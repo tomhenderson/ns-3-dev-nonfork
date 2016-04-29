@@ -26,13 +26,35 @@
 #include "ns3/event-id.h"
 #include "ns3/packet.h"
 #include "ns3/traced-callback.h"
+#include "ns3/traced-value.h"
 #include "supported-rates.h"
 #include "amsdu-subframe-header.h"
 #include "capability-information.h"
+#include "mgt-headers.h"
 
 namespace ns3  {
 
-class MgtAddBaRequestHeader;
+/**
+ * \ingroup wifi
+ *
+ * Struct to hold information regarding beacons observed
+ */
+struct BeaconInfo
+{
+  void Clear ()
+    {
+      m_channelNumber = 0;
+      m_bssid = Mac48Address ();
+      m_capabilities = CapabilityInformation ();
+      m_snr = 0;
+      m_probeResp = MgtProbeResponseHeader ();
+    };
+  uint32_t m_channelNumber;
+  Mac48Address m_bssid;
+  CapabilityInformation m_capabilities;
+  double m_snr;
+  MgtProbeResponseHeader m_probeResp;
+};
 
 /**
  * \ingroup wifi
@@ -92,7 +114,9 @@ private:
     ASSOCIATED,
     WAIT_PROBE_RESP,
     WAIT_ASSOC_RESP,
-    BEACON_MISSED,
+    WAIT_BEACON,
+    UNASSOCIATED,
+    SCANNING,
     REFUSED
   };
 
@@ -177,19 +201,42 @@ private:
    * \return the Capability information that we support
    */
   CapabilityInformation GetCapabilities (void) const;
+  /**
+   * This method is called after waiting in passive mode for beacons to
+   * arrive.  If no good beacons, restart scanning; otherwise, send an
+   * Association request to the highest quality beacon received and move
+   * to WAIT_ASSOC_RESP..
+   */
+  void WaitBeaconTimeout (void);
+
+  /**
+   * Start the scanning process to find the strongest beacon
+   */
+  void StartScanning (void);
+  /**
+   * Continue scanning process or terminate if no further channels to scan
+   */
+  void ScanningTimeout (void);
+
+  virtual void DoInitialize (void);
 
   enum MacState m_state;
   Time m_probeRequestTimeout;
   Time m_assocRequestTimeout;
+  Time m_scanningTimeout;
   EventId m_probeRequestEvent;
   EventId m_assocRequestEvent;
   EventId m_beaconWatchdog;
+  EventId m_waitBeaconEvent;
   Time m_beaconWatchdogEnd;
   uint32_t m_maxMissedBeacons;
   bool m_activeProbing;
+  std::vector<uint16_t> m_candidateChannels; /// used when scanning
+  BeaconInfo m_bestBeaconObserved; /// used when scanning
 
   TracedCallback<Mac48Address> m_assocLogger;
   TracedCallback<Mac48Address> m_deAssocLogger;
+  TracedValue<Time> m_beaconArrival;  /// Time in queue
 };
 
 } //namespace ns3

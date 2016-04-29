@@ -500,6 +500,34 @@ YansWifiPhy::GetChannelFrequencyMhz () const
 }
 
 void
+YansWifiPhy::AddOperationalChannel (uint16_t channelNumber)
+{
+  m_operationalChannelList.push_back (channelNumber);
+}
+
+
+std::vector<uint16_t>
+YansWifiPhy::GetOperationalChannelList () const
+{
+  std::vector<uint16_t> channelList;
+  channelList.push_back (m_channelNumber);
+  for (std::vector<uint16_t>::size_type i = 0; i != m_operationalChannelList.size (); i++)
+    {
+      if (m_operationalChannelList[i] != m_channelNumber)
+        {
+          channelList.push_back (m_channelNumber);
+        }
+    }
+  return channelList;
+}
+
+void
+YansWifiPhy::ClearOperationalChannelList ()
+{
+  m_operationalChannelList.clear ();
+}
+
+void
 YansWifiPhy::SetSleepMode (void)
 {
   NS_LOG_FUNCTION (this);

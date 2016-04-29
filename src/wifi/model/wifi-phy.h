@@ -568,6 +568,26 @@ public:
    */
   virtual uint16_t GetChannelNumber (void) const = 0;
   /**
+   * Add a channel number to the list of operational channels.  This method
+   * is used to support scanning for strongest base station.
+   *
+   * \param channelNumber the channel number to add
+   */
+  virtual void AddOperationalChannel (uint16_t channelNumber) = 0;
+  /**
+   * Return a list of channels to which it may be possible to roam
+   * By default, this method will return the current channel number followed
+   * by any other channel numbers that have been added.
+   *
+   * \return vector of channel numbers to which it may be possible to roam
+   */
+  virtual std::vector<uint16_t> GetOperationalChannelList () const = 0;
+  /**
+   * Clear the list of operational channels.
+   */
+  virtual void ClearOperationalChannelList (void) = 0;
+
+  /**
    * \return the required time for channel switch operation of this WifiPhy
    */
   virtual Time GetChannelSwitchDelay (void) const = 0;
