@@ -162,6 +162,15 @@ InterferenceHelper::Add (uint32_t size, WifiTxVector txVector,
   return event;
 }
 
+void
+InterferenceHelper::AddForeignSignal (Time duration, double rxPowerW)
+{
+  // Parameters other than duration and rxPowerW are unused for this type
+  // of signal, so we provide dummy versions
+  //WifiPreamble fakePreamble = WIFI_PREAMBLE_NONE;
+  WifiTxVector fakeTxVector;
+  Add (0, fakeTxVector, WIFI_PREAMBLE_NONE, duration, rxPowerW);
+}
 
 void
 InterferenceHelper::SetNoiseFigure (double value)
