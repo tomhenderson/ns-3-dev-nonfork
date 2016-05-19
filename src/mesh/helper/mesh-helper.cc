@@ -95,11 +95,17 @@ MeshHelper::Install (const WifiPhyHelper &phyHelper, NodeContainer c) const
           uint32_t channel = 0;
           if (m_spreadChannelPolicy == ZERO_CHANNEL)
             {
-              channel = 0;
+              // XXX this variable is used as a channel number; can't be zero
+              //channel = 0;
+              // mesh by default uses 802.11a
+              channel = 36;
             }
           if (m_spreadChannelPolicy == SPREAD_CHANNELS)
             {
-              channel = i * 5;
+              // XXX this variable is used as a channel number; can't be zero
+              //channel = i * 5;
+              // mesh by default uses 802.11a
+              channel = 36 + i * 4;
             }
           Ptr<WifiNetDevice> iface = CreateInterface (phyHelper, node, channel);
           mp->AddInterface (iface);

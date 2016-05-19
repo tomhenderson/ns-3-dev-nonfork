@@ -24,6 +24,7 @@
 #define YANS_WIFI_PHY_H
 
 #include <stdint.h>
+#include <map>
 #include "ns3/callback.h"
 #include "ns3/event-id.h"
 #include "ns3/packet.h"
@@ -77,28 +78,14 @@ public:
    * \param channel the YansWifiChannel this YansWifiPhy is to be connected to
    */
   void SetChannel (Ptr<YansWifiChannel> channel);
-  /**
-   * Set the current channel number.
-   *
-   * \param id the channel number
-   */
+  // Inherited
   void SetChannelNumber (uint16_t id);
-  /**
-   * Return the current channel number.
-   *
-   * \return the current channel number
-   */
+  // Inherited
   uint16_t GetChannelNumber (void) const;
   /**
    * \return the required time for channel switch operation of this WifiPhy
    */
   Time GetChannelSwitchDelay (void) const;
-  /**
-   * Return current center channel frequency in MHz.
-   *
-   * \return the current center channel frequency in MHz
-   */
-  double GetChannelFrequencyMhz () const;
   /**
    * Add a channel number to the list of operational channels.  This method
    * is used to support scanning for strongest base station.
@@ -333,13 +320,7 @@ public:
    */
   int64_t AssignStreams (int64_t stream);
 
-  /**
-   * \param freq the operating frequency on this node (2.4 GHz or 5GHz).
-   */
-  virtual void SetFrequency (uint32_t freq);
-  /**
-   * \return the operating frequency on this node
-   */
+  // Inherited
   virtual uint32_t GetFrequency (void) const;
   /**
    * \param tx the number of transmitters on this node.
@@ -475,9 +456,14 @@ private:
   void ConfigureHolland (void);
   /**
    * Configure YansWifiPhy with appropriate channel frequency and
-   * supported rates for 802.11n standard.
+   * supported rates for 802.11n standard at 2.4 GHz.
    */
-  void Configure80211n (void);
+  void Configure80211n_2_4Ghz (void);
+  /**
+   * Configure YansWifiPhy with appropriate channel frequency and
+   * supported rates for 802.11n standard at 5 GHz.
+   */
+  void Configure80211n_5Ghz (void);
   /**
    * Configure YansWifiPhy with appropriate channel frequency and
    * supported rates for 802.11ac standard.
@@ -581,8 +567,17 @@ private:
   EventId m_endRxEvent;
   EventId m_endPlcpRxEvent;
 
+  // XXX refactor to use C++-11 initialization list once bug 2270 patched
+  static std::map<uint32_t, double> CreateChannelMap ();
+  static std::map<uint32_t, double> m_channelMap;
+  
+  // XXX refactor to use C++-11 initialization list once bug 2270 patched
+  static std::map<uint32_t, double> CreateChannelMap10Mhz ();
+  static std::map<uint32_t, double> m_channelMap10Mhz;
+
   Ptr<UniformRandomVariable> m_random;  //!< Provides uniform random variables.
-  double m_channelStartingFrequency;    //!< Standard-dependent center frequency of 0-th channel in MHz
+  double m_channelCenterFrequency;    //!< Standard-dependent center frequency of configured channel in MHz
+  enum WifiPhyStandard m_standard; //!< Standard configured for this PHY
   Ptr<WifiPhyStateHelper> m_state;      //!< Pointer to WifiPhyStateHelper
   InterferenceHelper m_interference;    //!< Pointer to InterferenceHelper
   Time m_channelSwitchDelay;            //!< Time required to switch between channel

@@ -34,7 +34,6 @@
 using namespace ns3;
 
 static const uint16_t CHANNEL_NUMBER = 36;
-static const uint32_t FREQUENCY = 5000; // MHz
 
 class SpectrumWifiPhyBasicTest : public TestCase
 {
@@ -125,7 +124,6 @@ SpectrumWifiPhyBasicTest::DoSetup (void)
   Ptr<ErrorRateModel> error = CreateObject<NistErrorRateModel> ();
   m_phy->SetErrorRateModel (error);
   m_phy->SetChannelNumber (CHANNEL_NUMBER);
-  m_phy->SetFrequency (FREQUENCY);
   m_phy->SetNoisePowerSpectralDensity (WifiSpectrumHelper::CreateNoisePowerSpectralDensity (0, CHANNEL_NUMBER));
   m_phy->SetPacketReceivedCallback (MakeCallback (&SpectrumWifiPhyBasicTest::SpectrumWifiPhyReceiver, this));
 }

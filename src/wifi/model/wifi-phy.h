@@ -551,18 +551,15 @@ public:
   virtual WifiMode GetMcs (uint8_t mcs) const = 0;
 
   /**
-   * \brief Set channel number.
-   *
-   * Channel center frequency = Channel starting frequency + 5 MHz * (nch - 1)
-   *
-   * where Starting channel frequency is standard-dependent, see SetStandard()
-   * as defined in (Section 18.3.8.4.2 "Channel numbering"; IEEE Std 802.11-2012).
+   * \brief Set channel number.  If channels are bonded together, this sets
+   * the channel number of the lowest of the bonded channels.
    *
    * \param id the channel number
    */
   virtual void SetChannelNumber (uint16_t id) = 0;
   /**
-   * Return current channel number.
+   * Return current channel number.  If channels are bonded together, this
+   * returns the channel number of the lowest of the bonded channels.
    *
    * \return the current channel number
    */
@@ -1231,11 +1228,10 @@ public:
   virtual int64_t AssignStreams (int64_t stream) = 0;
 
   /**
-   * \param freq the operating frequency on this node.
-   */
-  virtual void SetFrequency (uint32_t freq) = 0;
-  /**
-   * \return the operating frequency on this node
+   * If multiple channels are bonded together, this method returns the
+   * center frequncy of the lowest bonded channel
+   *
+   * \return the center frequency (MHz) of the currently configured channel
    */
   virtual uint32_t GetFrequency (void) const = 0;
   /**
