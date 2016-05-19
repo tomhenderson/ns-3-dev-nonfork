@@ -39,7 +39,7 @@ WifiPhyTag::GetInstanceTypeId (void) const
 uint32_t
 WifiPhyTag::GetSerializedSize (void) const
 {
-  return (4 + (6 * 1) + 4 + 2);
+  return (4 + (2 * 1) + 4 + (5 * 1) + 4 + 2);
 }
 
 void
@@ -48,9 +48,11 @@ WifiPhyTag::Serialize (TagBuffer i) const
   i.WriteU32 (m_wifiTxVector.GetMode ().GetUid ());
   i.WriteU8 (m_wifiTxVector.GetTxPowerLevel ());
   i.WriteU8 (m_wifiTxVector.GetRetries ());
+  i.WriteU32 (m_wifiTxVector.GetChannelWidth ());
   i.WriteU8 (m_wifiTxVector.IsShortGuardInterval ());
   i.WriteU8 (m_wifiTxVector.GetNss ());
   i.WriteU8 (m_wifiTxVector.GetNess ());
+  i.WriteU8 (m_wifiTxVector.IsAggregation ());
   i.WriteU8 (m_wifiTxVector.IsStbc ());
   i.WriteU32 (m_wifiPreamble);
   i.WriteU16 (m_mpduType);
@@ -62,9 +64,11 @@ WifiPhyTag::Deserialize (TagBuffer i)
   m_wifiTxVector.SetMode (WifiMode (i.ReadU32 ()));
   m_wifiTxVector.SetTxPowerLevel (i.ReadU8 ());
   m_wifiTxVector.SetRetries (i.ReadU8 ());
+  m_wifiTxVector.SetChannelWidth (i.ReadU32 ());
   m_wifiTxVector.SetShortGuardInterval (i.ReadU8 ());
   m_wifiTxVector.SetNss (i.ReadU8 ());
   m_wifiTxVector.SetNess (i.ReadU8 ());
+  m_wifiTxVector.SetAggregation (i.ReadU8 ());
   m_wifiTxVector.SetStbc (i.ReadU8 ());
   m_wifiPreamble = i.ReadU32 ();
   m_mpduType = static_cast<enum mpduType> (i.ReadU16 ());
