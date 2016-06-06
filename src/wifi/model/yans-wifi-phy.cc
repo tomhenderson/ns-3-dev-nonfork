@@ -228,7 +228,7 @@ YansWifiPhy::DoChannelSwitch (uint16_t nch)
       break;
     case YansWifiPhy::TX:
       NS_LOG_DEBUG ("channel switching postponed until end of current transmission");
-      Simulator::Schedule (GetDelayUntilIdle (), &YansWifiPhy::SetChannelNumber, this, nch);
+      Simulator::Schedule (GetDelayUntilIdle (), &WifiPhy::SetChannelNumber, this, nch);
       break;
     case YansWifiPhy::CCA_BUSY:
     case YansWifiPhy::IDLE:
@@ -259,6 +259,57 @@ switchChannel:
   return true;
 }
 
+bool
+YansWifiPhy::DoFrequencySwitch (uint32_t frequency)
+{
+  if (!m_initialized)
+    {
+      //this is not channel switch, this is initialization
+      NS_LOG_DEBUG ("start at frequency " << frequency);
+      return true;
+    }
+
+  NS_ASSERT (!IsStateSwitching ());
+  switch (m_state->GetState ())
+    {
+    case YansWifiPhy::RX:
+      NS_LOG_DEBUG ("drop packet because of channel/frequency switching while reception");
+      m_endPlcpRxEvent.Cancel ();
+      m_endRxEvent.Cancel ();
+      goto switchFrequency;
+      break;
+    case YansWifiPhy::TX:
+      NS_LOG_DEBUG ("channel/frequency switching postponed until end of current transmission");
+      Simulator::Schedule (GetDelayUntilIdle (), &WifiPhy::SetFrequency, this, frequency);
+      break;
+    case YansWifiPhy::CCA_BUSY:
+    case YansWifiPhy::IDLE:
+      goto switchFrequency;
+      break;
+    case YansWifiPhy::SLEEP:
+      NS_LOG_DEBUG ("frequency switching ignored in sleep mode");
+      break;
+    default:
+      NS_ASSERT (false);
+      break;
+    }
+
+  return false;
+
+switchFrequency:
+
+  NS_LOG_DEBUG ("switching frequency " << GetFrequency () << " -> " << frequency);
+  m_state->SwitchToChannelSwitching (m_channelSwitchDelay);
+  m_interference.EraseEvents ();
+  /*
+   * Needed here to be able to correctly sensed the medium for the first
+   * time after the switching. The actual switching is not performed until
+   * after m_channelSwitchDelay. Packets received during the switching
+   * state are added to the event list and are employed later to figure
+   * out the state of the medium after the switching.
+   */
+  return true;
+}
 
 void
 YansWifiPhy::ConfigureStandard (enum WifiPhyStandard standard)
@@ -286,11 +337,9 @@ YansWifiPhy::ConfigureStandard (enum WifiPhyStandard standard)
       ConfigureHolland ();
       break;
     case WIFI_PHY_STANDARD_80211n_2_4GHZ:
-      SetFrequency (2412);
       Configure80211n ();
       break;
     case WIFI_PHY_STANDARD_80211n_5GHZ:
-      SetFrequency (5180);
       Configure80211n ();
       break;
     case WIFI_PHY_STANDARD_80211ac:
@@ -841,8 +890,6 @@ void
 YansWifiPhy::Configure80211a (void)
 {
   NS_LOG_FUNCTION (this);
-  SetFrequency (5180);
-  SetChannelWidth (20); //20 MHz
 
   m_deviceRateSet.push_back (WifiPhy::GetOfdmRate6Mbps ());
   m_deviceRateSet.push_back (WifiPhy::GetOfdmRate9Mbps ());
@@ -858,8 +905,6 @@ void
 YansWifiPhy::Configure80211b (void)
 {
   NS_LOG_FUNCTION (this);
-  SetFrequency (2412);
-  SetChannelWidth (22); //22 MHz
 
   m_deviceRateSet.push_back (WifiPhy::GetDsssRate1Mbps ());
   m_deviceRateSet.push_back (WifiPhy::GetDsssRate2Mbps ());
@@ -872,7 +917,6 @@ YansWifiPhy::Configure80211g (void)
 {
   NS_LOG_FUNCTION (this);
   Configure80211b ();
-  SetChannelWidth (20); //20 MHz
 
   m_deviceRateSet.push_back (WifiPhy::GetErpOfdmRate6Mbps ());
   m_deviceRateSet.push_back (WifiPhy::GetErpOfdmRate9Mbps ());
@@ -888,8 +932,6 @@ void
 YansWifiPhy::Configure80211_10Mhz (void)
 {
   NS_LOG_FUNCTION (this);
-  SetFrequency (5180);
-  SetChannelWidth (10); //10 MHz
 
   m_deviceRateSet.push_back (WifiPhy::GetOfdmRate3MbpsBW10MHz ());
   m_deviceRateSet.push_back (WifiPhy::GetOfdmRate4_5MbpsBW10MHz ());
@@ -905,8 +947,6 @@ void
 YansWifiPhy::Configure80211_5Mhz (void)
 {
   NS_LOG_FUNCTION (this);
-  SetFrequency (5180);
-  SetChannelWidth (5); //5 MHz
 
   m_deviceRateSet.push_back (WifiPhy::GetOfdmRate1_5MbpsBW5MHz ());
   m_deviceRateSet.push_back (WifiPhy::GetOfdmRate2_25MbpsBW5MHz ());
@@ -922,8 +962,6 @@ void
 YansWifiPhy::ConfigureHolland (void)
 {
   NS_LOG_FUNCTION (this);
-  SetFrequency (5180);
-  SetChannelWidth (20); //20 MHz
 
   m_deviceRateSet.push_back (WifiPhy::GetOfdmRate6Mbps ());
   m_deviceRateSet.push_back (WifiPhy::GetOfdmRate12Mbps ());
@@ -1014,7 +1052,6 @@ YansWifiPhy::Configure80211n (void)
     {
       Configure80211a ();
     }
-  SetChannelWidth (20); //20 MHz
   m_bssMembershipSelectorSet.push_back (HT_PHY);
   ConfigureHtDeviceMcsSet ();
 }
@@ -1023,9 +1060,7 @@ void
 YansWifiPhy::Configure80211ac (void)
 {
   NS_LOG_FUNCTION (this);
-  SetFrequency (5180);
   Configure80211n ();
-  SetChannelWidth (80); //80 MHz
 
   m_deviceMcsSet.push_back (WifiPhy::GetVhtMcs0 ());
   m_deviceMcsSet.push_back (WifiPhy::GetVhtMcs1 ());

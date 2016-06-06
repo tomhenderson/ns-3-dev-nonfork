@@ -23,6 +23,7 @@
 #define WIFI_PHY_H
 
 #include <stdint.h>
+#include <map>
 #include "ns3/callback.h"
 #include "ns3/packet.h"
 #include "ns3/object.h"
@@ -580,6 +581,32 @@ public:
    * \param standard the Wi-Fi standard
    */
   virtual void ConfigureStandard (enum WifiPhyStandard standard);
+
+  /**
+   * Add a channel definition to the WifiPhy.  The pair (channelNumber,
+   * WifiPhyStandard) may then be used to lookup a pair (frequency, 
+   * channelWidth).
+   *
+   * If the channel is not already defined for the standard, the method
+   * should return true; otherwise false.
+   *
+   * \param channelNumber the channel number to define
+   * \param standard the applicable WifiPhyStandard
+   * \param frequency the frequency (MHz)
+   * \param channelWidth the channel width (MHz)
+   *
+   * \return true if the channel definition succeeded
+   */
+  bool DefineChannelNumber (uint16_t channelNumber, enum WifiPhyStandard standard, uint32_t frequency, uint32_t channelWidth);
+
+  /**
+   * A pair of a ChannelNumber and WifiPhyStandard
+   */
+  typedef std::pair<uint16_t, enum WifiPhyStandard> ChannelNumberStandardPair;
+  /**
+   * A pair of a center Frequency and a ChannelWidth
+   */
+  typedef std::pair<uint32_t, uint32_t> FrequencyWidthPair;
 
   /**
    * Return the WifiChannel this WifiPhy is connected to.
@@ -1345,6 +1372,41 @@ private:
    */
   virtual bool DoChannelSwitch (uint16_t id);
   /**
+   * The default implementation does nothing and returns true.  This method
+   * is typically called internally by SetFrequency ().
+   *
+   * \brief Perform any actions necessary when user changes frequency
+   * \param frequency frequency to try to switch to
+   * \return true if WifiPhy can actually change the frequency; false if not
+   * \see SetFrequency
+   */
+  virtual bool DoFrequencySwitch (uint32_t frequency);
+  /**
+   * Configure the PHY-level parameters for different Wi-Fi standard.
+   * This method is called when defaults for each standard must be 
+   * selected.
+   *
+   * \param standard the Wi-Fi standard
+   */
+  virtual void ConfigureDefaultsForStandard (enum WifiPhyStandard standard);
+  /**
+   * Configure the PHY-level parameters for different Wi-Fi standard.
+   * This method is called when the Frequency or ChannelNumber attributes
+   * are set by the user.  If the Frequency or ChannelNumber are valid for
+   * the standard, they are used instead.
+   *
+   * \param standard the Wi-Fi standard
+   */
+  virtual void ConfigureChannelForStandard (enum WifiPhyStandard standard);
+  /**
+   * Look for 
+   * \param frequency The center frequency to use
+   * \param width The channel width to use
+   * \return the channel number if found, zero if not
+   */
+  uint16_t FindChannelNumberForFrequencyWidth (uint32_t frequency, uint32_t width) const;
+
+  /**
    * The trace source fired when a packet begins the transmission process on
    * the medium.
    *
@@ -1421,9 +1483,14 @@ private:
   TracedCallback<Ptr<const Packet>, uint16_t, uint16_t, uint32_t,
                  WifiPreamble, WifiTxVector, struct mpduInfo> m_phyMonitorSniffTxTrace;
 
-  uint32_t m_standard;         //!< WifiPhyStandard
-  uint32_t m_channelCenterFrequency;    //!< Center frequency in MHz
-  uint32_t m_channelWidth;          //!< Channel width
+  enum WifiPhyStandard m_standard;     //!< WifiPhyStandard
+  uint32_t m_channelCenterFrequency;   //!< Center frequency in MHz
+  uint32_t m_channelWidth;             //!< Channel width
+
+
+  typedef std::map<ChannelNumberStandardPair,FrequencyWidthPair> ChannelToFrequencyWidthMap;
+  static ChannelToFrequencyWidthMap m_channelToFrequencyWidth;
+
   std::vector<uint32_t> m_supportedChannelWidthSet; //!< Supported channel width
   uint16_t             m_channelNumber;  //!< Operating channel number
 

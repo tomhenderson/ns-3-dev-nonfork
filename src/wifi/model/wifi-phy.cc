@@ -31,6 +31,7 @@
 #include "ns3/uinteger.h"
 #include "ns3/enum.h"
 #include "ns3/trace-source-accessor.h"
+#include "ns3/fatal-error.h"
 #include <cmath>
 
 namespace ns3 {
@@ -51,6 +52,108 @@ WifiPhyListener::~WifiPhyListener ()
 
 NS_OBJECT_ENSURE_REGISTERED (WifiPhy);
 
+/**
+ * This table maintains the mapping of valid ChannelNumber to
+ * Frequency/ChannelWidth pairs.  If you want to make a channel applicable
+ * to all standards, then you may use the WIFI_PHY_STANDARD_UNSPECIFIED
+ * standard to represent this, as a wildcard.  If you want to limit the 
+ * configuration of a particular channel/frequency/width to a particular 
+ * standard(s), then you can specify one or more such bindings. 
+ */
+WifiPhy::ChannelToFrequencyWidthMap WifiPhy::m_channelToFrequencyWidth =
+{
+  // 802.11b uses width of 22, while OFDM modes use width of 20
+  { std::make_pair (1, WIFI_PHY_STANDARD_80211b), std::make_pair (2412, 22) },
+  { std::make_pair (1, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (2412, 20) },
+  { std::make_pair (2, WIFI_PHY_STANDARD_80211b), std::make_pair (2417, 22) },
+  { std::make_pair (2, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (2417, 20) },
+  { std::make_pair (3, WIFI_PHY_STANDARD_80211b), std::make_pair (2422, 22) },
+  { std::make_pair (3, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (2422, 20) },
+  { std::make_pair (4, WIFI_PHY_STANDARD_80211b), std::make_pair (2427, 22) },
+  { std::make_pair (4, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (2427, 20) },
+  { std::make_pair (5, WIFI_PHY_STANDARD_80211b), std::make_pair (2432, 22) },
+  { std::make_pair (5, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (2432, 20) },
+  { std::make_pair (6, WIFI_PHY_STANDARD_80211b), std::make_pair (2437, 22) },
+  { std::make_pair (6, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (2437, 20) },
+  { std::make_pair (7, WIFI_PHY_STANDARD_80211b), std::make_pair (2442, 22) },
+  { std::make_pair (7, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (2442, 20) },
+  { std::make_pair (8, WIFI_PHY_STANDARD_80211b), std::make_pair (2447, 22) },
+  { std::make_pair (8, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (2447, 20) },
+  { std::make_pair (9, WIFI_PHY_STANDARD_80211b), std::make_pair (2452, 22) },
+  { std::make_pair (9, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (2452, 20) },
+  { std::make_pair (10, WIFI_PHY_STANDARD_80211b), std::make_pair (2457, 22) },
+  { std::make_pair (10, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (2457, 20) },
+  { std::make_pair (11, WIFI_PHY_STANDARD_80211b), std::make_pair (2462, 22) },
+  { std::make_pair (11, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (2462, 20) },
+  { std::make_pair (12, WIFI_PHY_STANDARD_80211b), std::make_pair (2467, 22) },
+  { std::make_pair (12, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (2467, 20) },
+  { std::make_pair (13, WIFI_PHY_STANDARD_80211b), std::make_pair (2472, 22) },
+  { std::make_pair (13, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (2472, 20) },
+  // Only defined for 802.11b
+  { std::make_pair (14, WIFI_PHY_STANDARD_80211b), std::make_pair (2484, 22) },
+
+  // Now the 5GHz channels; UNSPECIFIED for 802.11a/n channels, but limited
+  // to 802.11ac for the 80/160 MHz channels
+  // 20 MHz channels
+  { std::make_pair (36, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5180, 20) },
+  { std::make_pair (40, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5200, 20) },
+  { std::make_pair (44, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5220, 20) },
+  { std::make_pair (48, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5240, 20) },
+  { std::make_pair (52, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5260, 20) },
+  { std::make_pair (56, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5280, 20) },
+  { std::make_pair (60, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5300, 20) },
+  { std::make_pair (64, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5320, 20) },
+  { std::make_pair (100, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5500, 20) },
+  { std::make_pair (104, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5520, 20) },
+  { std::make_pair (108, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5540, 20) },
+  { std::make_pair (112, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5560, 20) },
+  { std::make_pair (116, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5580, 20) },
+  { std::make_pair (120, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5600, 20) },
+  { std::make_pair (124, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5620, 20) },
+  { std::make_pair (128, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5640, 20) },
+  { std::make_pair (132, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5660, 20) },
+  { std::make_pair (136, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5680, 20) },
+  { std::make_pair (140, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5700, 20) },
+  { std::make_pair (144, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5720, 20) },
+  { std::make_pair (149, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5745, 20) },
+  { std::make_pair (153, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5765, 20) },
+  { std::make_pair (157, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5785, 20) },
+  { std::make_pair (161, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5805, 20) },
+  { std::make_pair (165, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5825, 20) },
+  // 40 MHz channels
+  { std::make_pair (38, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5190, 40) },
+  { std::make_pair (46, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5230, 40) },
+  { std::make_pair (54, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5230, 40) },
+  { std::make_pair (62, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5310, 40) },
+  { std::make_pair (102, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5510, 40) },
+  { std::make_pair (110, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5550, 40) },
+  { std::make_pair (118, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5590, 40) },
+  { std::make_pair (126, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5590, 40) },
+  { std::make_pair (134, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5670, 40) },
+  { std::make_pair (142, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5710, 40) },
+  { std::make_pair (151, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5755, 40) },
+  { std::make_pair (159, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5795, 40) },
+  // 80 MHz channels
+  { std::make_pair (42, WIFI_PHY_STANDARD_80211ac), std::make_pair (5210, 80) },
+  { std::make_pair (58, WIFI_PHY_STANDARD_80211ac), std::make_pair (5290, 80) },
+  { std::make_pair (106, WIFI_PHY_STANDARD_80211ac), std::make_pair (5530, 80) },
+  { std::make_pair (122, WIFI_PHY_STANDARD_80211ac), std::make_pair (5610, 80) },
+  { std::make_pair (138, WIFI_PHY_STANDARD_80211ac), std::make_pair (5690, 80) },
+  { std::make_pair (155, WIFI_PHY_STANDARD_80211ac), std::make_pair (5775, 80) },
+  // 160 MHz channels
+  { std::make_pair (50, WIFI_PHY_STANDARD_80211ac), std::make_pair (5250, 160) },
+  { std::make_pair (114, WIFI_PHY_STANDARD_80211ac), std::make_pair (5570, 160) },
+
+  // 802.11p (10 MHz channels at the 5.855-5.925 band 
+  { std::make_pair (172, WIFI_PHY_STANDARD_80211_10MHZ), std::make_pair (5860, 10) },
+  { std::make_pair (174, WIFI_PHY_STANDARD_80211_10MHZ), std::make_pair (5870, 10) },
+  { std::make_pair (176, WIFI_PHY_STANDARD_80211_10MHZ), std::make_pair (5880, 10) },
+  { std::make_pair (178, WIFI_PHY_STANDARD_80211_10MHZ), std::make_pair (5890, 10) },
+  { std::make_pair (180, WIFI_PHY_STANDARD_80211_10MHZ), std::make_pair (5900, 10) },
+  { std::make_pair (182, WIFI_PHY_STANDARD_80211_10MHZ), std::make_pair (5910, 10) },
+  { std::make_pair (184, WIFI_PHY_STANDARD_80211_10MHZ), std::make_pair (5920, 10) }
+};
+
 TypeId
 WifiPhy::GetTypeId (void)
 {
@@ -59,7 +162,7 @@ WifiPhy::GetTypeId (void)
     .SetGroupName ("Wifi")
     .AddAttribute ("Frequency",
                    "The operating center frequency (MHz)",
-                   UintegerValue (2407),
+                   UintegerValue (0),
                    MakeUintegerAccessor (&WifiPhy::GetFrequency,
                                          &WifiPhy::SetFrequency),
                    MakeUintegerChecker<uint32_t> ())
@@ -70,8 +173,8 @@ WifiPhy::GetTypeId (void)
                                          &WifiPhy::SetChannelWidth),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("ChannelNumber",
-                   "Channel center frequency = Channel starting frequency + 5 MHz * nch.",
-                   UintegerValue (1),
+                   "If set to non-zero defined value, will control Frequency and ChannelWidth assignment",
+                   UintegerValue (0),
                    MakeUintegerAccessor (&WifiPhy::SetChannelNumber,
                                          &WifiPhy::GetChannelNumber),
                    MakeUintegerChecker<uint16_t> ())
@@ -140,16 +243,243 @@ WifiPhy::~WifiPhy ()
 }
 
 void
+WifiPhy::ConfigureDefaultsForStandard (enum WifiPhyStandard standard)
+{
+  NS_LOG_FUNCTION (this << standard);
+  switch (standard)
+    {
+    case WIFI_PHY_STANDARD_80211a:
+      SetChannelWidth (20);
+      SetFrequency (5180);
+      // Channel number should be aligned by SetFrequency () to 36
+      NS_ASSERT (GetChannelNumber () == 36);
+      break;
+    case WIFI_PHY_STANDARD_80211b:
+      SetChannelWidth (22);
+      SetFrequency (2412);
+      // Channel number should be aligned by SetFrequency () to 1
+      NS_ASSERT (GetChannelNumber () == 1);
+      break;
+    case WIFI_PHY_STANDARD_80211g:
+      SetChannelWidth (20);
+      SetFrequency (2412);
+      // Channel number should be aligned by SetFrequency () to 1
+      NS_ASSERT (GetChannelNumber () == 1);
+      break;
+    case WIFI_PHY_STANDARD_80211_10MHZ:
+      SetChannelWidth (10);
+      SetFrequency (5860);
+      // Channel number should be aligned by SetFrequency () to 172
+      NS_ASSERT (GetChannelNumber () == 172);
+      break;
+    case WIFI_PHY_STANDARD_80211_5MHZ:
+      SetChannelWidth (5);
+      SetFrequency (5860);
+      // Channel number should be aligned by SetFrequency () to 0 
+      NS_ASSERT (GetChannelNumber () == 0);
+      break;
+    case WIFI_PHY_STANDARD_holland:
+      SetChannelWidth (20);
+      SetFrequency (5180);
+      // Channel number should be aligned by SetFrequency () to 36
+      NS_ASSERT (GetChannelNumber () == 36);
+      break;
+    case WIFI_PHY_STANDARD_80211n_2_4GHZ:
+      SetChannelWidth (20);
+      SetFrequency (2412);
+      // Channel number should be aligned by SetFrequency () to 1
+      NS_ASSERT (GetChannelNumber () == 1);
+      break;
+    case WIFI_PHY_STANDARD_80211n_5GHZ:
+      SetChannelWidth (20);
+      SetFrequency (5180);
+      // Channel number should be aligned by SetFrequency () to 36
+      NS_ASSERT (GetChannelNumber () == 36);
+      break;
+    case WIFI_PHY_STANDARD_80211ac:
+      SetChannelWidth (80);
+      SetFrequency (5210);
+      // Channel number should be aligned by SetFrequency () to 42
+      NS_ASSERT (GetChannelNumber () == 42);
+      break;
+    case WIFI_PHY_STANDARD_UNSPECIFIED:
+      NS_LOG_WARN ("Configuring unspecified standard; performing no action");
+      break;
+    default:
+      NS_ASSERT (false);
+      break;
+    }
+}
+
+bool 
+WifiPhy::DefineChannelNumber (uint16_t channelNumber, enum WifiPhyStandard standard, uint32_t frequency, uint32_t channelWidth)
+{
+  NS_LOG_FUNCTION (this << channelNumber << standard << frequency << channelWidth);
+  ChannelNumberStandardPair p = std::make_pair (channelNumber, standard);
+  ChannelToFrequencyWidthMap::const_iterator it;
+  it = m_channelToFrequencyWidth.find (p);
+  if (it != m_channelToFrequencyWidth.end ())
+    {
+      NS_LOG_DEBUG ("channel number/standard already defined; returning false");
+      return false;
+    }
+  FrequencyWidthPair f = std::make_pair (frequency, channelWidth);
+  m_channelToFrequencyWidth[p] = f;
+  return true;
+}
+
+uint16_t 
+WifiPhy::FindChannelNumberForFrequencyWidth (uint32_t frequency, uint32_t width) const
+{
+  NS_LOG_FUNCTION (this << frequency << width);
+  bool found = false;
+  FrequencyWidthPair f = std::make_pair (frequency, width);
+  ChannelToFrequencyWidthMap::const_iterator it = m_channelToFrequencyWidth.begin ();
+  while (it != m_channelToFrequencyWidth.end ())
+    {
+      if (it->second == f)
+        {
+           found = true;
+           break;
+        }
+      ++it;
+    }
+  if (found)
+    {
+      NS_LOG_DEBUG ("Found, returning " << it->first.first);
+      return (it->first.first);
+    }
+  else
+    {
+      NS_LOG_DEBUG ("Not found, returning 0");
+      return 0;
+    }
+}
+
+void
+WifiPhy::ConfigureChannelForStandard (enum WifiPhyStandard standard)
+{
+  NS_LOG_FUNCTION (this << standard);
+  // If the user has configured both Frequency and ChannelNumber, Frequency
+  // takes precedence 
+  if (GetFrequency () != 0)
+    {
+      // If Frequency is already set, then see whether a ChannelNumber can
+      // be found that matches Frequency and ChannelWidth.  If so, configure 
+      // the ChannelNumber to that channel number.  If not, set 
+      // ChannelNumber to zero.
+      NS_LOG_DEBUG ("Frequency set; checking whether a channel number corresponds");
+      uint32_t channelNumberSearched = FindChannelNumberForFrequencyWidth (GetFrequency (), GetChannelWidth ());
+      if (channelNumberSearched)
+        {
+          NS_LOG_DEBUG ("Channel number found; setting to " << channelNumberSearched);
+          SetChannelNumber (channelNumberSearched);
+        }
+      else
+        {
+          NS_LOG_DEBUG ("Channel number not found; setting to zero");
+          SetChannelNumber (0);
+        }
+    }
+  else if (GetChannelNumber () != 0)
+    {
+      // If the channel number is known for this particular standard or for 
+      // the unspecified standard, configure using the known values;
+      // otherwise, this is a configuration error
+      NS_LOG_DEBUG ("Configuring for channel number " << GetChannelNumber ());
+      ChannelNumberStandardPair p = std::make_pair (GetChannelNumber (), standard);
+      FrequencyWidthPair f;
+      ChannelToFrequencyWidthMap::const_iterator it;
+      it = m_channelToFrequencyWidth.find (p);
+      if (it != m_channelToFrequencyWidth.end ())
+        {
+          f = m_channelToFrequencyWidth[p];
+        }
+      else
+        {
+          // the specific pair of number/standard is not known
+          NS_LOG_DEBUG ("Falling back to check WIFI_PHY_STANDARD_UNSPECIFIED");
+          ChannelNumberStandardPair p2 = std::make_pair (GetChannelNumber (), WIFI_PHY_STANDARD_UNSPECIFIED);
+          it = m_channelToFrequencyWidth.find (p2);
+        }
+      if (it == m_channelToFrequencyWidth.end())
+        {
+          NS_FATAL_ERROR ("Error, ChannelNumber " << GetChannelNumber () << " is unknown for this standard");
+        }
+      else
+        {
+          NS_LOG_DEBUG ("Setting frequency to " << f.first << "; width to " << f.second);
+          SetFrequency (f.first);
+          SetChannelWidth (f.second);
+        }
+    }
+}
+
+void
 WifiPhy::ConfigureStandard (enum WifiPhyStandard standard)
 {
   NS_LOG_FUNCTION (this << standard);
   m_standard = standard;
+  if (GetFrequency () == 0 && GetChannelNumber () == 0)
+    {
+      ConfigureDefaultsForStandard (standard);
+    }
+  else
+    {
+      // The user has configured either (or both) Frequency or ChannelNumber
+      ConfigureChannelForStandard (standard);
+    }
 }
 
 void
-WifiPhy::SetFrequency (uint32_t freq)
+WifiPhy::SetFrequency (uint32_t frequency)
 {
-  m_channelCenterFrequency = freq;
+  NS_LOG_FUNCTION (this << frequency);
+  // If the user has configured both Frequency and ChannelNumber, Frequency
+  // takes precedence 
+  if (GetFrequency () == frequency)
+    {
+      NS_LOG_DEBUG ("No frequency change requested");
+      return;
+    }
+  if (frequency == 0)
+    {
+      DoFrequencySwitch (0);
+      NS_LOG_DEBUG ("Setting frequency and channel number to zero");
+      m_channelCenterFrequency = 0;
+      m_channelNumber = 0;
+      return;
+    }
+  // See if there corresponds a channel number to the requested frequency.
+  uint16_t nch = FindChannelNumberForFrequencyWidth (frequency, GetChannelWidth ());
+  if (nch != 0)
+    {
+      NS_LOG_DEBUG ("Setting frequency " << frequency << " corresponds to channel " << nch);
+      if (DoFrequencySwitch (frequency))
+        {
+          NS_LOG_DEBUG ("Channel frequency switched to " << frequency << "; channel number to " << nch);
+          m_channelCenterFrequency = frequency;
+          m_channelNumber = nch;
+        }
+    else
+        {
+          NS_LOG_DEBUG ("Suppressing reassignment of frequency");
+        }
+    }
+  else
+    {
+      NS_LOG_DEBUG ("Channel number is unknown for frequency " << frequency);
+      if (DoFrequencySwitch (frequency))
+        {
+          NS_LOG_DEBUG ("Channel frequency switched to " << frequency << "; channel number to " << 0);
+          m_channelCenterFrequency = frequency;
+          m_channelNumber = 0;
+        }
+    else
+        {
+          NS_LOG_DEBUG ("Suppressing reassignment of frequency");
+        }
+    }
 }
 
 uint32_t
@@ -196,9 +526,37 @@ void
 WifiPhy::SetChannelNumber (uint16_t nch)
 {
   NS_LOG_FUNCTION (this << nch);
+  if (GetChannelNumber () == nch)
+    {
+      NS_LOG_DEBUG ("No channel change requested");
+      return;
+    }
+  if (nch == 0)
+    {
+      DoChannelSwitch (nch);
+      m_channelNumber = 0;
+      return;
+    }
+
+  ChannelNumberStandardPair p = std::make_pair (nch, m_standard);
+  FrequencyWidthPair f = m_channelToFrequencyWidth[p];
+  if (f.first == 0 && m_standard != WIFI_PHY_STANDARD_UNSPECIFIED)
+    {
+      // the specific pair of number/standard is not known
+      NS_LOG_DEBUG ("Falling back to check WIFI_PHY_STANDARD_UNSPECIFIED");
+      ChannelNumberStandardPair p2 = std::make_pair (nch, WIFI_PHY_STANDARD_UNSPECIFIED);
+      f = m_channelToFrequencyWidth[p2];
+    }
+  if (f.first == 0)
+    {
+      NS_FATAL_ERROR ("Error, ChannelNumber " << nch << " is unknown for this standard");
+    }
   if (DoChannelSwitch (nch))
     {
       m_channelNumber = nch;
+      NS_LOG_DEBUG ("Setting frequency to " << f.first << "; width to " << f.second);
+      m_channelCenterFrequency = f.first;
+      SetChannelWidth (f.second);
     }
   else
     {
@@ -214,6 +572,12 @@ WifiPhy::GetChannelNumber (void) const
 
 bool
 WifiPhy::DoChannelSwitch (uint16_t nch)
+{
+  return true;
+}
+
+bool
+WifiPhy::DoFrequencySwitch (uint32_t frequency)
 {
   return true;
 }

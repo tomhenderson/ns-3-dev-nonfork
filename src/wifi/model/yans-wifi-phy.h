@@ -390,6 +390,7 @@ private:
 
   // Inherited
   virtual bool DoChannelSwitch (uint16_t id);
+  virtual bool DoFrequencySwitch (uint32_t frequency);
   /**
    * Configure YansWifiPhy with appropriate channel frequency and
    * supported rates for 802.11a standard.
