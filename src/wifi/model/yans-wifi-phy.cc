@@ -177,12 +177,6 @@ YansWifiPhy::GetTypeId (void)
                    MakeBooleanAccessor (&YansWifiPhy::GetShortPlcpPreambleSupported,
                                         &YansWifiPhy::SetShortPlcpPreambleSupported),
                    MakeBooleanChecker ())
-    .AddAttribute ("ChannelWidth",
-                   "Whether 5MHz, 10MHz, 20MHz, 22MHz, 40MHz, 80 MHz or 160 MHz.",
-                   UintegerValue (20),
-                   MakeUintegerAccessor (&YansWifiPhy::GetChannelWidth,
-                                         &YansWifiPhy::SetChannelWidth),
-                   MakeUintegerChecker<uint32_t> ())
   ;
   return tid;
 }
@@ -1328,20 +1322,6 @@ YansWifiPhy::SetShortPlcpPreambleSupported (bool enable)
   m_shortPreamble = enable;
 }
 
-void
-YansWifiPhy::SetChannelWidth (uint32_t channelwidth)
-{
-  NS_ASSERT_MSG (channelwidth == 5 || channelwidth == 10 || channelwidth == 20 || channelwidth == 22 || channelwidth == 40 || channelwidth == 80 || channelwidth == 160, "wrong channel width value");
-  m_channelWidth = channelwidth;
-  AddSupportedChannelWidth (channelwidth);
-}
-
-uint32_t
-YansWifiPhy::GetChannelWidth (void) const
-{
-  return m_channelWidth;
-}
-
 uint8_t 
 YansWifiPhy::GetSupportedRxSpatialStreams (void) const
 {
@@ -1352,26 +1332,6 @@ uint8_t
 YansWifiPhy::GetSupportedTxSpatialStreams (void) const
 {
   return (static_cast<uint8_t> (GetNumberOfTransmitAntennas ()));
-}
-
-void
-YansWifiPhy::AddSupportedChannelWidth (uint32_t width)
-{
-  NS_LOG_FUNCTION (this << width);
-  for (std::vector<uint32_t>::size_type i = 0; i != m_supportedChannelWidthSet.size (); i++)
-    {
-      if (m_supportedChannelWidthSet[i] == width)
-        {
-          return;
-        }
-    }
-  m_supportedChannelWidthSet.push_back (width);
-}
-
-std::vector<uint32_t> 
-YansWifiPhy::GetSupportedChannelWidthSet (void) const
-{
-  return m_supportedChannelWidthSet;
 }
 
 uint32_t

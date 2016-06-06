@@ -57,6 +57,12 @@ WifiPhy::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::WifiPhy")
     .SetParent<Object> ()
     .SetGroupName ("Wifi")
+    .AddAttribute ("ChannelWidth",
+                   "Whether 5MHz, 10MHz, 20MHz, 22MHz, 40MHz, 80 MHz or 160 MHz.",
+                   UintegerValue (20),
+                   MakeUintegerAccessor (&WifiPhy::GetChannelWidth,
+                                         &WifiPhy::SetChannelWidth),
+                   MakeUintegerChecker<uint32_t> ())
     .AddTraceSource ("PhyTxBegin",
                      "Trace source indicating a packet "
                      "has begun transmitting over the channel medium",
@@ -116,6 +122,40 @@ WifiPhy::WifiPhy ()
 WifiPhy::~WifiPhy ()
 {
   NS_LOG_FUNCTION (this);
+}
+
+void
+WifiPhy::SetChannelWidth (uint32_t channelwidth)
+{
+  NS_ASSERT_MSG (channelwidth == 5 || channelwidth == 10 || channelwidth == 20 || channelwidth == 22 || channelwidth == 40 || channelwidth == 80 || channelwidth == 160, "wrong channel width value");
+  m_channelWidth = channelwidth;
+  AddSupportedChannelWidth (channelwidth);
+}
+
+uint32_t
+WifiPhy::GetChannelWidth (void) const
+{
+  return m_channelWidth;
+}
+
+void
+WifiPhy::AddSupportedChannelWidth (uint32_t width)
+{
+  NS_LOG_FUNCTION (this << width);
+  for (std::vector<uint32_t>::size_type i = 0; i != m_supportedChannelWidthSet.size (); i++)
+    {
+      if (m_supportedChannelWidthSet[i] == width)
+        {
+          return;
+        }
+    }
+  m_supportedChannelWidthSet.push_back (width);
+}
+
+std::vector<uint32_t> 
+WifiPhy::GetSupportedChannelWidthSet (void) const
+{
+  return m_supportedChannelWidthSet;
 }
 
 WifiMode

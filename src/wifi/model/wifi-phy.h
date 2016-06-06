@@ -1276,11 +1276,19 @@ public:
   /**
    * \return the channel width
    */
-  virtual uint32_t GetChannelWidth (void) const = 0;
+  virtual uint32_t GetChannelWidth (void) const;
   /**
    * \param channelwidth channel width
    */
-  virtual void SetChannelWidth (uint32_t channelwidth) = 0;
+  virtual void SetChannelWidth (uint32_t channelwidth);
+  /**
+   * \param channelwidth channel width (in MHz) to support
+   */
+  virtual void AddSupportedChannelWidth (uint32_t channelwidth);
+  /**
+   * \return a vector containing the supported channel widths, values in MHz
+   */
+  virtual std::vector<uint32_t> GetSupportedChannelWidthSet (void) const;
   /**
    * \return the maximum number of supported Rx spatial streams
    */
@@ -1289,14 +1297,6 @@ public:
    * \return the maximum number of supported Tx spatial streams
    */
   virtual uint8_t GetSupportedTxSpatialStreams (void) const = 0;
-  /**
-   * \param width channel width (in MHz) to support
-   */
-  virtual void AddSupportedChannelWidth (uint32_t width) = 0;
-  /**
-   * \return a vector containing the supported channel widths, values in MHz
-   */
-  virtual std::vector<uint32_t> GetSupportedChannelWidthSet (void) const = 0;
   /**
    * Convert from dBm to Watts.
    *
@@ -1408,6 +1408,8 @@ private:
   TracedCallback<Ptr<const Packet>, uint16_t, uint16_t, uint32_t,
                  WifiPreamble, WifiTxVector, struct mpduInfo> m_phyMonitorSniffTxTrace;
 
+  uint32_t m_channelWidth;          //!< Channel width
+  std::vector<uint32_t> m_supportedChannelWidthSet; //!< Supported channel width
   double m_totalAmpduNumSymbols;   //!< Number of symbols previously transmitted for the MPDUs in an A-MPDU, used for the computation of the number of symbols needed for the last MPDU in the A-MPDU
   uint32_t m_totalAmpduSize;       //!< Total size of the previously transmitted MPDUs in an A-MPDU, used for the computation of the number of symbols needed for the last MPDU in the A-MPDU
 };
