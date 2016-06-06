@@ -125,7 +125,8 @@ WifiPhy::GetTypeId (void)
 }
 
 WifiPhy::WifiPhy ()
-  : m_channelCenterFrequency (0),
+  : m_standard (WIFI_PHY_STANDARD_UNSPECIFIED),
+    m_channelCenterFrequency (0),
     m_channelNumber (1)
 {
   NS_LOG_FUNCTION (this);
@@ -136,6 +137,13 @@ WifiPhy::WifiPhy ()
 WifiPhy::~WifiPhy ()
 {
   NS_LOG_FUNCTION (this);
+}
+
+void
+WifiPhy::ConfigureStandard (enum WifiPhyStandard standard)
+{
+  NS_LOG_FUNCTION (this << standard);
+  m_standard = standard;
 }
 
 void

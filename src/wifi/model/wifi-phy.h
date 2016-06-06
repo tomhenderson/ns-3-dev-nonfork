@@ -33,6 +33,7 @@
 #include "wifi-phy-standard.h"
 #include "ns3/traced-callback.h"
 #include "wifi-tx-vector.h"
+#include "wifi-phy-standard.h"
 
 namespace ns3 {
 
@@ -578,7 +579,7 @@ public:
    *
    * \param standard the Wi-Fi standard
    */
-  virtual void ConfigureStandard (enum WifiPhyStandard standard) = 0;
+  virtual void ConfigureStandard (enum WifiPhyStandard standard);
 
   /**
    * Return the WifiChannel this WifiPhy is connected to.
@@ -1420,6 +1421,7 @@ private:
   TracedCallback<Ptr<const Packet>, uint16_t, uint16_t, uint32_t,
                  WifiPreamble, WifiTxVector, struct mpduInfo> m_phyMonitorSniffTxTrace;
 
+  uint32_t m_standard;         //!< WifiPhyStandard
   uint32_t m_channelCenterFrequency;    //!< Center frequency in MHz
   uint32_t m_channelWidth;          //!< Channel width
   std::vector<uint32_t> m_supportedChannelWidthSet; //!< Supported channel width

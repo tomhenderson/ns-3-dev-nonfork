@@ -264,6 +264,7 @@ void
 YansWifiPhy::ConfigureStandard (enum WifiPhyStandard standard)
 {
   NS_LOG_FUNCTION (this << standard);
+  WifiPhy::ConfigureStandard (standard); // set up base class
   switch (standard)
     {
     case WIFI_PHY_STANDARD_80211a:
