@@ -119,12 +119,6 @@ YansWifiPhy::GetTypeId (void)
                    TimeValue (MicroSeconds (250)),
                    MakeTimeAccessor (&YansWifiPhy::m_channelSwitchDelay),
                    MakeTimeChecker ())
-    .AddAttribute ("ChannelNumber",
-                   "Channel center frequency = Channel starting frequency + 5 MHz * nch.",
-                   UintegerValue (1),
-                   MakeUintegerAccessor (&YansWifiPhy::SetChannelNumber,
-                                         &YansWifiPhy::GetChannelNumber),
-                   MakeUintegerChecker<uint16_t> ())
     .AddAttribute ("Frequency",
                    "The operating frequency.",
                    UintegerValue (2407),
@@ -183,7 +177,6 @@ YansWifiPhy::GetTypeId (void)
 
 YansWifiPhy::YansWifiPhy ()
   : m_initialized (false),
-    m_channelNumber (1),
     m_endRxEvent (),
     m_endPlcpRxEvent (),
     m_channelStartingFrequency (0),
@@ -220,6 +213,59 @@ YansWifiPhy::DoInitialize ()
   NS_LOG_FUNCTION (this);
   m_initialized = true;
 }
+
+bool
+YansWifiPhy::DoChannelSwitch (uint16_t nch)
+{
+  if (!m_initialized)
+    {
+      //this is not channel switch, this is initialization
+      NS_LOG_DEBUG ("start at channel " << nch);
+      return true;
+    }
+
+  NS_ASSERT (!IsStateSwitching ());
+  switch (m_state->GetState ())
+    {
+    case YansWifiPhy::RX:
+      NS_LOG_DEBUG ("drop packet because of channel switching while reception");
+      m_endPlcpRxEvent.Cancel ();
+      m_endRxEvent.Cancel ();
+      goto switchChannel;
+      break;
+    case YansWifiPhy::TX:
+      NS_LOG_DEBUG ("channel switching postponed until end of current transmission");
+      Simulator::Schedule (GetDelayUntilIdle (), &YansWifiPhy::SetChannelNumber, this, nch);
+      break;
+    case YansWifiPhy::CCA_BUSY:
+    case YansWifiPhy::IDLE:
+      goto switchChannel;
+      break;
+    case YansWifiPhy::SLEEP:
+      NS_LOG_DEBUG ("channel switching ignored in sleep mode");
+      break;
+    default:
+      NS_ASSERT (false);
+      break;
+    }
+
+  return false;
+
+switchChannel:
+
+  NS_LOG_DEBUG ("switching channel " << GetChannelNumber () << " -> " << nch);
+  m_state->SwitchToChannelSwitching (m_channelSwitchDelay);
+  m_interference.EraseEvents ();
+  /*
+   * Needed here to be able to correctly sensed the medium for the first
+   * time after the switching. The actual switching is not performed until
+   * after m_channelSwitchDelay. Packets received during the switching
+   * state are added to the event list and are employed later to figure
+   * out the state of the medium after the switching.
+   */
+  return true;
+}
+
 
 void
 YansWifiPhy::ConfigureStandard (enum WifiPhyStandard standard)
@@ -420,65 +466,6 @@ YansWifiPhy::SetChannel (Ptr<YansWifiChannel> channel)
 {
   m_channel = channel;
   m_channel->Add (this);
-}
-
-void
-YansWifiPhy::SetChannelNumber (uint16_t nch)
-{
-  if (!m_initialized)
-    {
-      //this is not channel switch, this is initialization
-      NS_LOG_DEBUG ("start at channel " << nch);
-      m_channelNumber = nch;
-      return;
-    }
-
-  NS_ASSERT (!IsStateSwitching ());
-  switch (m_state->GetState ())
-    {
-    case YansWifiPhy::RX:
-      NS_LOG_DEBUG ("drop packet because of channel switching while reception");
-      m_endPlcpRxEvent.Cancel ();
-      m_endRxEvent.Cancel ();
-      goto switchChannel;
-      break;
-    case YansWifiPhy::TX:
-      NS_LOG_DEBUG ("channel switching postponed until end of current transmission");
-      Simulator::Schedule (GetDelayUntilIdle (), &YansWifiPhy::SetChannelNumber, this, nch);
-      break;
-    case YansWifiPhy::CCA_BUSY:
-    case YansWifiPhy::IDLE:
-      goto switchChannel;
-      break;
-    case YansWifiPhy::SLEEP:
-      NS_LOG_DEBUG ("channel switching ignored in sleep mode");
-      break;
-    default:
-      NS_ASSERT (false);
-      break;
-    }
-
-  return;
-
-switchChannel:
-
-  NS_LOG_DEBUG ("switching channel " << m_channelNumber << " -> " << nch);
-  m_state->SwitchToChannelSwitching (m_channelSwitchDelay);
-  m_interference.EraseEvents ();
-  /*
-   * Needed here to be able to correctly sensed the medium for the first
-   * time after the switching. The actual switching is not performed until
-   * after m_channelSwitchDelay. Packets received during the switching
-   * state are added to the event list and are employed later to figure
-   * out the state of the medium after the switching.
-   */
-  m_channelNumber = nch;
-}
-
-uint16_t
-YansWifiPhy::GetChannelNumber (void) const
-{
-  return m_channelNumber;
 }
 
 Time

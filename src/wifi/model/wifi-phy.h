@@ -556,16 +556,18 @@ public:
    *
    * where Starting channel frequency is standard-dependent, see SetStandard()
    * as defined in (Section 18.3.8.4.2 "Channel numbering"; IEEE Std 802.11-2012).
+   * This method may fail to take action if the Phy model determines that
+   * the channel number cannot be switched for some reason (e.g. sleep state)
    *
    * \param id the channel number
    */
-  virtual void SetChannelNumber (uint16_t id) = 0;
+  virtual void SetChannelNumber (uint16_t id);
   /**
    * Return current channel number.
    *
    * \return the current channel number
    */
-  virtual uint16_t GetChannelNumber (void) const = 0;
+  virtual uint16_t GetChannelNumber (void) const;
   /**
    * \return the required time for channel switch operation of this WifiPhy
    */
@@ -1332,6 +1334,16 @@ public:
 
 private:
   /**
+   * The default implementation does nothing and returns true.  This method 
+   * is typically called internally by SetChannelNumber ().
+   *
+   * \brief Perform any actions necessary when user changes channel number
+   * \param id channel number to try to switch to
+   * \return true if WifiPhy can actually change the number; false if not
+   * \see SetChannelNumber
+   */
+  virtual bool DoChannelSwitch (uint16_t id);
+  /**
    * The trace source fired when a packet begins the transmission process on
    * the medium.
    *
@@ -1410,6 +1422,8 @@ private:
 
   uint32_t m_channelWidth;          //!< Channel width
   std::vector<uint32_t> m_supportedChannelWidthSet; //!< Supported channel width
+  uint16_t             m_channelNumber;  //!< Operating channel number
+
   double m_totalAmpduNumSymbols;   //!< Number of symbols previously transmitted for the MPDUs in an A-MPDU, used for the computation of the number of symbols needed for the last MPDU in the A-MPDU
   uint32_t m_totalAmpduSize;       //!< Total size of the previously transmitted MPDUs in an A-MPDU, used for the computation of the number of symbols needed for the last MPDU in the A-MPDU
 };

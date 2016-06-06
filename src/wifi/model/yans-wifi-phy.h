@@ -78,18 +78,6 @@ public:
    */
   void SetChannel (Ptr<YansWifiChannel> channel);
   /**
-   * Set the current channel number.
-   *
-   * \param id the channel number
-   */
-  void SetChannelNumber (uint16_t id);
-  /**
-   * Return the current channel number.
-   *
-   * \return the current channel number
-   */
-  uint16_t GetChannelNumber (void) const;
-  /**
    * \return the required time for channel switch operation of this WifiPhy
    */
   Time GetChannelSwitchDelay (void) const;
@@ -414,6 +402,8 @@ private:
   virtual void DoInitialize (void);
   virtual void DoDispose (void);
 
+  // Inherited
+  virtual bool DoChannelSwitch (uint16_t id);
   /**
    * Configure YansWifiPhy with appropriate channel frequency and
    * supported rates for 802.11a standard.
@@ -490,7 +480,6 @@ private:
   uint32_t m_nTxPower;            //!< Number of available transmission power levels
 
   Ptr<YansWifiChannel> m_channel;        //!< YansWifiChannel that this YansWifiPhy is connected to
-  uint16_t             m_channelNumber;  //!< Operating channel number
   Ptr<NetDevice>       m_device;         //!< Pointer to the device
   Ptr<MobilityModel>   m_mobility;       //!< Pointer to the mobility model
 

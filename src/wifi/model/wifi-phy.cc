@@ -63,6 +63,12 @@ WifiPhy::GetTypeId (void)
                    MakeUintegerAccessor (&WifiPhy::GetChannelWidth,
                                          &WifiPhy::SetChannelWidth),
                    MakeUintegerChecker<uint32_t> ())
+    .AddAttribute ("ChannelNumber",
+                   "Channel center frequency = Channel starting frequency + 5 MHz * nch.",
+                   UintegerValue (1),
+                   MakeUintegerAccessor (&WifiPhy::SetChannelNumber,
+                                         &WifiPhy::GetChannelNumber),
+                   MakeUintegerChecker<uint16_t> ())
     .AddTraceSource ("PhyTxBegin",
                      "Trace source indicating a packet "
                      "has begun transmitting over the channel medium",
@@ -113,6 +119,7 @@ WifiPhy::GetTypeId (void)
 }
 
 WifiPhy::WifiPhy ()
+  : m_channelNumber (1)
 {
   NS_LOG_FUNCTION (this);
   m_totalAmpduSize = 0;
@@ -156,6 +163,32 @@ std::vector<uint32_t>
 WifiPhy::GetSupportedChannelWidthSet (void) const
 {
   return m_supportedChannelWidthSet;
+}
+
+void
+WifiPhy::SetChannelNumber (uint16_t nch)
+{
+  NS_LOG_FUNCTION (this << nch);
+  if (DoChannelSwitch (nch))
+    {
+      m_channelNumber = nch;
+    }
+  else
+    {
+      NS_LOG_DEBUG ("Suppressing reassignment of channel number");
+    }
+}
+
+uint16_t
+WifiPhy::GetChannelNumber (void) const
+{
+  return m_channelNumber;
+}
+
+bool
+WifiPhy::DoChannelSwitch (uint16_t nch)
+{
+  return true;
 }
 
 WifiMode
