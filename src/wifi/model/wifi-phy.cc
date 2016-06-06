@@ -57,6 +57,12 @@ WifiPhy::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::WifiPhy")
     .SetParent<Object> ()
     .SetGroupName ("Wifi")
+    .AddAttribute ("Frequency",
+                   "The operating center frequency (MHz)",
+                   UintegerValue (2407),
+                   MakeUintegerAccessor (&WifiPhy::GetFrequency,
+                                         &WifiPhy::SetFrequency),
+                   MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("ChannelWidth",
                    "Whether 5MHz, 10MHz, 20MHz, 22MHz, 40MHz, 80 MHz or 160 MHz.",
                    UintegerValue (20),
@@ -119,7 +125,8 @@ WifiPhy::GetTypeId (void)
 }
 
 WifiPhy::WifiPhy ()
-  : m_channelNumber (1)
+  : m_channelCenterFrequency (0),
+    m_channelNumber (1)
 {
   NS_LOG_FUNCTION (this);
   m_totalAmpduSize = 0;
@@ -129,6 +136,18 @@ WifiPhy::WifiPhy ()
 WifiPhy::~WifiPhy ()
 {
   NS_LOG_FUNCTION (this);
+}
+
+void
+WifiPhy::SetFrequency (uint32_t freq)
+{
+  m_channelCenterFrequency = freq;
+}
+
+uint32_t
+WifiPhy::GetFrequency (void) const
+{
+  return m_channelCenterFrequency;
 }
 
 void

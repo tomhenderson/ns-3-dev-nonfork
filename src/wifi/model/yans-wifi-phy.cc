@@ -119,12 +119,6 @@ YansWifiPhy::GetTypeId (void)
                    TimeValue (MicroSeconds (250)),
                    MakeTimeAccessor (&YansWifiPhy::m_channelSwitchDelay),
                    MakeTimeChecker ())
-    .AddAttribute ("Frequency",
-                   "The operating frequency.",
-                   UintegerValue (2407),
-                   MakeUintegerAccessor (&YansWifiPhy::GetFrequency,
-                                         &YansWifiPhy::SetFrequency),
-                   MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("TxAntennas",
                    "The number of supported Tx antennas.",
                    UintegerValue (1),
@@ -179,7 +173,6 @@ YansWifiPhy::YansWifiPhy ()
   : m_initialized (false),
     m_endRxEvent (),
     m_endPlcpRxEvent (),
-    m_channelStartingFrequency (0),
     m_mpdusNum (0),
     m_plcpSuccess (false),
     m_txMpduReferenceNumber (0xffffffff),
@@ -292,11 +285,11 @@ YansWifiPhy::ConfigureStandard (enum WifiPhyStandard standard)
       ConfigureHolland ();
       break;
     case WIFI_PHY_STANDARD_80211n_2_4GHZ:
-      m_channelStartingFrequency = 2407;
+      SetFrequency (2412);
       Configure80211n ();
       break;
     case WIFI_PHY_STANDARD_80211n_5GHZ:
-      m_channelStartingFrequency = 5e3;
+      SetFrequency (5180);
       Configure80211n ();
       break;
     case WIFI_PHY_STANDARD_80211ac:
@@ -472,12 +465,6 @@ Time
 YansWifiPhy::GetChannelSwitchDelay (void) const
 {
   return m_channelSwitchDelay;
-}
-
-double
-YansWifiPhy::GetChannelFrequencyMhz () const
-{
-  return m_channelStartingFrequency + 5 * GetChannelNumber ();
 }
 
 void
@@ -801,7 +788,7 @@ YansWifiPhy::SendPacket (Ptr<const Packet> packet, WifiTxVector txVector, WifiPr
   struct mpduInfo aMpdu;
   aMpdu.type = mpdutype;
   aMpdu.mpduRefNumber = m_txMpduReferenceNumber;
-  NotifyMonitorSniffTx (packet, (uint16_t)GetChannelFrequencyMhz (), GetChannelNumber (), dataRate500KbpsUnits, preamble, txVector, aMpdu);
+  NotifyMonitorSniffTx (packet, (uint16_t)GetFrequency (), GetChannelNumber (), dataRate500KbpsUnits, preamble, txVector, aMpdu);
   m_state->SwitchToTx (txDuration, packet, GetPowerDbm (txVector.GetTxPowerLevel ()), txVector, preamble);
   m_channel->Send (this, packet, GetPowerDbm (txVector.GetTxPowerLevel ()) + m_txGainDb, txVector, preamble, mpdutype, txDuration);
 }
@@ -853,7 +840,7 @@ void
 YansWifiPhy::Configure80211a (void)
 {
   NS_LOG_FUNCTION (this);
-  m_channelStartingFrequency = 5e3; //5.000 GHz
+  SetFrequency (5180);
   SetChannelWidth (20); //20 MHz
 
   m_deviceRateSet.push_back (WifiPhy::GetOfdmRate6Mbps ());
@@ -870,7 +857,7 @@ void
 YansWifiPhy::Configure80211b (void)
 {
   NS_LOG_FUNCTION (this);
-  m_channelStartingFrequency = 2407; //2.407 GHz
+  SetFrequency (2412);
   SetChannelWidth (22); //22 MHz
 
   m_deviceRateSet.push_back (WifiPhy::GetDsssRate1Mbps ());
@@ -900,7 +887,7 @@ void
 YansWifiPhy::Configure80211_10Mhz (void)
 {
   NS_LOG_FUNCTION (this);
-  m_channelStartingFrequency = 5e3; //5.000 GHz, suppose 802.11a
+  SetFrequency (5180);
   SetChannelWidth (10); //10 MHz
 
   m_deviceRateSet.push_back (WifiPhy::GetOfdmRate3MbpsBW10MHz ());
@@ -917,7 +904,7 @@ void
 YansWifiPhy::Configure80211_5Mhz (void)
 {
   NS_LOG_FUNCTION (this);
-  m_channelStartingFrequency = 5e3; //5.000 GHz, suppose 802.11a
+  SetFrequency (5180);
   SetChannelWidth (5); //5 MHz
 
   m_deviceRateSet.push_back (WifiPhy::GetOfdmRate1_5MbpsBW5MHz ());
@@ -934,7 +921,7 @@ void
 YansWifiPhy::ConfigureHolland (void)
 {
   NS_LOG_FUNCTION (this);
-  m_channelStartingFrequency = 5e3; //5.000 GHz
+  SetFrequency (5180);
   SetChannelWidth (20); //20 MHz
 
   m_deviceRateSet.push_back (WifiPhy::GetOfdmRate6Mbps ());
@@ -1017,12 +1004,12 @@ void
 YansWifiPhy::Configure80211n (void)
 {
   NS_LOG_FUNCTION (this);
-  if (m_channelStartingFrequency >= 2400 && m_channelStartingFrequency <= 2500) //at 2.4 GHz
+  if (GetFrequency () >= 2400 && GetFrequency () <= 2500) //at 2.4 GHz
     {
       Configure80211b ();
       Configure80211g ();
     }
-  if (m_channelStartingFrequency >= 5000 && m_channelStartingFrequency <= 6000) //at 5 GHz
+  if (GetFrequency () >= 5000 && GetFrequency () <= 6000) //at 5 GHz
     {
       Configure80211a ();
     }
@@ -1035,7 +1022,7 @@ void
 YansWifiPhy::Configure80211ac (void)
 {
   NS_LOG_FUNCTION (this);
-  m_channelStartingFrequency = 5e3; //5.000 GHz
+  SetFrequency (5180);
   Configure80211n ();
   SetChannelWidth (80); //80 MHz
 
@@ -1183,7 +1170,7 @@ YansWifiPhy::EndReceive (Ptr<Packet> packet, enum WifiPreamble preamble, enum mp
           struct mpduInfo aMpdu;
           aMpdu.type = mpdutype;
           aMpdu.mpduRefNumber = m_rxMpduReferenceNumber;
-          NotifyMonitorSniffRx (packet, (uint16_t)GetChannelFrequencyMhz (), GetChannelNumber (), dataRate500KbpsUnits, event->GetPreambleType (), event->GetTxVector (), aMpdu, signalNoise);
+          NotifyMonitorSniffRx (packet, (uint16_t)GetFrequency (), GetChannelNumber (), dataRate500KbpsUnits, event->GetPreambleType (), event->GetTxVector (), aMpdu, signalNoise);
           m_state->SwitchFromRxEndOk (packet, snrPer.snr, event->GetTxVector (), event->GetPreambleType ());
         }
       else
@@ -1210,12 +1197,6 @@ YansWifiPhy::AssignStreams (int64_t stream)
   NS_LOG_FUNCTION (this << stream);
   m_random->SetStream (stream);
   return 1;
-}
-
-void
-YansWifiPhy::SetFrequency (uint32_t freq)
-{
-  m_channelStartingFrequency = freq;
 }
 
 void
@@ -1259,12 +1240,6 @@ void
 YansWifiPhy::SetGuardInterval (bool guardInterval)
 {
   m_guardInterval = guardInterval;
-}
-
-uint32_t
-YansWifiPhy::GetFrequency (void) const
-{
-  return m_channelStartingFrequency;
 }
 
 uint32_t

@@ -1212,13 +1212,13 @@ public:
   virtual int64_t AssignStreams (int64_t stream) = 0;
 
   /**
-   * \param freq the operating frequency on this node.
+   * \param freq the operating center frequency (MHz) on this node.
    */
-  virtual void SetFrequency (uint32_t freq) = 0;
+  virtual void SetFrequency (uint32_t freq);
   /**
-   * \return the operating frequency on this node
+   * \return the operating center frequency (MHz) 
    */
-  virtual uint32_t GetFrequency (void) const = 0;
+  virtual uint32_t GetFrequency (void) const;
   /**
    * \param tx the number of transmitters on this node.
    */
@@ -1420,6 +1420,7 @@ private:
   TracedCallback<Ptr<const Packet>, uint16_t, uint16_t, uint32_t,
                  WifiPreamble, WifiTxVector, struct mpduInfo> m_phyMonitorSniffTxTrace;
 
+  uint32_t m_channelCenterFrequency;    //!< Center frequency in MHz
   uint32_t m_channelWidth;          //!< Channel width
   std::vector<uint32_t> m_supportedChannelWidthSet; //!< Supported channel width
   uint16_t             m_channelNumber;  //!< Operating channel number

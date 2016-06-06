@@ -81,12 +81,6 @@ public:
    * \return the required time for channel switch operation of this WifiPhy
    */
   Time GetChannelSwitchDelay (void) const;
-  /**
-   * Return current center channel frequency in MHz.
-   *
-   * \return the current center channel frequency in MHz
-   */
-  double GetChannelFrequencyMhz () const;
 
   /**
    * Starting receiving the plcp of a packet (i.e. the first bit of the preamble has arrived).
@@ -302,14 +296,6 @@ public:
    */
   int64_t AssignStreams (int64_t stream);
 
-  /**
-   * \param freq the operating frequency on this node (2.4 GHz or 5GHz).
-   */
-  virtual void SetFrequency (uint32_t freq);
-  /**
-   * \return the operating frequency on this node
-   */
-  virtual uint32_t GetFrequency (void) const;
   /**
    * \param tx the number of transmitters on this node.
    */
