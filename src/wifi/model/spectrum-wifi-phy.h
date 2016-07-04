@@ -84,25 +84,6 @@ public:
    * \return the required time for channel switch operation of this WifiPhy
    */
   Time GetChannelSwitchDelay (void) const;
-  /**
-   * Add a channel number to the list of operational channels.  This method
-   * is used to support scanning for strongest base station.
-   *
-   * \param channelNumber the channel number to add
-   */
-  void AddOperationalChannel (uint16_t channelNumber);
-  /**
-   * Return a list of channels to which it may be possible to roam
-   * By default, this method will return the current channel number followed
-   * by any other channel numbers that have been added.
-   *
-   * \return vector of channel numbers to which it may be possible to roam
-   */
-  std::vector<uint16_t> GetOperationalChannelList (void) const;
-  /**
-   * Clear the list of operational channels.
-   */
-  void ClearOperationalChannelList (void);
 
   /**
    * Starting receiving the plcp of a packet (i.e. the first bit of the preamble has arrived).
@@ -608,7 +589,6 @@ private:
   uint32_t m_nTxPower;            //!< Number of available transmission power levels
 
   Ptr<SpectrumChannel> m_channel;        //!< SpectrumChannel that this SpectrumWifiPhy is connected to
-  std::vector<uint16_t> m_operationalChannelList; //!< List of possible channels
   Ptr<NetDevice>       m_device;         //!< Pointer to the device
   Ptr<MobilityModel>   m_mobility;       //!< Pointer to the mobility model
 

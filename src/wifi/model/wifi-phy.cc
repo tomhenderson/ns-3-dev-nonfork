@@ -588,6 +588,34 @@ WifiPhy::DoFrequencySwitch (uint32_t frequency)
   return true;
 }
 
+void
+WifiPhy::AddOperationalChannel (uint16_t channelNumber)
+{
+  m_operationalChannelList.push_back (channelNumber);
+}
+
+
+std::vector<uint16_t>
+WifiPhy::GetOperationalChannelList () const
+{
+  std::vector<uint16_t> channelList;
+  channelList.push_back (m_channelNumber);
+  for (std::vector<uint16_t>::size_type i = 0; i != m_operationalChannelList.size (); i++)
+    {
+      if (m_operationalChannelList[i] != m_channelNumber)
+        {
+          channelList.push_back (m_channelNumber);
+        }
+    }
+  return channelList;
+}
+
+void
+WifiPhy::ClearOperationalChannelList ()
+{
+  m_operationalChannelList.clear ();
+}
+
 WifiMode
 WifiPhy::GetHtPlcpHeaderMode (WifiMode payloadMode)
 {

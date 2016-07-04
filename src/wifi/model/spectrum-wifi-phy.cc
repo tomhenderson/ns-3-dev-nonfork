@@ -566,33 +566,6 @@ SpectrumWifiPhy::GetChannelSwitchDelay (void) const
 }
 
 void
-SpectrumWifiPhy::AddOperationalChannel (uint16_t channelNumber)
-{
-  m_operationalChannelList.push_back (channelNumber);
-}
-
-std::vector<uint16_t>
-SpectrumWifiPhy::GetOperationalChannelList () const
-{
-  std::vector<uint16_t> channelList;
-  channelList.push_back (GetChannelNumber ());  // first channel of list
-  for (std::vector<uint16_t>::size_type i = 0; i != m_operationalChannelList.size (); i++)
-    {
-      if (m_operationalChannelList[i] != GetChannelNumber ())
-        { 
-          channelList.push_back (m_operationalChannelList[i]);
-        }
-    }
-  return channelList;
-}
-
-void
-SpectrumWifiPhy::ClearOperationalChannelList ()
-{
-  m_operationalChannelList.clear ();
-}
-
-void
 SpectrumWifiPhy::SetSleepMode (void)
 {
   NS_LOG_FUNCTION (this);

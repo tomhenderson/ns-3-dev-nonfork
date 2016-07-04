@@ -571,6 +571,7 @@ public:
    * \return the current channel number
    */
   virtual uint16_t GetChannelNumber (void) const;
+
   /**
    * \return the required time for channel switch operation of this WifiPhy
    */
@@ -1335,6 +1336,25 @@ public:
    * \return a vector containing the supported channel widths, values in MHz
    */
   virtual std::vector<uint32_t> GetSupportedChannelWidthSet (void) const;
+  /**
+   * Add a channel number to the list of operational channels.  This method
+   * is used to support scanning for strongest base station.
+   *
+   * \param channelNumber the channel number to add
+   */
+  void AddOperationalChannel (uint16_t channelNumber);
+  /**
+   * Return a list of channels to which it may be possible to roam
+   * By default, this method will return the current channel number followed
+   * by any other channel numbers that have been added.
+   *
+   * \return vector of channel numbers to which it may be possible to roam
+   */
+  std::vector<uint16_t> GetOperationalChannelList (void) const;
+  /**
+   * Clear the list of operational channels.
+   */
+  void ClearOperationalChannelList (void);
 
 private:
   /**
@@ -1469,6 +1489,7 @@ private:
 
   std::vector<uint32_t> m_supportedChannelWidthSet; //!< Supported channel width
   uint16_t             m_channelNumber;  //!< Operating channel number
+  std::vector<uint16_t> m_operationalChannelList; //!< List of possible channels
 
   double m_totalAmpduNumSymbols;   //!< Number of symbols previously transmitted for the MPDUs in an A-MPDU, used for the computation of the number of symbols needed for the last MPDU in the A-MPDU
   uint32_t m_totalAmpduSize;       //!< Total size of the previously transmitted MPDUs in an A-MPDU, used for the computation of the number of symbols needed for the last MPDU in the A-MPDU
