@@ -65,7 +65,6 @@ private:
   Ptr<SpectrumWifiPhy> m_spectrumWifiPhy;
   Ptr<NetDevice> m_netDevice;
   Ptr<SpectrumChannel> m_channel;
-  Ptr<SpectrumValue> m_txPsd;
 };
 
 } // namespace ns3

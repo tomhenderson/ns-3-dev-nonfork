@@ -205,8 +205,8 @@ int main (int argc, char *argv[])
           spectrumChannel->SetPropagationDelayModel (delayModel);
 
           spectrumPhy.SetChannel (spectrumChannel);
-          spectrumPhy.SetChannelNumber (36); // 5.180 GHz 
           spectrumPhy.SetErrorRateModel (errorModelType);
+          spectrumPhy.Set ("ChannelNumber", UintegerValue (36)); // 5.180 GHz 
           spectrumPhy.Set ("TxPowerStart", DoubleValue (1));
           spectrumPhy.Set ("TxPowerEnd", DoubleValue (1));
     

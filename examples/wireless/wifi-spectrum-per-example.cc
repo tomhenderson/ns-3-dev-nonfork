@@ -135,7 +135,7 @@ int main (int argc, char *argv[])
       stopIndex = index;
     }
 
-  std::cout << "wifiType: " << wifiType << " distance: " << distance << "m; sent: 1000" << std::endl;
+  std::cout << "wifiType: " << wifiType << " distance: " << distance << "m; sent: 1000 TxPower: 1 dBm (1.3 mW)" << std::endl;
   std::cout << std::setw (5) << "index" <<
                std::setw (6) << "MCS" <<
                std::setw (12) << "Rate (Mb/s)" << 
@@ -171,7 +171,7 @@ int main (int argc, char *argv[])
           channel.AddPropagationLoss ("ns3::FriisPropagationLossModel");
           channel.SetPropagationDelay ("ns3::ConstantSpeedPropagationDelayModel");
           phy.SetChannel (channel.Create ());
-          phy.Set ("TxPowerStart", DoubleValue (1));
+          phy.Set ("TxPowerStart", DoubleValue (1)); // dBm (1.26 mW)
           phy.Set ("TxPowerEnd", DoubleValue (1));
     
           if (i <= 7)
@@ -197,8 +197,8 @@ int main (int argc, char *argv[])
         }
       else if (wifiType == "ns3::SpectrumWifiPhy")
         {
-          Ptr<SingleModelSpectrumChannel> spectrumChannel
-            = CreateObject<SingleModelSpectrumChannel> ();
+          Ptr<MultiModelSpectrumChannel> spectrumChannel
+            = CreateObject<MultiModelSpectrumChannel> ();
           Ptr<FriisPropagationLossModel> lossModel
             = CreateObject<FriisPropagationLossModel> ();
           spectrumChannel->AddPropagationLossModel (lossModel);
@@ -208,10 +208,10 @@ int main (int argc, char *argv[])
           spectrumChannel->SetPropagationDelayModel (delayModel);
 
           spectrumPhy.SetChannel (spectrumChannel);
-          spectrumPhy.SetChannelNumber (36); // 5.180 GHz 
           spectrumPhy.SetErrorRateModel (errorModelType);
-          spectrumPhy.Set ("TxPowerStart", DoubleValue (1));
-          spectrumPhy.Set ("TxPowerEnd", DoubleValue (1));
+          spectrumPhy.Set ("ChannelNumber", UintegerValue (36)); // 5.180 GHz 
+          spectrumPhy.Set ("TxPowerStart", DoubleValue (1)); // dBm  (1.26 mW)
+          spectrumPhy.Set ("TxPowerEnd", DoubleValue (1));  
     
           if (i <= 7)
             {
@@ -545,11 +545,21 @@ int main (int argc, char *argv[])
                    std::setw (6) << (i%8) << 
                    std::setw (10) << datarate << 
                    std::setw (12) << throughput << 
-                   std::setw (8) << totalPacketsThrough <<
-                   std::setw (12) << g_signalDbmAvg <<
-                   std::setw (12) << g_noiseDbmAvg <<
-                   std::setw (12) << (g_signalDbmAvg - g_noiseDbmAvg) << 
-                   std::endl;
+                   std::setw (8) << totalPacketsThrough;
+      if (totalPacketsThrough > 0)
+        {
+          std::cout << std::setw (12) << g_signalDbmAvg <<
+                       std::setw (12) << g_noiseDbmAvg <<
+                       std::setw (12) << (g_signalDbmAvg - g_noiseDbmAvg) << 
+                       std::endl;
+        }
+      else
+        {
+          std::cout << std::setw (12) << "N/A" <<
+                       std::setw (12) << "N/A" <<
+                       std::setw (12) << "N/A" <<
+                       std::endl;
+        }
     }
   return 0;
 }

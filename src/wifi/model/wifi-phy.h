@@ -23,6 +23,7 @@
 #define WIFI_PHY_H
 
 #include <stdint.h>
+#include <map>
 #include "ns3/callback.h"
 #include "ns3/packet.h"
 #include "ns3/object.h"
@@ -33,6 +34,7 @@
 #include "wifi-phy-standard.h"
 #include "ns3/traced-callback.h"
 #include "wifi-tx-vector.h"
+#include "wifi-phy-standard.h"
 
 namespace ns3 {
 
@@ -551,39 +553,24 @@ public:
   virtual WifiMode GetMcs (uint8_t mcs) const = 0;
 
   /**
-   * \brief Set channel number.  If channels are bonded together, this sets
-   * the channel number of the lowest of the bonded channels.
+   * \brief Set channel number.
+   *
+   * Channel center frequency = Channel starting frequency + 5 MHz * (nch - 1)
+   *
+   * where Starting channel frequency is standard-dependent, see SetStandard()
+   * as defined in (Section 18.3.8.4.2 "Channel numbering"; IEEE Std 802.11-2012).
+   * This method may fail to take action if the Phy model determines that
+   * the channel number cannot be switched for some reason (e.g. sleep state)
    *
    * \param id the channel number
    */
-  virtual void SetChannelNumber (uint16_t id) = 0;
+  virtual void SetChannelNumber (uint16_t id);
   /**
-   * Return current channel number.  If channels are bonded together, this
-   * returns the channel number of the lowest of the bonded channels.
+   * Return current channel number.
    *
    * \return the current channel number
    */
-  virtual uint16_t GetChannelNumber (void) const = 0;
-  /**
-   * Add a channel number to the list of operational channels.  This method
-   * is used to support scanning for strongest base station.
-   *
-   * \param channelNumber the channel number to add
-   */
-  virtual void AddOperationalChannel (uint16_t channelNumber) = 0;
-  /**
-   * Return a list of channels to which it may be possible to roam
-   * By default, this method will return the current channel number followed
-   * by any other channel numbers that have been added.
-   *
-   * \return vector of channel numbers to which it may be possible to roam
-   */
-  virtual std::vector<uint16_t> GetOperationalChannelList () const = 0;
-  /**
-   * Clear the list of operational channels.
-   */
-  virtual void ClearOperationalChannelList (void) = 0;
-
+  virtual uint16_t GetChannelNumber (void) const;
   /**
    * \return the required time for channel switch operation of this WifiPhy
    */
@@ -594,7 +581,40 @@ public:
    *
    * \param standard the Wi-Fi standard
    */
-  virtual void ConfigureStandard (enum WifiPhyStandard standard) = 0;
+  virtual void ConfigureStandard (enum WifiPhyStandard standard);
+
+  /**
+   * Get the configured Wi-Fi standard
+   *
+   * \return the Wi-Fi standard that has been configured
+   */
+  virtual enum WifiPhyStandard GetStandard (void) const;
+
+  /**
+   * Add a channel definition to the WifiPhy.  The pair (channelNumber,
+   * WifiPhyStandard) may then be used to lookup a pair (frequency, 
+   * channelWidth).
+   *
+   * If the channel is not already defined for the standard, the method
+   * should return true; otherwise false.
+   *
+   * \param channelNumber the channel number to define
+   * \param standard the applicable WifiPhyStandard
+   * \param frequency the frequency (MHz)
+   * \param channelWidth the channel width (MHz)
+   *
+   * \return true if the channel definition succeeded
+   */
+  bool DefineChannelNumber (uint16_t channelNumber, enum WifiPhyStandard standard, uint32_t frequency, uint32_t channelWidth);
+
+  /**
+   * A pair of a ChannelNumber and WifiPhyStandard
+   */
+  typedef std::pair<uint16_t, enum WifiPhyStandard> ChannelNumberStandardPair;
+  /**
+   * A pair of a center Frequency and a ChannelWidth
+   */
+  typedef std::pair<uint32_t, uint32_t> FrequencyWidthPair;
 
   /**
    * Return the WifiChannel this WifiPhy is connected to.
@@ -1228,12 +1248,13 @@ public:
   virtual int64_t AssignStreams (int64_t stream) = 0;
 
   /**
-   * If multiple channels are bonded together, this method returns the
-   * center frequncy of the lowest bonded channel
-   *
-   * \return the center frequency (MHz) of the currently configured channel
+   * \param freq the operating center frequency (MHz) on this node.
    */
-  virtual uint32_t GetFrequency (void) const = 0;
+  virtual void SetFrequency (uint32_t freq);
+  /**
+   * \return the operating center frequency (MHz) 
+   */
+  virtual uint32_t GetFrequency (void) const;
   /**
    * \param tx the number of transmitters on this node.
    */
@@ -1293,11 +1314,11 @@ public:
   /**
    * \return the channel width
    */
-  virtual uint32_t GetChannelWidth (void) const = 0;
+  virtual uint32_t GetChannelWidth (void) const;
   /**
    * \param channelwidth channel width
    */
-  virtual void SetChannelWidth (uint32_t channelwidth) = 0;
+  virtual void SetChannelWidth (uint32_t channelwidth);
   /**
    * \return the maximum number of supported Rx spatial streams
    */
@@ -1309,45 +1330,58 @@ public:
   /**
    * \param width channel width (in MHz) to support
    */
-  virtual void AddSupportedChannelWidth (uint32_t width) = 0;
+  virtual void AddSupportedChannelWidth (uint32_t width);
   /**
    * \return a vector containing the supported channel widths, values in MHz
    */
-  virtual std::vector<uint32_t> GetSupportedChannelWidthSet (void) const = 0;
-  /**
-   * Convert from dBm to Watts.
-   *
-   * \param dbm the power in dBm
-   *
-   * \return the equivalent Watts for the given dBm
-   */
-  double DbmToW (double dbm) const;
-  /**
-   * Convert from dB to ratio.
-   *
-   * \param db
-   *
-   * \return ratio
-   */
-  double DbToRatio (double db) const;
-  /**
-   * Convert from Watts to dBm.
-   *
-   * \param w the power in Watts
-   *
-   * \return the equivalent dBm for the given Watts
-   */
-  double WToDbm (double w) const;
-  /**
-   * Convert from ratio to dB.
-   *
-   * \param ratio
-   *
-   * \return dB
-   */
-  double RatioToDb (double ratio) const;
+  virtual std::vector<uint32_t> GetSupportedChannelWidthSet (void) const;
 
 private:
+  /**
+   * The default implementation does nothing and returns true.  This method 
+   * is typically called internally by SetChannelNumber ().
+   *
+   * \brief Perform any actions necessary when user changes channel number
+   * \param id channel number to try to switch to
+   * \return true if WifiPhy can actually change the number; false if not
+   * \see SetChannelNumber
+   */
+  virtual bool DoChannelSwitch (uint16_t id);
+  /**
+   * The default implementation does nothing and returns true.  This method
+   * is typically called internally by SetFrequency ().
+   *
+   * \brief Perform any actions necessary when user changes frequency
+   * \param frequency frequency to try to switch to
+   * \return true if WifiPhy can actually change the frequency; false if not
+   * \see SetFrequency
+   */
+  virtual bool DoFrequencySwitch (uint32_t frequency);
+  /**
+   * Configure the PHY-level parameters for different Wi-Fi standard.
+   * This method is called when defaults for each standard must be 
+   * selected.
+   *
+   * \param standard the Wi-Fi standard
+   */
+  virtual void ConfigureDefaultsForStandard (enum WifiPhyStandard standard);
+  /**
+   * Configure the PHY-level parameters for different Wi-Fi standard.
+   * This method is called when the Frequency or ChannelNumber attributes
+   * are set by the user.  If the Frequency or ChannelNumber are valid for
+   * the standard, they are used instead.
+   *
+   * \param standard the Wi-Fi standard
+   */
+  virtual void ConfigureChannelForStandard (enum WifiPhyStandard standard);
+  /**
+   * Look for 
+   * \param frequency The center frequency to use
+   * \param width The channel width to use
+   * \return the channel number if found, zero if not
+   */
+  uint16_t FindChannelNumberForFrequencyWidth (uint32_t frequency, uint32_t width) const;
+
   /**
    * The trace source fired when a packet begins the transmission process on
    * the medium.
@@ -1424,6 +1458,17 @@ private:
    */
   TracedCallback<Ptr<const Packet>, uint16_t, uint16_t, uint32_t,
                  WifiPreamble, WifiTxVector, struct mpduInfo> m_phyMonitorSniffTxTrace;
+
+  enum WifiPhyStandard m_standard;     //!< WifiPhyStandard
+  uint32_t m_channelCenterFrequency;   //!< Center frequency in MHz
+  uint32_t m_channelWidth;             //!< Channel width
+
+
+  typedef std::map<ChannelNumberStandardPair,FrequencyWidthPair> ChannelToFrequencyWidthMap;
+  static ChannelToFrequencyWidthMap m_channelToFrequencyWidth;
+
+  std::vector<uint32_t> m_supportedChannelWidthSet; //!< Supported channel width
+  uint16_t             m_channelNumber;  //!< Operating channel number
 
   double m_totalAmpduNumSymbols;   //!< Number of symbols previously transmitted for the MPDUs in an A-MPDU, used for the computation of the number of symbols needed for the last MPDU in the A-MPDU
   uint32_t m_totalAmpduSize;       //!< Total size of the previously transmitted MPDUs in an A-MPDU, used for the computation of the number of symbols needed for the last MPDU in the A-MPDU

@@ -26,7 +26,6 @@
 #include "ns3/propagation-delay-model.h"
 #include "ns3/spectrum-channel.h"
 #include "ns3/spectrum-wifi-phy.h"
-#include "ns3/wifi-spectrum-helper.h"
 #include "ns3/ampdu-subframe-header.h"
 #include "ns3/wifi-net-device.h"
 #include "ns3/radiotap-header.h"
@@ -93,7 +92,6 @@ AsciiPhyReceiveSinkWithoutContext (
 
 SpectrumWifiPhyHelper::SpectrumWifiPhyHelper ()
   : m_channel (0),
-    m_channelNumber (1),
     m_pcapDlt (PcapHelper::DLT_IEEE802_11)
 {
   m_phy.SetTypeId ("ns3::SpectrumWifiPhy");
@@ -118,12 +116,6 @@ SpectrumWifiPhyHelper::SetChannel (std::string channelName)
 {
   Ptr<SpectrumChannel> channel = Names::Find<SpectrumChannel> (channelName);
   m_channel = channel;
-}
-
-void
-SpectrumWifiPhyHelper::SetChannelNumber (uint16_t nch)
-{
-  m_channelNumber = nch;
 }
 
 void
@@ -163,10 +155,8 @@ SpectrumWifiPhyHelper::Create (Ptr<Node> node, Ptr<NetDevice> device) const
   Ptr<ErrorRateModel> error = m_errorRateModel.Create<ErrorRateModel> ();
   phy->SetErrorRateModel (error);
   phy->SetChannel (m_channel);
-  phy->SetChannelNumber (m_channelNumber);
   phy->SetDevice (device);
   phy->SetMobility (node->GetObject<MobilityModel> ());
-  phy->SetNoisePowerSpectralDensity (WifiSpectrumHelper::CreateNoisePowerSpectralDensity (0, m_channelNumber));
   m_channel->AddRx (phy->GetSpectrumPhy());
   return phy;
 }

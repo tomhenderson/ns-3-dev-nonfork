@@ -26,6 +26,7 @@
 #include "spectrum-wifi-phy.h"
 #include "ns3/spectrum-channel.h"
 #include "ns3/spectrum-value.h"
+#include "ns3/wifi-spectrum-value-helper.h"
 #include "wifi-channel.h"
 #include "wifi-mode.h"
 #include "wifi-preamble.h"
@@ -46,7 +47,6 @@
 #include "ampdu-tag.h"
 #include "wifi-spectrum-signal-parameters.h"
 #include "wifi-phy-tag.h"
-#include "wifi-spectrum-helper.h"
 #include "ns3/antenna-model.h"
 #include <cmath>
 
@@ -55,43 +55,6 @@ namespace ns3 {
 NS_LOG_COMPONENT_DEFINE ("SpectrumWifiPhy");
 
 NS_OBJECT_ENSURE_REGISTERED (SpectrumWifiPhy);
-
-// XXX refactor to use C++-11 initialization list once bug 2270 patched
-std::map<uint32_t, double>
-SpectrumWifiPhy::CreateChannelMap ()
-{
-  std::map<uint32_t, double> m;
-  m[8] = 5040; m[12] = 5060; m[16] = 5080;
-  m[36] = 5180; m[38] = 5190; m[40] = 5200; m[42] = 5210; m[44] = 5220;
-  m[46] = 5230; m[48] = 5240; m[50] = 5250; m[52] = 5260; m[54] = 5270;
-  m[56] = 5280; m[58] = 5290; m[60] = 5300; m[62] = 5310; m[64] = 5320;
-  m[100] = 5500; m[102] = 5510; m[104] = 5520; m[106] = 5530; m[108] = 5540;
-  m[110] = 5550; m[112] = 5560; m[114] = 5570; m[116] = 5580; m[118] = 5590;
-  m[120] = 5600; m[122] = 5610; m[124] = 5620; m[126] = 5630; m[128] = 5640;
-  m[132] = 5660; m[134] = 5670; m[136] = 5680; m[138] = 5690; m[140] = 5700;
-  m[142] = 5710; m[144] = 5720; 
-  m[149] = 5745; m[151] = 5755; m[153] = 5765; m[155] = 5775; m[157] = 5785;
-  m[159] = 5795; m[161] = 5805; m[165] = 5825;
-  m[184] = 4920; m[188] = 4940; m[192] = 4960; m[196] = 4980;
-  // 802.11p
-  m[175] = 5875; m[181] = 5905;
-  return m;
-}
-std::map<uint32_t, double> SpectrumWifiPhy::m_channelMap =  SpectrumWifiPhy::CreateChannelMap ();
-
-// XXX refactor to use C++-11 initialization list once bug 2270 patched
-std::map<uint32_t, double>
-SpectrumWifiPhy::CreateChannelMap10Mhz ()
-{
-  std::map<uint32_t, double> m;
-  m[7] = 5035; m[9] = 5045; m[11] = 5055; m[183] = 4915; m[185] = 4925;
-  m[187] = 4935; m[189] = 4945;
-  // 802.11p
-  m[172] = 5860; m[174] = 5870; m[176] = 5880; m[178] = 5890;
-  m[180] = 5900; m[182] = 5910; m[184] = 5920;
-  return m;
-}
-std::map<uint32_t, double> SpectrumWifiPhy::m_channelMap10Mhz =  SpectrumWifiPhy::CreateChannelMap10Mhz ();
 
 TypeId
 SpectrumWifiPhy::GetTypeId (void)
@@ -110,7 +73,7 @@ SpectrumWifiPhy::GetTypeId (void)
     .AddAttribute ("CcaMode1Threshold",
                    "The energy of a received signal should be higher than "
                    "this threshold (dbm) to allow the PHY layer to declare CCA BUSY state.",
-                   DoubleValue (-99.0),
+                   DoubleValue (-62.0),
                    MakeDoubleAccessor (&SpectrumWifiPhy::SetCcaMode1Threshold,
                                        &SpectrumWifiPhy::GetCcaMode1Threshold),
                    MakeDoubleChecker<double> ())
@@ -169,18 +132,6 @@ SpectrumWifiPhy::GetTypeId (void)
                    TimeValue (MicroSeconds (250)),
                    MakeTimeAccessor (&SpectrumWifiPhy::m_channelSwitchDelay),
                    MakeTimeChecker ())
-    .AddAttribute ("ChannelNumber",
-                   "Channel center frequency = Channel starting frequency + 5 MHz * nch.",
-                   UintegerValue (1),
-                   MakeUintegerAccessor (&SpectrumWifiPhy::SetChannelNumber,
-                                         &SpectrumWifiPhy::GetChannelNumber),
-                   MakeUintegerChecker<uint16_t> ())
-    .AddAttribute ("Frequency",
-                   "The center frequency of the currently configured channel, in MHz",
-                    TypeId::ATTR_GET,
-                    UintegerValue (2412), // This value is ignored since there is no setter
-                   MakeUintegerAccessor (&SpectrumWifiPhy::GetFrequency),
-                   MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("TxAntennas",
                    "The number of supported Tx antennas.",
                    UintegerValue (1),
@@ -227,12 +178,6 @@ SpectrumWifiPhy::GetTypeId (void)
                    MakeBooleanAccessor (&SpectrumWifiPhy::GetShortPlcpPreambleSupported,
                                         &SpectrumWifiPhy::SetShortPlcpPreambleSupported),
                    MakeBooleanChecker ())
-    .AddAttribute ("ChannelWidth",
-                   "Whether 5MHz, 10MHz, 20MHz, 22MHz, 40MHz, 80 MHz or 160 MHz.",
-                   UintegerValue (20),
-                   MakeUintegerAccessor (&SpectrumWifiPhy::GetChannelWidth,
-                                         &SpectrumWifiPhy::SetChannelWidth),
-                   MakeUintegerChecker<uint32_t> ())
     .AddTraceSource ("SignalArrival",
                      "Signal arrival",
                      MakeTraceSourceAccessor (&SpectrumWifiPhy::m_signalCb),
@@ -243,11 +188,8 @@ SpectrumWifiPhy::GetTypeId (void)
 
 SpectrumWifiPhy::SpectrumWifiPhy ()
   : m_initialized (false),
-    m_channelNumber (1),
     m_endRxEvent (),
     m_endPlcpRxEvent (),
-    m_channelCenterFrequency (0),
-    m_standard (WIFI_PHY_STANDARD_80211a),
     m_mpdusNum (0),
     m_plcpSuccess (false),
     m_txMpduReferenceNumber (0xffffffff),
@@ -282,10 +224,117 @@ SpectrumWifiPhy::DoInitialize ()
   m_initialized = true;
 }
 
+bool
+SpectrumWifiPhy::DoChannelSwitch (uint16_t nch)
+{
+  if (!m_initialized)
+    {
+      //this is not channel switch, this is initialization
+      NS_LOG_DEBUG ("start at channel " << nch);
+      return true;
+    }
+
+  NS_ASSERT (!IsStateSwitching ());
+  switch (m_state->GetState ())
+    {
+    case SpectrumWifiPhy::RX:
+      NS_LOG_DEBUG ("drop packet because of channel switching while reception");
+      m_endPlcpRxEvent.Cancel ();
+      m_endRxEvent.Cancel ();
+      goto switchChannel;
+      break;
+    case SpectrumWifiPhy::TX:
+      NS_LOG_DEBUG ("channel switching postponed until end of current transmission");
+      Simulator::Schedule (GetDelayUntilIdle (), &WifiPhy::SetChannelNumber, this, nch);
+      break;
+    case SpectrumWifiPhy::CCA_BUSY:
+    case SpectrumWifiPhy::IDLE:
+      goto switchChannel;
+      break;
+    case SpectrumWifiPhy::SLEEP:
+      NS_LOG_DEBUG ("channel switching ignored in sleep mode");
+      break;
+    default:
+      NS_ASSERT (false);
+      break;
+    }
+
+  return false;
+
+switchChannel:
+
+  NS_LOG_DEBUG ("switching channel " << GetChannelNumber () << " -> " << nch);
+  m_rxSpectrumModel = WifiSpectrumValueHelper::GetSpectrumModel (GetFrequency (), GetChannelWidth ());
+  m_state->SwitchToChannelSwitching (m_channelSwitchDelay);
+  m_interference.EraseEvents ();
+  /*
+   * Needed here to be able to correctly sensed the medium for the first
+   * time after the switching. The actual switching is not performed until
+   * after m_channelSwitchDelay. Packets received during the switching
+   * state are added to the event list and are employed later to figure
+   * out the state of the medium after the switching.
+   */
+  return true;
+}
+
+bool
+SpectrumWifiPhy::DoFrequencySwitch (uint32_t frequency)
+{
+  if (!m_initialized)
+    {
+      //this is not channel switch, this is initialization
+      NS_LOG_DEBUG ("start at frequency " << frequency);
+      return true;
+    }
+
+  NS_ASSERT (!IsStateSwitching ());
+  switch (m_state->GetState ())
+    {
+    case SpectrumWifiPhy::RX:
+      NS_LOG_DEBUG ("drop packet because of channel/frequency switching while reception");
+      m_endPlcpRxEvent.Cancel ();
+      m_endRxEvent.Cancel ();
+      goto switchFrequency;
+      break;
+    case SpectrumWifiPhy::TX:
+      NS_LOG_DEBUG ("channel/frequency switching postponed until end of current transmission");
+      Simulator::Schedule (GetDelayUntilIdle (), &WifiPhy::SetFrequency, this, frequency);
+      break;
+    case SpectrumWifiPhy::CCA_BUSY:
+    case SpectrumWifiPhy::IDLE:
+      goto switchFrequency;
+      break;
+    case SpectrumWifiPhy::SLEEP:
+      NS_LOG_DEBUG ("frequency switching ignored in sleep mode");
+      break;
+    default:
+      NS_ASSERT (false);
+      break;
+    }
+
+  return false;
+
+switchFrequency:
+
+  NS_LOG_DEBUG ("switching frequency " << GetFrequency () << " -> " << frequency);
+  m_rxSpectrumModel = WifiSpectrumValueHelper::GetSpectrumModel (GetFrequency (), GetChannelWidth ());
+  m_state->SwitchToChannelSwitching (m_channelSwitchDelay);
+  m_interference.EraseEvents ();
+  /*
+   * Needed here to be able to correctly sensed the medium for the first
+   * time after the switching. The actual switching is not performed until
+   * after m_channelSwitchDelay. Packets received during the switching
+   * state are added to the event list and are employed later to figure
+   * out the state of the medium after the switching.
+   */
+  return true;
+}
+
 void
 SpectrumWifiPhy::ConfigureStandard (enum WifiPhyStandard standard)
 {
   NS_LOG_FUNCTION (this << standard);
+  WifiPhy::ConfigureStandard (standard); // set up base class
   switch (standard)
     {
     case WIFI_PHY_STANDARD_80211a:
@@ -307,10 +356,10 @@ SpectrumWifiPhy::ConfigureStandard (enum WifiPhyStandard standard)
       ConfigureHolland ();
       break;
     case WIFI_PHY_STANDARD_80211n_2_4GHZ:
-      Configure80211n_2_4Ghz ();
+      Configure80211n ();
       break;
     case WIFI_PHY_STANDARD_80211n_5GHZ:
-      Configure80211n_5Ghz ();
+      Configure80211n ();
       break;
     case WIFI_PHY_STANDARD_80211ac:
       Configure80211ac ();
@@ -319,7 +368,6 @@ SpectrumWifiPhy::ConfigureStandard (enum WifiPhyStandard standard)
       NS_ASSERT (false);
       break;
     }
-  m_standard = standard;
 }
 
 void
@@ -466,16 +514,25 @@ SpectrumWifiPhy::GetMobility (void)
 Ptr<const SpectrumModel>
 SpectrumWifiPhy::GetRxSpectrumModel () const
 {
+  NS_LOG_FUNCTION (this);
+  if (m_rxSpectrumModel)
+    {
+      return m_rxSpectrumModel;
+    }
+  else
+    {
+      if (GetFrequency () == 0)
+        {
+          NS_LOG_DEBUG ("Frequency is not set; returning 0");
+          return 0;
+        }
+      else
+        {
+          NS_LOG_DEBUG ("Creating spectrum model from frequency/width pair of (" << GetFrequency () << ", " << GetChannelWidth () << ")");
+          m_rxSpectrumModel = WifiSpectrumValueHelper::GetSpectrumModel (GetFrequency (), GetChannelWidth ());
+        }
+    }
   return m_rxSpectrumModel;
-}
-
-void
-SpectrumWifiPhy::SetNoisePowerSpectralDensity (Ptr<const SpectrumValue> noisePsd)
-{
-  NS_LOG_FUNCTION (this << noisePsd);
-  NS_ASSERT (noisePsd);
-  m_rxSpectrumModel = noisePsd->GetSpectrumModel ();
-  NS_ASSERT (m_rxSpectrumModel);
 }
 
 double
@@ -497,68 +554,9 @@ SpectrumWifiPhy::SetChannel (Ptr<SpectrumChannel> channel)
 }
 
 void
-SpectrumWifiPhy::SetChannelNumber (uint16_t nch)
-{
-  if (!m_initialized)
-    {
-      //this is not channel switch, this is initialization
-      NS_LOG_DEBUG ("start at channel " << nch);
-      m_channelNumber = nch;
-      return;
-    }
-
-  NS_ASSERT (!IsStateSwitching ());
-  switch (m_state->GetState ())
-    {
-    case SpectrumWifiPhy::RX:
-      NS_LOG_DEBUG ("drop packet because of channel switching while reception");
-      m_endPlcpRxEvent.Cancel ();
-      m_endRxEvent.Cancel ();
-      goto switchChannel;
-      break;
-    case SpectrumWifiPhy::TX:
-      NS_LOG_DEBUG ("channel switching postponed until end of current transmission");
-      Simulator::Schedule (GetDelayUntilIdle (), &SpectrumWifiPhy::SetChannelNumber, this, nch);
-      break;
-    case SpectrumWifiPhy::CCA_BUSY:
-    case SpectrumWifiPhy::IDLE:
-      goto switchChannel;
-      break;
-    case SpectrumWifiPhy::SLEEP:
-      NS_LOG_DEBUG ("channel switching ignored in sleep mode");
-      break;
-    default:
-      NS_ASSERT (false);
-      break;
-    }
-
-  return;
-
-switchChannel:
-
-  NS_LOG_DEBUG ("switching channel " << m_channelNumber << " -> " << nch);
-  m_state->SwitchToChannelSwitching (m_channelSwitchDelay);
-  m_interference.EraseEvents ();
-  /*
-   * Needed here to be able to correctly sensed the medium for the first
-   * time after the switching. The actual switching is not performed until
-   * after m_channelSwitchDelay. Packets received during the switching
-   * state are added to the event list and are employed later to figure
-   * out the state of the medium after the switching.
-   */
-  m_channelNumber = nch;
-}
-
-void
 SpectrumWifiPhy::SetPacketReceivedCallback (RxCallback callback)
 {
   m_rxCallback = callback;
-}
-
-uint16_t
-SpectrumWifiPhy::GetChannelNumber (void) const
-{
-  return m_channelNumber;
 }
 
 Time
@@ -577,12 +575,12 @@ std::vector<uint16_t>
 SpectrumWifiPhy::GetOperationalChannelList () const
 {
   std::vector<uint16_t> channelList;
-  channelList.push_back (m_channelNumber);
+  channelList.push_back (GetChannelNumber ());  // first channel of list
   for (std::vector<uint16_t>::size_type i = 0; i != m_operationalChannelList.size (); i++)
     {
-      if (m_operationalChannelList[i] != m_channelNumber)
+      if (m_operationalChannelList[i] != GetChannelNumber ())
         { 
-          channelList.push_back (m_channelNumber);
+          channelList.push_back (m_operationalChannelList[i]);
         }
     }
   return channelList;
@@ -671,6 +669,7 @@ SpectrumWifiPhy::SetReceiveErrorCallback (RxErrorCallback callback)
 void
 SpectrumWifiPhy::SwitchMaybeToCcaBusy (void)
 {
+  NS_LOG_FUNCTION (this);
   //We are here because we have received the first bit of a packet and we are
   //not going to be able to synchronize on it
   //In this model, CCA becomes busy when the aggregation of all signals as
@@ -679,6 +678,7 @@ SpectrumWifiPhy::SwitchMaybeToCcaBusy (void)
   Time delayUntilCcaEnd = m_interference.GetEnergyDuration (m_ccaMode1ThresholdW);
   if (!delayUntilCcaEnd.IsZero ())
     {
+      NS_LOG_DEBUG ("Calling SwitchMaybeToCcaBusy for " << delayUntilCcaEnd.As (Time::S));
       m_state->SwitchMaybeToCcaBusy (delayUntilCcaEnd);
     }
 }
@@ -689,21 +689,22 @@ SpectrumWifiPhy::StartRx (Ptr<SpectrumSignalParameters> rxParams)
   NS_LOG_FUNCTION (this << rxParams);
   Time rxDuration = rxParams->duration;
   Ptr<SpectrumValue> receivedSignalPsd = rxParams->psd;
+  NS_LOG_DEBUG ("Received signal with PSD " << *receivedSignalPsd << " and duration " << rxDuration.As (Time::NS));
   uint32_t senderNodeId = 0;
   if (rxParams->txPhy)
     {
       senderNodeId = rxParams->txPhy->GetDevice ()->GetNode ()->GetId ();
     }
-  NS_LOG_DEBUG ("Received signal from " << senderNodeId << " with unfiltered power " << WToDbm (Integral (*receivedSignalPsd)) << " dBm");
+  NS_LOG_DEBUG ("Received signal from " << senderNodeId << " with unfiltered power " << WToDbm (Integral (*(GetPointer (receivedSignalPsd)))) << " dBm");
   // Integrate over our receive bandwidth (i.e., all that the receive
   // spectral mask representing our filtering allows) to find the
   // total energy apparent to the "demodulator".
-  Ptr<SpectrumValue> filter = WifiSpectrumHelper::CreateRfFilter (m_channelNumber);
+  Ptr<SpectrumValue> filter = WifiSpectrumValueHelper::CreateRfFilter (GetFrequency (), GetChannelWidth ());
   SpectrumValue filteredSignal = (*filter) * (*receivedSignalPsd);
   // Add receiver antenna gain
+  NS_LOG_DEBUG ("Signal power received (watts) before antenna gain: " << Integral (filteredSignal));
   double rxPowerW = Integral (filteredSignal) * DbToRatio (m_rxGainDb);
-  double rxPowerDbm = WToDbm (rxPowerW);
-  NS_LOG_DEBUG ("Signal power received: " << rxPowerDbm << " dBm");
+  NS_LOG_DEBUG ("Signal power received after antenna gain: " << rxPowerW << " W (" << WToDbm (rxPowerW) << " dBm)");
 
   Ptr<WifiSpectrumSignalParameters> wifiRxParams = DynamicCast<WifiSpectrumSignalParameters> (rxParams);
 
@@ -724,6 +725,7 @@ SpectrumWifiPhy::StartRx (Ptr<SpectrumSignalParameters> rxParams)
       return;
     }
 
+  NS_LOG_INFO ("Received Wi-Fi signal");
   Ptr<Packet> packet = wifiRxParams->packet;
   WifiPhyTag tag;
   bool found = packet->RemovePacketTag (tag);
@@ -960,6 +962,35 @@ SpectrumWifiPhy::SendPacket (Ptr<const Packet> packet, WifiTxVector txVector, Wi
   SendPacket (packet, txVector, preamble, NORMAL_MPDU);
 }
 
+Ptr<SpectrumValue>
+SpectrumWifiPhy::GetTxPowerSpectralDensity (uint32_t centerFrequency, uint32_t channelWidth, double txPowerW) const
+{
+  NS_LOG_FUNCTION (centerFrequency << channelWidth << txPowerW);
+  Ptr<SpectrumValue> v;
+  switch (GetStandard ())
+    {
+    case WIFI_PHY_STANDARD_80211a:
+    case WIFI_PHY_STANDARD_80211g:
+    case WIFI_PHY_STANDARD_holland:
+    case WIFI_PHY_STANDARD_80211_10MHZ:
+    case WIFI_PHY_STANDARD_80211_5MHZ:
+      v = WifiSpectrumValueHelper::CreateOfdmTxPowerSpectralDensity (centerFrequency, channelWidth, txPowerW);
+      break;
+    case WIFI_PHY_STANDARD_80211b:
+      v = WifiSpectrumValueHelper::CreateDsssTxPowerSpectralDensity (centerFrequency, txPowerW);
+      break;
+    case WIFI_PHY_STANDARD_80211n_2_4GHZ:
+    case WIFI_PHY_STANDARD_80211n_5GHZ:
+    case WIFI_PHY_STANDARD_80211ac:
+      v = WifiSpectrumValueHelper::CreateHtOfdmTxPowerSpectralDensity (centerFrequency, channelWidth, txPowerW);
+      break;
+    default:
+      NS_FATAL_ERROR ("Standard unknown: " << GetStandard ());
+      break;
+    }
+  return v; 
+}
+
 void
 SpectrumWifiPhy::SendPacket (Ptr<const Packet> packet, WifiTxVector txVector, WifiPreamble preamble, enum mpduType mpdutype)
 {
@@ -1008,7 +1039,7 @@ SpectrumWifiPhy::SendPacket (Ptr<const Packet> packet, WifiTxVector txVector, Wi
   struct mpduInfo aMpdu;
   aMpdu.type = mpdutype;
   aMpdu.mpduRefNumber = m_txMpduReferenceNumber;
-  NotifyMonitorSniffTx (packet, (uint16_t)GetFrequency (), GetChannelNumber (), dataRate500KbpsUnits, preamble, txVector, aMpdu);
+  NotifyMonitorSniffTx (packet, (uint16_t) GetFrequency (), GetChannelNumber (), dataRate500KbpsUnits, preamble, txVector, aMpdu);
   m_state->SwitchToTx (txDuration, packet, GetPowerDbm (txVector.GetTxPowerLevel ()), txVector, preamble);
   //
   // Spectrum elements added here
@@ -1019,11 +1050,10 @@ SpectrumWifiPhy::SendPacket (Ptr<const Packet> packet, WifiTxVector txVector, Wi
   WifiPhyTag tag (txVector, preamble, mpdutype);
   newPacket->AddPacketTag (tag);
 
+  NS_LOG_DEBUG ("Transmission signal power before antenna gain: " << GetPowerDbm (txVector.GetTxPowerLevel ()) << " dBm");
   double txPowerWatts = DbmToW (GetPowerDbm (txVector.GetTxPowerLevel ()) + m_txGainDb);
 
-  Ptr<SpectrumValue> txPowerSpectrum =
-    WifiSpectrumHelper::CreateTxPowerSpectralDensity (txPowerWatts, txVector.GetMode (), m_channelNumber);
-
+  Ptr<SpectrumValue> txPowerSpectrum = GetTxPowerSpectralDensity (GetFrequency (), GetChannelWidth (), txPowerWatts);
   Ptr<WifiSpectrumSignalParameters> txParams = Create<WifiSpectrumSignalParameters> ();
   txParams->duration = txDuration;
   txParams->psd = txPowerSpectrum;
@@ -1031,8 +1061,8 @@ SpectrumWifiPhy::SendPacket (Ptr<const Packet> packet, WifiTxVector txVector, Wi
   txParams->txPhy = m_wifiSpectrumPhyInterface->GetObject<SpectrumPhy> ();
   txParams->txAntenna = m_antenna;
   txParams->packet = newPacket;
-  NS_LOG_DEBUG ("Starting transmission with wifi power " << WToDbm (txPowerWatts) << " dBm on channel " << m_channelNumber);
-  NS_LOG_DEBUG ("Starting transmission with spectrum power " << WToDbm (Integral (*txPowerSpectrum)) << " dBm");
+  NS_LOG_DEBUG ("Starting transmission with power " << WToDbm (txPowerWatts) << " dBm on channel " << GetChannelNumber ());
+  NS_LOG_DEBUG ("Starting transmission with integrated spectrum power " << WToDbm (Integral (*txPowerSpectrum)) << " dBm; spectrum model Uid: " << txPowerSpectrum->GetSpectrumModel ()->GetUid ());
   m_channel->StartTx (txParams);
 }
 
@@ -1083,9 +1113,6 @@ void
 SpectrumWifiPhy::Configure80211a (void)
 {
   NS_LOG_FUNCTION (this);
-  m_channelCenterFrequency = 5180; //MHz
-  m_channelNumber = 36;
-  SetChannelWidth (20); //MHz
 
   m_deviceRateSet.push_back (WifiPhy::GetOfdmRate6Mbps ());
   m_deviceRateSet.push_back (WifiPhy::GetOfdmRate9Mbps ());
@@ -1101,9 +1128,6 @@ void
 SpectrumWifiPhy::Configure80211b (void)
 {
   NS_LOG_FUNCTION (this);
-  m_channelCenterFrequency = 2412; //MHz
-  m_channelNumber = 1;
-  SetChannelWidth (22); //MHz
 
   m_deviceRateSet.push_back (WifiPhy::GetDsssRate1Mbps ());
   m_deviceRateSet.push_back (WifiPhy::GetDsssRate2Mbps ());
@@ -1116,7 +1140,6 @@ SpectrumWifiPhy::Configure80211g (void)
 {
   NS_LOG_FUNCTION (this);
   Configure80211b ();
-  SetChannelWidth (20); //20 MHz
 
   m_deviceRateSet.push_back (WifiPhy::GetErpOfdmRate6Mbps ());
   m_deviceRateSet.push_back (WifiPhy::GetErpOfdmRate9Mbps ());
@@ -1132,9 +1155,6 @@ void
 SpectrumWifiPhy::Configure80211_10Mhz (void)
 {
   NS_LOG_FUNCTION (this);
-  m_channelCenterFrequency = 5035; //MHz
-  m_channelNumber = 7;
-  SetChannelWidth (10); //MHz
 
   m_deviceRateSet.push_back (WifiPhy::GetOfdmRate3MbpsBW10MHz ());
   m_deviceRateSet.push_back (WifiPhy::GetOfdmRate4_5MbpsBW10MHz ());
@@ -1150,9 +1170,6 @@ void
 SpectrumWifiPhy::Configure80211_5Mhz (void)
 {
   NS_LOG_FUNCTION (this);
-  m_channelCenterFrequency = 5180; //MHz
-  m_channelNumber = 36;
-  SetChannelWidth (5); //MHz
 
   m_deviceRateSet.push_back (WifiPhy::GetOfdmRate1_5MbpsBW5MHz ());
   m_deviceRateSet.push_back (WifiPhy::GetOfdmRate2_25MbpsBW5MHz ());
@@ -1168,9 +1185,6 @@ void
 SpectrumWifiPhy::ConfigureHolland (void)
 {
   NS_LOG_FUNCTION (this);
-  m_channelCenterFrequency = 5180; //MHz
-  m_channelNumber = 36;
-  SetChannelWidth (20); //MHz
 
   m_deviceRateSet.push_back (WifiPhy::GetOfdmRate6Mbps ());
   m_deviceRateSet.push_back (WifiPhy::GetOfdmRate12Mbps ());
@@ -1249,26 +1263,18 @@ SpectrumWifiPhy::ConfigureHtDeviceMcsSet (void)
 }
 
 void
-SpectrumWifiPhy::Configure80211n_2_4Ghz (void)
+SpectrumWifiPhy::Configure80211n (void)
 {
   NS_LOG_FUNCTION (this);
-  Configure80211b ();
-  Configure80211g ();
-  m_channelCenterFrequency = 2412; //MHz
-  m_channelNumber = 1;
-  SetChannelWidth (20); //20 MHz
-  m_bssMembershipSelectorSet.push_back (HT_PHY);
-  ConfigureHtDeviceMcsSet ();
-}
-
-void
-SpectrumWifiPhy::Configure80211n_5Ghz (void)
-{
-  NS_LOG_FUNCTION (this);
-  Configure80211a ();
-  m_channelCenterFrequency = 5180; //MHz
-  m_channelNumber = 36;
-  SetChannelWidth (20); //MHz
+  if (GetFrequency () >= 2400 && GetFrequency () <= 2500) //at 2.4 GHz
+    {
+      Configure80211b ();
+      Configure80211g ();
+    }
+  if (GetFrequency () >= 5000 && GetFrequency () <= 6000) //at 5 GHz
+    {
+      Configure80211a ();
+    }
   m_bssMembershipSelectorSet.push_back (HT_PHY);
   ConfigureHtDeviceMcsSet ();
 }
@@ -1277,10 +1283,7 @@ void
 SpectrumWifiPhy::Configure80211ac (void)
 {
   NS_LOG_FUNCTION (this);
-  Configure80211n_5Ghz ();
-  m_channelCenterFrequency = 5210; //MHz
-  m_channelNumber = 42;
-  SetChannelWidth (80); //80 MHz
+  Configure80211n ();
 
   m_deviceMcsSet.push_back (WifiPhy::GetVhtMcs0 ());
   m_deviceMcsSet.push_back (WifiPhy::GetVhtMcs1 ());
@@ -1453,7 +1456,7 @@ SpectrumWifiPhy::EndReceive (Ptr<Packet> packet, enum WifiPreamble preamble, enu
           struct mpduInfo aMpdu;
           aMpdu.type = mpdutype;
           aMpdu.mpduRefNumber = m_rxMpduReferenceNumber;
-          NotifyMonitorSniffRx (packet, (uint16_t)GetFrequency (), GetChannelNumber (), dataRate500KbpsUnits, event->GetPreambleType (), event->GetTxVector (), aMpdu, signalNoise);
+          NotifyMonitorSniffRx (packet, (uint16_t) GetFrequency (), GetChannelNumber (), dataRate500KbpsUnits, event->GetPreambleType (), event->GetTxVector (), aMpdu, signalNoise);
           m_state->SwitchFromRxEndOk (packet, snrPer.snr, event->GetTxVector (), event->GetPreambleType ());
           rxSucceeded = true;
         }
@@ -1540,60 +1543,6 @@ SpectrumWifiPhy::SetGuardInterval (bool guardInterval)
 }
 
 uint32_t
-SpectrumWifiPhy::GetFrequency (void) const
-{
-  double frequency;
-  switch (m_standard)
-    {
-    case WIFI_PHY_STANDARD_80211b:
-    case WIFI_PHY_STANDARD_80211g:
-    case WIFI_PHY_STANDARD_80211n_2_4GHZ:
-      NS_ASSERT_MSG (m_channelNumber >= 1 && m_channelNumber <= 14, "Invalid channel number " << m_channelNumber);
-      if (m_channelNumber < 14)
-        {
-          return (2407 + 5 * m_channelNumber);
-        }
-      else
-        {
-          return 2484; // channel 14
-        }
-      NS_ASSERT (false);
-      break;
-    case WIFI_PHY_STANDARD_80211a:
-    case WIFI_PHY_STANDARD_80211n_5GHZ:
-    case WIFI_PHY_STANDARD_80211ac:
-    case WIFI_PHY_STANDARD_holland:
-      NS_ASSERT_MSG (m_channelNumber >= 7 && m_channelNumber <= 196, "Invalid channel number " << m_channelNumber);
-      frequency = m_channelMap [m_channelNumber];
-      NS_ASSERT (frequency); // not found in map
-      return (frequency);
-      break;
-    case WIFI_PHY_STANDARD_80211_10MHZ:
-      // 10 MHz channels are defined in some regions; 
-      frequency = m_channelMap10Mhz [m_channelNumber];
-      if (frequency == 0)
-        {
-          // Users may instead choose a 20/40/80/160 MHz channel number;
-          // in this case, reuse those center frequencies
-          frequency = m_channelMap [m_channelNumber];
-        }
-      NS_ASSERT (frequency); // not found in map
-      return frequency;
-      break;
-    case WIFI_PHY_STANDARD_80211_5MHZ:
-      // Since no standard channel numbers exist for 5MHz channels, we
-      // reuse the 20/40/80/160 channel center frequencies here
-      frequency = m_channelMap [m_channelNumber];
-      NS_ASSERT (frequency); // not found in map
-      break;
-    default:
-      NS_ASSERT_MSG (false, "Standard " << m_standard << " not found");
-      break;
-    }
-  return 0;
-}
-
-uint32_t
 SpectrumWifiPhy::GetNumberOfTransmitAntennas (void) const
 {
   return m_numberOfTransmitters;
@@ -1635,20 +1584,6 @@ SpectrumWifiPhy::SetShortPlcpPreambleSupported (bool enable)
   m_shortPreamble = enable;
 }
 
-void
-SpectrumWifiPhy::SetChannelWidth (uint32_t channelwidth)
-{
-  NS_ASSERT_MSG (channelwidth == 5 || channelwidth == 10 || channelwidth == 20 || channelwidth == 22 || channelwidth == 40 || channelwidth == 80 || channelwidth == 160, "wrong channel width value");
-  m_channelWidth = channelwidth;
-  AddSupportedChannelWidth (channelwidth);
-}
-
-uint32_t
-SpectrumWifiPhy::GetChannelWidth (void) const
-{
-  return m_channelWidth;
-}
-
 uint8_t 
 SpectrumWifiPhy::GetSupportedRxSpatialStreams (void) const
 {
@@ -1659,26 +1594,6 @@ uint8_t
 SpectrumWifiPhy::GetSupportedTxSpatialStreams (void) const
 {
   return (static_cast<uint8_t> (GetNumberOfTransmitAntennas ()));
-}
-
-void
-SpectrumWifiPhy::AddSupportedChannelWidth (uint32_t width)
-{
-  NS_LOG_FUNCTION (this << width);
-  for (std::vector<uint32_t>::size_type i = 0; i != m_supportedChannelWidthSet.size (); i++)
-    {
-      if (m_supportedChannelWidthSet[i] == width)
-        {
-          return;
-        }
-    }
-  m_supportedChannelWidthSet.push_back (width);
-}
-
-std::vector<uint32_t> 
-SpectrumWifiPhy::GetSupportedChannelWidthSet (void) const
-{
-  return m_supportedChannelWidthSet;
 }
 
 uint32_t

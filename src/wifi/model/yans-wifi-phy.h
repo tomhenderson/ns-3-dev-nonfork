@@ -24,7 +24,6 @@
 #define YANS_WIFI_PHY_H
 
 #include <stdint.h>
-#include <map>
 #include "ns3/callback.h"
 #include "ns3/event-id.h"
 #include "ns3/packet.h"
@@ -78,33 +77,10 @@ public:
    * \param channel the YansWifiChannel this YansWifiPhy is to be connected to
    */
   void SetChannel (Ptr<YansWifiChannel> channel);
-  // Inherited
-  void SetChannelNumber (uint16_t id);
-  // Inherited
-  uint16_t GetChannelNumber (void) const;
   /**
    * \return the required time for channel switch operation of this WifiPhy
    */
   Time GetChannelSwitchDelay (void) const;
-  /**
-   * Add a channel number to the list of operational channels.  This method
-   * is used to support scanning for strongest base station.
-   *
-   * \param channelNumber the channel number to add
-   */
-  void AddOperationalChannel (uint16_t channelNumber);
-  /**
-   * Return a list of channels to which it may be possible to roam
-   * By default, this method will return the current channel number followed
-   * by any other channel numbers that have been added.
-   *
-   * \return vector of channel numbers to which it may be possible to roam
-   */
-  std::vector<uint16_t> GetOperationalChannelList (void) const;
-  /**
-   * Clear the list of operational channels.
-   */
-  void ClearOperationalChannelList (void);
 
   /**
    * Starting receiving the plcp of a packet (i.e. the first bit of the preamble has arrived).
@@ -320,8 +296,6 @@ public:
    */
   int64_t AssignStreams (int64_t stream);
 
-  // Inherited
-  virtual uint32_t GetFrequency (void) const;
   /**
    * \param tx the number of transmitters on this node.
    */
@@ -397,23 +371,9 @@ public:
    * \returns if short PLCP preamble is supported or not
    */
   virtual bool GetShortPlcpPreambleSupported (void) const;
-  /**
-   * Return channel width.
-   *
-   * \return channel width
-   */
-  virtual uint32_t GetChannelWidth (void) const;
-  /**
-   * Set channel width.
-   *
-   * \param channel width
-   */
-  virtual void SetChannelWidth (uint32_t channelwidth);
 
   virtual uint8_t GetSupportedRxSpatialStreams (void) const;
   virtual uint8_t GetSupportedTxSpatialStreams (void) const;
-  virtual void AddSupportedChannelWidth (uint32_t width);
-  virtual std::vector<uint32_t> GetSupportedChannelWidthSet (void) const;
   virtual uint32_t GetNBssMembershipSelectors (void) const;
   virtual uint32_t GetBssMembershipSelector (uint32_t selector) const;
   virtual WifiModeList GetMembershipSelectorModes (uint32_t selector);
@@ -428,6 +388,9 @@ private:
   virtual void DoInitialize (void);
   virtual void DoDispose (void);
 
+  // Inherited
+  virtual bool DoChannelSwitch (uint16_t id);
+  virtual bool DoFrequencySwitch (uint32_t frequency);
   /**
    * Configure YansWifiPhy with appropriate channel frequency and
    * supported rates for 802.11a standard.
@@ -456,14 +419,9 @@ private:
   void ConfigureHolland (void);
   /**
    * Configure YansWifiPhy with appropriate channel frequency and
-   * supported rates for 802.11n standard at 2.4 GHz.
+   * supported rates for 802.11n standard.
    */
-  void Configure80211n_2_4Ghz (void);
-  /**
-   * Configure YansWifiPhy with appropriate channel frequency and
-   * supported rates for 802.11n standard at 5 GHz.
-   */
-  void Configure80211n_5Ghz (void);
+  void Configure80211n (void);
   /**
    * Configure YansWifiPhy with appropriate channel frequency and
    * supported rates for 802.11ac standard.
@@ -480,6 +438,38 @@ private:
    * \return the energy detection threshold.
    */
   double GetEdThresholdW (void) const;
+  /**
+   * Convert from dBm to Watts.
+   *
+   * \param dbm the power in dBm
+   *
+   * \return the equivalent Watts for the given dBm
+   */
+  double DbmToW (double dbm) const;
+  /**
+   * Convert from dB to ratio.
+   *
+   * \param db
+   *
+   * \return ratio
+   */
+  double DbToRatio (double db) const;
+  /**
+   * Convert from Watts to dBm.
+   *
+   * \param w the power in Watts
+   *
+   * \return the equivalent dBm for the given Watts
+   */
+  double WToDbm (double w) const;
+  /**
+   * Convert from ratio to dB.
+   *
+   * \param ratio
+   *
+   * \return dB
+   */
+  double RatioToDb (double ratio) const;
   /**
    * Get the power of the given power level in dBm.
    * In YansWifiPhy implementation, the power levels are equally spaced (in dBm).
@@ -509,8 +499,6 @@ private:
   uint32_t m_nTxPower;            //!< Number of available transmission power levels
 
   Ptr<YansWifiChannel> m_channel;        //!< YansWifiChannel that this YansWifiPhy is connected to
-  uint16_t             m_channelNumber;  //!< Operating channel number
-  std::vector<uint16_t> m_operationalChannelList; //!< List of possible channels
   Ptr<NetDevice>       m_device;         //!< Pointer to the device
   Ptr<MobilityModel>   m_mobility;       //!< Pointer to the mobility model
 
@@ -520,8 +508,6 @@ private:
   bool     m_stbc;                  //!< Flag if STBC is used
   bool     m_greenfield;            //!< Flag if GreenField format is supported
   bool     m_guardInterval;         //!< Flag if short guard interval is used
-  uint32_t m_channelWidth;          //!< Channel width
-  std::vector<uint32_t> m_supportedChannelWidthSet; //!< Supported channel width
   bool     m_shortPreamble;         //!< Flag if short PLCP preamble is supported
 
   /**
@@ -567,17 +553,7 @@ private:
   EventId m_endRxEvent;
   EventId m_endPlcpRxEvent;
 
-  // XXX refactor to use C++-11 initialization list once bug 2270 patched
-  static std::map<uint32_t, double> CreateChannelMap ();
-  static std::map<uint32_t, double> m_channelMap;
-  
-  // XXX refactor to use C++-11 initialization list once bug 2270 patched
-  static std::map<uint32_t, double> CreateChannelMap10Mhz ();
-  static std::map<uint32_t, double> m_channelMap10Mhz;
-
   Ptr<UniformRandomVariable> m_random;  //!< Provides uniform random variables.
-  double m_channelCenterFrequency;    //!< Standard-dependent center frequency of configured channel in MHz
-  enum WifiPhyStandard m_standard; //!< Standard configured for this PHY
   Ptr<WifiPhyStateHelper> m_state;      //!< Pointer to WifiPhyStateHelper
   InterferenceHelper m_interference;    //!< Pointer to InterferenceHelper
   Time m_channelSwitchDelay;            //!< Time required to switch between channel

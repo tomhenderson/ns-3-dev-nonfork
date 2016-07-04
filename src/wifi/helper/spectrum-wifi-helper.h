@@ -65,10 +65,6 @@ public:
    */
   void SetChannel (std::string channelName);
   /**
-   * \param channelnum the channel number to which created PHYs will be tuned
-   */
-  void SetChannelNumber (uint16_t nch);
-  /**
    * \param name the name of the attribute to set
    * \param v the value of the attribute
    *
@@ -183,7 +179,6 @@ private:
   ObjectFactory m_phy;
   ObjectFactory m_errorRateModel;
   Ptr<SpectrumChannel> m_channel;
-  uint16_t m_channelNumber;
   uint32_t m_pcapDlt;
 };
 

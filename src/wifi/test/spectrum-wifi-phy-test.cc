@@ -20,8 +20,8 @@
 #include "ns3/packet.h"
 #include "ns3/tag.h"
 #include "ns3/packet-burst.h"
-#include "ns3/wifi-spectrum-helper.h"
 #include "ns3/spectrum-wifi-helper.h"
+#include "ns3/wifi-spectrum-value-helper.h"
 #include "ns3/spectrum-wifi-phy.h"
 #include "ns3/interference-helper.h"
 #include "ns3/nist-error-rate-model.h"
@@ -34,6 +34,8 @@
 using namespace ns3;
 
 static const uint16_t CHANNEL_NUMBER = 36;
+static const uint32_t FREQUENCY = 5180; // MHz
+static const uint32_t CHANNEL_WIDTH = 20; // MHz
 
 class SpectrumWifiPhyBasicTest : public TestCase
 {
@@ -88,7 +90,7 @@ SpectrumWifiPhyBasicTest::MakeSignal (double txPowerWatts)
   pkt->AddTrailer (trailer);
   WifiPhyTag tag (txVector, preamble, mpdutype);
   pkt->AddPacketTag (tag);
-  Ptr<SpectrumValue> txPowerSpectrum = WifiSpectrumHelper::CreateTxPowerSpectralDensity (txPowerWatts, txVector.GetMode (), CHANNEL_NUMBER);
+  Ptr<SpectrumValue> txPowerSpectrum = WifiSpectrumValueHelper::CreateOfdmTxPowerSpectralDensity (FREQUENCY, CHANNEL_WIDTH, txPowerWatts);
   Ptr<WifiSpectrumSignalParameters> txParams = Create<WifiSpectrumSignalParameters> ();
   txParams->psd = txPowerSpectrum;
   txParams->txPhy = 0;
@@ -124,7 +126,7 @@ SpectrumWifiPhyBasicTest::DoSetup (void)
   Ptr<ErrorRateModel> error = CreateObject<NistErrorRateModel> ();
   m_phy->SetErrorRateModel (error);
   m_phy->SetChannelNumber (CHANNEL_NUMBER);
-  m_phy->SetNoisePowerSpectralDensity (WifiSpectrumHelper::CreateNoisePowerSpectralDensity (0, CHANNEL_NUMBER));
+  m_phy->SetFrequency (FREQUENCY);
   m_phy->SetPacketReceivedCallback (MakeCallback (&SpectrumWifiPhyBasicTest::SpectrumWifiPhyReceiver, this));
 }
 

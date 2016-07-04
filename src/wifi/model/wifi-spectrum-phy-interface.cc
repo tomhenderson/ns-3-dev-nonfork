@@ -97,14 +97,7 @@ WifiSpectrumPhyInterface::SetChannel (Ptr<SpectrumChannel> c)
 Ptr<const SpectrumModel>
 WifiSpectrumPhyInterface::GetRxSpectrumModel () const
 {
-  if (m_txPsd)
-    {
-      return m_txPsd->GetSpectrumModel ();
-    }
-  else
-    {
-      return m_spectrumWifiPhy->GetRxSpectrumModel ();
-    }
+  return m_spectrumWifiPhy->GetRxSpectrumModel ();
 }
 
 Ptr<AntennaModel>
