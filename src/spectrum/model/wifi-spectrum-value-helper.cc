@@ -187,10 +187,9 @@ WifiSpectrumValueHelper::CreateHtOfdmTxPowerSpectralDensity (uint32_t centerFreq
               *vit = txPowerPerBand / (bit->fh - bit->fl);
             }
         }
-      NS_LOG_DEBUG ("Added signal power to subbands 36-63, 65-92, 100-127, 129-156, 164-191, 193-220, 228-255, 257-284");
+      NS_LOG_DEBUG ("Added signal power to subbands 36-63, 65-92, 100-127, 129-156, 164-191, 193-220, 228-255, 257-284, 292-319, 321-348, 356-383, 385-412, 420-447, 449-476, 484-511, and 513-540");
       NS_LOG_DEBUG ("Integrated power " << Integral (*(GetPointer (c))));
       NS_ASSERT_MSG (std::abs (txPowerW - Integral (*(GetPointer (c)))) < 1e-6, "Power allocation failed"); 
-      break;
       break;
     default:
       NS_FATAL_ERROR ("ChannelWidth " << channelWidth << " unsupported");
