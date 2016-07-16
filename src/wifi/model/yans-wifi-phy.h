@@ -384,12 +384,12 @@ public:
   virtual uint8_t GetNMcs (void) const;
   virtual WifiMode GetMcs (uint8_t mcs) const;
 
-private:
-  virtual void DoDispose (void);
-
+protected:
   // Inherited
+  virtual void DoDispose (void);
   virtual bool DoChannelSwitch (uint16_t id);
   virtual bool DoFrequencySwitch (uint32_t frequency);
+private:
   /**
    * Configure YansWifiPhy with appropriate channel frequency and
    * supported rates for 802.11a standard.

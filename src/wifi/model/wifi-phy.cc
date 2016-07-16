@@ -243,6 +243,21 @@ WifiPhy::~WifiPhy ()
 }
 
 void
+WifiPhy::DoInitialize (void)
+{
+  NS_LOG_FUNCTION (this);
+  // Perform some initialization checks
+  if (GetChannelNumber () != 0 && GetStandard () == WIFI_PHY_STANDARD_UNSPECIFIED)
+    {
+      NS_FATAL_ERROR ("Error, ChannelNumber " << GetChannelNumber () << " was set by user, but not a standard");
+    }
+  if (GetChannelNumber () != 0 && GetFrequency () == 0)
+    {
+      NS_FATAL_ERROR ("Error, ChannelNumber " << GetChannelNumber () << " set but no frequency is configured");
+    }
+}
+
+void
 WifiPhy::ConfigureDefaultsForStandard (enum WifiPhyStandard standard)
 {
   NS_LOG_FUNCTION (this << standard);
@@ -387,22 +402,14 @@ WifiPhy::ConfigureChannelForStandard (enum WifiPhyStandard standard)
       // the unspecified standard, configure using the known values;
       // otherwise, this is a configuration error
       NS_LOG_DEBUG ("Configuring for channel number " << GetChannelNumber ());
-      ChannelNumberStandardPair p = std::make_pair (GetChannelNumber (), standard);
-      FrequencyWidthPair f;
-      ChannelToFrequencyWidthMap::const_iterator it;
-      it = m_channelToFrequencyWidth.find (p);
-      if (it != m_channelToFrequencyWidth.end ())
-        {
-          f = m_channelToFrequencyWidth[p];
-        }
-      else
+      FrequencyWidthPair f = GetFrequencyWidthForChannelNumberStandard (GetChannelNumber (), standard);
+      if (f.first == 0)
         {
           // the specific pair of number/standard is not known
           NS_LOG_DEBUG ("Falling back to check WIFI_PHY_STANDARD_UNSPECIFIED");
-          ChannelNumberStandardPair p2 = std::make_pair (GetChannelNumber (), WIFI_PHY_STANDARD_UNSPECIFIED);
-          it = m_channelToFrequencyWidth.find (p2);
+          f = GetFrequencyWidthForChannelNumberStandard (GetChannelNumber (), WIFI_PHY_STANDARD_UNSPECIFIED);
         }
-      if (it == m_channelToFrequencyWidth.end())
+      if (f.first == 0)
         {
           NS_FATAL_ERROR ("Error, ChannelNumber " << GetChannelNumber () << " is unknown for this standard");
         }
@@ -467,7 +474,7 @@ WifiPhy::SetFrequency (uint32_t frequency)
           m_channelCenterFrequency = frequency;
           m_channelNumber = nch;
         }
-    else
+      else
         {
           NS_LOG_DEBUG ("Suppressing reassignment of frequency");
         }
@@ -519,6 +526,7 @@ WifiPhy::AddSupportedChannelWidth (uint32_t width)
           return;
         }
     }
+  NS_LOG_FUNCTION ("Adding " << width << " to supported channel width set");
   m_supportedChannelWidthSet.push_back (width);
 }
 
@@ -526,6 +534,14 @@ std::vector<uint32_t>
 WifiPhy::GetSupportedChannelWidthSet (void) const
 {
   return m_supportedChannelWidthSet;
+}
+
+WifiPhy::FrequencyWidthPair
+WifiPhy::GetFrequencyWidthForChannelNumberStandard (uint16_t channelNumber, enum WifiPhyStandard standard) const
+{
+  ChannelNumberStandardPair p = std::make_pair (channelNumber, standard);
+  FrequencyWidthPair f = m_channelToFrequencyWidth[p];
+  return f;
 }
 
 void
@@ -539,34 +555,52 @@ WifiPhy::SetChannelNumber (uint16_t nch)
     }
   if (nch == 0)
     {
-      DoChannelSwitch (nch);
+      // This case corresponds to when there is not a known channel
+      // number for the requested frequency.  There is no need to call
+      // DoChannelSwitch () because DoFrequencySwitch () should have been
+      // called by the client
+      NS_LOG_DEBUG ("Setting channel number to zero");
       m_channelNumber = 0;
       return;
     }
 
-  ChannelNumberStandardPair p = std::make_pair (nch, m_standard);
-  FrequencyWidthPair f = m_channelToFrequencyWidth[p];
-  if (f.first == 0 && m_standard != WIFI_PHY_STANDARD_UNSPECIFIED)
+  if (IsInitialized () == false && GetStandard () == WIFI_PHY_STANDARD_UNSPECIFIED)
     {
-      // the specific pair of number/standard is not known
-      NS_LOG_DEBUG ("Falling back to check WIFI_PHY_STANDARD_UNSPECIFIED");
-      ChannelNumberStandardPair p2 = std::make_pair (nch, WIFI_PHY_STANDARD_UNSPECIFIED);
-      f = m_channelToFrequencyWidth[p2];
+      // This is not a run-time channel switch, and user has not yet
+      // specified a standard to correspond to the channel number,
+      // so we just need to set the channel number now, and the
+      // DoInitialize () method should perform checking at run-time that
+      // the standard was eventually set
+      NS_LOG_DEBUG ("Setting channel number to " << nch);
+      m_channelNumber = nch;
+      return;
     }
+
+  // First make sure that the channel number is defined for the standard
+  // in use
+  FrequencyWidthPair f = GetFrequencyWidthForChannelNumberStandard (nch, GetStandard ());
   if (f.first == 0)
     {
-      NS_FATAL_ERROR ("Error, ChannelNumber " << nch << " is unknown for this standard");
+      f = GetFrequencyWidthForChannelNumberStandard (nch, WIFI_PHY_STANDARD_UNSPECIFIED);
     }
-  if (DoChannelSwitch (nch))
+  if (f.first != 0)
     {
-      m_channelNumber = nch;
-      NS_LOG_DEBUG ("Setting frequency to " << f.first << "; width to " << f.second);
-      m_channelCenterFrequency = f.first;
-      SetChannelWidth (f.second);
+      if (DoChannelSwitch (nch))
+        {
+          NS_LOG_DEBUG ("Setting frequency to " << f.first << "; width to " << f.second);
+          m_channelCenterFrequency = f.first;
+          SetChannelWidth (f.second);
+          m_channelNumber = nch;
+        }
+      else
+        {
+          // Subclass may have suppressed (e.g. waiting for state change)
+          NS_LOG_DEBUG ("Channel switch suppressed");
+        }
     }
   else
     {
-      NS_LOG_DEBUG ("Suppressing reassignment of channel number");
+      NS_FATAL_ERROR ("Frequency not found for channel number " << nch);
     }
 }
 

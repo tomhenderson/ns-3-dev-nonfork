@@ -203,7 +203,7 @@ int main (int argc, char *argv[])
           channel.AddPropagationLoss ("ns3::FriisPropagationLossModel");
           channel.SetPropagationDelay ("ns3::ConstantSpeedPropagationDelayModel");
           phy.SetChannel (channel.Create ());
-          phy.Set ("ChannelNumber", UintegerValue (36));
+          phy.Set ("Frequency", UintegerValue (5180));
     
           if (i <= 7)
             {
@@ -241,7 +241,7 @@ int main (int argc, char *argv[])
 
           spectrumPhy.SetChannel (spectrumChannel);
           spectrumPhy.SetErrorRateModel (errorModelType);
-          spectrumPhy.Set ("ChannelNumber", UintegerValue (36)); // 5.180 GHz 
+          spectrumPhy.Set ("Frequency", UintegerValue (5180)); // channel 36 at 20 MHz
     
           if (i <= 7)
             {
@@ -573,15 +573,15 @@ int main (int argc, char *argv[])
       g_channelNumber = 0;
       g_rate = 0;
 
-      // Make sure we are tuned to channel 36; if not, the example will
+      // Make sure we are tuned to 5180 MHz; if not, the example will
       // not work properly
       Ptr<NetDevice> staDevicePtr = staDevice.Get (0); 
       Ptr<WifiNetDevice> wifiStaDevicePtr = staDevicePtr->GetObject <WifiNetDevice> ();
       UintegerValue val;
-      wifiStaDevicePtr->GetPhy ()->GetAttribute ("ChannelNumber", val);
-      if (val.Get () != 36)
+      wifiStaDevicePtr->GetPhy ()->GetAttribute ("Frequency", val);
+      if (val.Get () != 5180)
         {
-          NS_FATAL_ERROR ("Error:  Wi-Fi nodes must be tuned to ch. 36 to match the waveform generator");
+          NS_FATAL_ERROR ("Error:  Wi-Fi nodes must be tuned to 5180 MHz to match the waveform generator");
         }
 
       Simulator::Stop (Seconds (simulationTime+1));

@@ -216,6 +216,22 @@ SpectrumWifiPhy::DoDispose (void)
   m_state = 0;
 }
 
+void
+SpectrumWifiPhy::DoInitialize (void)
+{
+  NS_LOG_FUNCTION (this);
+  WifiPhy::DoInitialize ();
+  // This connection is deferred until frequency and channel width are set
+  if (m_channel && m_wifiSpectrumPhyInterface)
+    {
+      m_channel->AddRx (m_wifiSpectrumPhyInterface);
+    }
+  else
+    {
+      NS_FATAL_ERROR ("SpectrumWifiPhy misses channel and WifiSpectrumPhyInterface objects at initialization time");
+    }
+}
+
 bool
 SpectrumWifiPhy::DoChannelSwitch (uint16_t nch)
 {
@@ -916,6 +932,7 @@ SpectrumWifiPhy::SetAntenna (Ptr<AntennaModel> a)
 void
 SpectrumWifiPhy::CreateWifiSpectrumPhyInterface (Ptr<NetDevice> device)
 {
+  NS_LOG_FUNCTION (this << device);
   m_wifiSpectrumPhyInterface = CreateObject<WifiSpectrumPhyInterface> ();
   m_wifiSpectrumPhyInterface->SetSpectrumWifiPhy (this);
   m_wifiSpectrumPhyInterface->SetDevice (device);

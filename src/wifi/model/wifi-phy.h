@@ -1356,7 +1356,8 @@ public:
    */
   void ClearOperationalChannelList (void);
 
-private:
+protected:
+  virtual void DoInitialize (void);
   /**
    * The default implementation does nothing and returns true.  This method 
    * is typically called internally by SetChannelNumber ().
@@ -1377,6 +1378,7 @@ private:
    * \see SetFrequency
    */
   virtual bool DoFrequencySwitch (uint32_t frequency);
+private:
   /**
    * Configure the PHY-level parameters for different Wi-Fi standard.
    * This method is called when defaults for each standard must be 
@@ -1395,12 +1397,19 @@ private:
    */
   virtual void ConfigureChannelForStandard (enum WifiPhyStandard standard);
   /**
-   * Look for 
+   * Look for channel number matching the frequency and width
    * \param frequency The center frequency to use
    * \param width The channel width to use
    * \return the channel number if found, zero if not
    */
   uint16_t FindChannelNumberForFrequencyWidth (uint32_t frequency, uint32_t width) const;
+  /**
+   * Lookup frequency/width pair for channelNumber/standard pair
+   * \param channelNumber The channel number to check
+   * \param standard The WifiPhyStandard to check
+   * \return the FrequencyWidthPair found
+   */
+  FrequencyWidthPair GetFrequencyWidthForChannelNumberStandard (uint16_t channelNumber, enum WifiPhyStandard standard) const;
 
   /**
    * The trace source fired when a packet begins the transmission process on

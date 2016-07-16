@@ -205,7 +205,7 @@ YansWifiPhy::DoChannelSwitch (uint16_t nch)
   if (IsInitialized () == false)
     {
       //this is not channel switch, this is initialization
-      NS_LOG_DEBUG ("start at channel " << nch);
+      NS_LOG_DEBUG ("initialize to channel " << nch);
       return true;
     }
 

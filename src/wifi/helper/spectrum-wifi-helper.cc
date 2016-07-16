@@ -157,7 +157,6 @@ SpectrumWifiPhyHelper::Create (Ptr<Node> node, Ptr<NetDevice> device) const
   phy->SetChannel (m_channel);
   phy->SetDevice (device);
   phy->SetMobility (node->GetObject<MobilityModel> ());
-  m_channel->AddRx (phy->GetSpectrumPhy());
   return phy;
 }
 
