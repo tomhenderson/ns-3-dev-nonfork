@@ -455,7 +455,6 @@ public:
   virtual WifiMode GetMcs (uint8_t mcs) const;
 
 private:
-  virtual void DoInitialize (void);
   virtual void DoDispose (void);
 
   // Inherited
@@ -579,7 +578,6 @@ private:
    */
   Ptr<SpectrumValue> GetTxPowerSpectralDensity (uint32_t centerFrequency, uint32_t channelWidth, double txPowerW) const;
 
-  bool     m_initialized;         //!< Flag for runtime initialization
   double   m_edThresholdW;        //!< Energy detection threshold in watts
   double   m_ccaMode1ThresholdW;  //!< Clear channel assessment (CCA) threshold in watts
   double   m_txGainDb;            //!< Transmission gain (dB)

@@ -187,8 +187,7 @@ SpectrumWifiPhy::GetTypeId (void)
 }
 
 SpectrumWifiPhy::SpectrumWifiPhy ()
-  : m_initialized (false),
-    m_endRxEvent (),
+  : m_endRxEvent (),
     m_endPlcpRxEvent (),
     m_mpdusNum (0),
     m_plcpSuccess (false),
@@ -217,17 +216,10 @@ SpectrumWifiPhy::DoDispose (void)
   m_state = 0;
 }
 
-void
-SpectrumWifiPhy::DoInitialize ()
-{
-  NS_LOG_FUNCTION (this);
-  m_initialized = true;
-}
-
 bool
 SpectrumWifiPhy::DoChannelSwitch (uint16_t nch)
 {
-  if (!m_initialized)
+  if (IsInitialized () == false)
     {
       //this is not channel switch, this is initialization
       NS_LOG_DEBUG ("start at channel " << nch);
@@ -280,7 +272,7 @@ switchChannel:
 bool
 SpectrumWifiPhy::DoFrequencySwitch (uint32_t frequency)
 {
-  if (!m_initialized)
+  if (IsInitialized () == false)
     {
       //this is not channel switch, this is initialization
       NS_LOG_DEBUG ("start at frequency " << frequency);
