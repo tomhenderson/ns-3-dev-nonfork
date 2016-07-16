@@ -170,8 +170,7 @@ YansWifiPhy::GetTypeId (void)
 }
 
 YansWifiPhy::YansWifiPhy ()
-  : m_initialized (false),
-    m_endRxEvent (),
+  : m_endRxEvent (),
     m_endPlcpRxEvent (),
     m_mpdusNum (0),
     m_plcpSuccess (false),
@@ -200,17 +199,10 @@ YansWifiPhy::DoDispose (void)
   m_state = 0;
 }
 
-void
-YansWifiPhy::DoInitialize ()
-{
-  NS_LOG_FUNCTION (this);
-  m_initialized = true;
-}
-
 bool
 YansWifiPhy::DoChannelSwitch (uint16_t nch)
 {
-  if (!m_initialized)
+  if (IsInitialized () == false)
     {
       //this is not channel switch, this is initialization
       NS_LOG_DEBUG ("start at channel " << nch);
@@ -262,7 +254,7 @@ switchChannel:
 bool
 YansWifiPhy::DoFrequencySwitch (uint32_t frequency)
 {
-  if (!m_initialized)
+  if (IsInitialized () == false)
     {
       //this is not channel switch, this is initialization
       NS_LOG_DEBUG ("start at frequency " << frequency);

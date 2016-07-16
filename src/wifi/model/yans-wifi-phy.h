@@ -385,7 +385,6 @@ public:
   virtual WifiMode GetMcs (uint8_t mcs) const;
 
 private:
-  virtual void DoInitialize (void);
   virtual void DoDispose (void);
 
   // Inherited
@@ -489,7 +488,6 @@ private:
    */
   void EndReceive (Ptr<Packet> packet, enum WifiPreamble preamble, enum mpduType mpdutype, Ptr<InterferenceHelper::Event> event);
 
-  bool     m_initialized;         //!< Flag for runtime initialization
   double   m_edThresholdW;        //!< Energy detection threshold in watts
   double   m_ccaMode1ThresholdW;  //!< Clear channel assessment (CCA) threshold in watts
   double   m_txGainDb;            //!< Transmission gain (dB)
