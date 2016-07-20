@@ -707,7 +707,7 @@ SpectrumWifiPhy::StartRx (Ptr<SpectrumSignalParameters> rxParams)
     }
 
   NS_LOG_INFO ("Received Wi-Fi signal");
-  Ptr<Packet> packet = wifiRxParams->packet;
+  Ptr<Packet> packet = wifiRxParams->packet->Copy ();
   WifiPhyTag tag;
   bool found = packet->PeekPacketTag (tag);
   if (!found)
