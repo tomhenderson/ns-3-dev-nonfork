@@ -230,6 +230,7 @@ WifiPhy::GetTypeId (void)
 WifiPhy::WifiPhy ()
   : m_standard (WIFI_PHY_STANDARD_UNSPECIFIED),
     m_channelCenterFrequency (0),
+    m_channelWidth (0),
     m_channelNumber (1)
 {
   NS_LOG_FUNCTION (this);
@@ -461,6 +462,21 @@ WifiPhy::SetFrequency (uint32_t frequency)
       NS_LOG_DEBUG ("Setting frequency and channel number to zero");
       m_channelCenterFrequency = 0;
       m_channelNumber = 0;
+      return;
+    }
+  if (GetChannelWidth () == 0)
+    {
+      // Possibly in attribute initialization phase; just perform frequency
+      // setting here
+      if (DoFrequencySwitch (frequency))
+        {
+          NS_LOG_DEBUG ("Channel frequency switched to " << frequency << "; channel number unchanged");
+          m_channelCenterFrequency = frequency;
+        }
+      else
+        {
+          NS_LOG_DEBUG ("Suppressing reassignment of frequency");
+        }
       return;
     }
   // See if there corresponds a channel number to the requested frequency.

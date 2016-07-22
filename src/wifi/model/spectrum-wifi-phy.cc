@@ -209,6 +209,7 @@ SpectrumWifiPhy::DoDispose (void)
 {
   NS_LOG_FUNCTION (this);
   m_channel = 0;
+  m_wifiSpectrumPhyInterface = 0;
   m_deviceRateSet.clear ();
   m_deviceMcsSet.clear ();
   m_device = 0;
@@ -676,7 +677,7 @@ SpectrumWifiPhy::StartRx (Ptr<SpectrumSignalParameters> rxParams)
     {
       senderNodeId = rxParams->txPhy->GetDevice ()->GetNode ()->GetId ();
     }
-  NS_LOG_DEBUG ("Received signal from " << senderNodeId << " with unfiltered power " << WToDbm (Integral (*(GetPointer (receivedSignalPsd)))) << " dBm");
+  NS_LOG_DEBUG ("Received signal from " << senderNodeId << " with unfiltered power " << WToDbm (Integral (*receivedSignalPsd)) << " dBm");
   // Integrate over our receive bandwidth (i.e., all that the receive
   // spectral mask representing our filtering allows) to find the
   // total energy apparent to the "demodulator".
