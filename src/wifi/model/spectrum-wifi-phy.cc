@@ -1453,17 +1453,16 @@ SpectrumWifiPhy::EndReceive (Ptr<Packet> packet, enum WifiPreamble preamble, enu
         }
       if (!m_rxCallback.IsNull ())
         {
-         m_rxCallback(rxSucceeded);
+         m_rxCallback (rxSucceeded);
         }
     }
   else
     {
       bool isEndOfFrame = ((mpdutype == NORMAL_MPDU && preamble != WIFI_PREAMBLE_NONE) || (mpdutype == LAST_MPDU_IN_AGGREGATE && preamble == WIFI_PREAMBLE_NONE));
       m_state->SwitchFromRxEndError (packet, snrPer.snr, isEndOfFrame);
-      rxSucceeded = false;
-      if (!m_rxCallback.IsNull () && isEndOfFrame)
+      if (!m_rxCallback.IsNull ())
         {
-          m_rxCallback(rxSucceeded);
+          m_rxCallback (false);
         }
     }
 
