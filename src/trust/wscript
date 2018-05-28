@@ -9,7 +9,10 @@
 def build(bld):
     module = bld.create_ns3_module('trust', ['core'])
     module.source = [
+        'model/AbstractTrustCalculation.cc',
+        'model/AbstractTrustEntry.cc',
         'model/trust.cc',
+        'model/TrustTable.cc',
         'helper/trust-helper.cc',
         ]
 
@@ -21,7 +24,10 @@ def build(bld):
     headers = bld(features='ns3header')
     headers.module = 'trust'
     headers.source = [
+        'model/AbstractTrustCalculation.h',
+        'model/AbstractTrustEntry.h',
         'model/trust.h',
+        'model/TrustTable.h',
         'helper/trust-helper.h',
         ]
 
