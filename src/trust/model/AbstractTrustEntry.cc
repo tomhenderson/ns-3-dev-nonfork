@@ -26,7 +26,7 @@ void AbstractTrustEntry::setNeighbourAddress(Ipv4Address neighbourAddress) {
 }
 
 const Time& AbstractTrustEntry::getTimestamp() {
-	return this->timestamp
+	return this->timestamp;
 }
 void AbstractTrustEntry::setTimestamp(const Time& timestamp) {
 	this->timestamp = timestamp;

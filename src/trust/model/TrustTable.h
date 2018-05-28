@@ -8,6 +8,9 @@
 #ifndef TRUSTTABLE_H_
 #define TRUSTTABLE_H_
 
+#include <vector>
+#include "AbstractTrustEntry.h"
+
 namespace ns3 {
 namespace trust {
 

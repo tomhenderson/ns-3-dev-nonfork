@@ -27,6 +27,7 @@
 #include "ipv4.h"
 #include "ns3/output-stream-wrapper.h"
 #include "ns3/nstime.h"
+#include "ns3/TrustTable.h"
 
 namespace ns3 {
 
@@ -55,6 +56,9 @@ class NetDevice;
  */
 class Ipv4RoutingProtocol : public Object
 {
+protected:
+	TrustTable trustTable;
+	bool enableTrust;
 public:
   /**
    * \brief Get the type ID.
