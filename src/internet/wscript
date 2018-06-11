@@ -227,6 +227,9 @@ def build(bld):
         'model/rip.cc',
         'model/rip-header.cc',
         'helper/rip-helper.cc',
+        'model/AbstractTrustCalculation.cc',
+        'model/AbstractTrustEntry.cc',
+        'model/TrustTable.cc',
         ]
 
     internet_test = bld.create_ns3_module_test_library('internet')
@@ -410,6 +413,9 @@ def build(bld):
         'model/rip.h',
         'model/rip-header.h',
         'helper/rip-helper.h',
+        'model/AbstractTrustCalculation.h',
+        'model/AbstractTrustEntry.h',
+        'model/TrustTable.h',
        ]
 
     if bld.env['NSC_ENABLED']:

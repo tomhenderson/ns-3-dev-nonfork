@@ -1,0 +1,25 @@
+#ifndef TRUSTTABLE_H_
+#define TRUSTTABLE_H_
+
+#include <vector>
+#include "AbstractTrustEntry.h"
+
+namespace ns3
+{
+
+class TrustTable
+{
+
+private:
+  std::vector<AbstractTrustEntry> tableRecords;
+public:
+  TrustTable ();
+  virtual ~TrustTable ();
+  void addRecord (AbstractTrustEntry entry);
+  void removeRecord (AbstractTrustEntry entry);
+  void updateRecord (AbstractTrustEntry entry);
+};
+
+} // namespace ns3
+
+#endif
