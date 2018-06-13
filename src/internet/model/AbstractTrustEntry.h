@@ -64,7 +64,7 @@ public:
 
   /**
    * \brief Get the timestamp of the trust table entry
-   * returns Time object reference represent the timestamp
+   * \returns Time object reference represent the timestamp
    */
   const Time& GetTimestamp ();
 
@@ -76,7 +76,7 @@ public:
 
   /**
    * \brief Get the trust value of the trust table entry
-   * returns int32_t trust value
+   * \returns int32_t trust value
    */
   int32_t GetTrustValue ();
 
