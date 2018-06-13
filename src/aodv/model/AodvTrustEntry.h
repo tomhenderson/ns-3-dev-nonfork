@@ -18,31 +18,14 @@
  * Author: Jude Niroshan <jude.niroshan11@gmail.com>
  */
 
-#include "trust-table.h"
+#ifndef AODVTRUSTENTRY_H_
+#define AODVTRUSTENTRY_H_
 
-namespace ns3 {
-
-TrustTable::TrustTable ()
+class AodvTrustEntry
 {
-}
+public:
+  AodvTrustEntry ();
+  virtual ~AodvTrustEntry ();
+};
 
-void TrustTable::AddRecord (AbstractTrustEntry entry)
-{
-  m_tableRecords.push_back (entry);
-}
-
-void TrustTable::RemoveRecord (AbstractTrustEntry entry)
-{
-  m_tableRecords.pop_back (); //need to change this
-}
-
-void updateRecord (AbstractTrustEntry entry)
-{
-  // TODO write update trust record logic
-}
-
-TrustTable::~TrustTable ()
-{
-}
-
-} // namespace ns3
+#endif

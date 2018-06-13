@@ -1,6 +1,6 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2018 SomeUniversity
+ * Copyright (c) 2018 Sri Lanka Institute of Information Technology
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -24,14 +24,14 @@
 #include <vector>
 #include "AbstractTrustEntry.h"
 
-namespace ns3
-{
+namespace ns3 {
 
 /**
  * \ingroup internet
  * \defgroup trust Trust management framework.
  *
- * The Trust Management Framework is [...]
+ * The Trust Management Framework is built-in support to implement custom
+ * trust based protocols in ns-3.
  */
 
 /**
