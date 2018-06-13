@@ -49,7 +49,7 @@ public:
   /**
    * \brief Calculate the trust value for a given destination node
    * \param [in] address target node IPv4 address to calculate the trust
-   * returns int32_t trust value
+   * \returns int32_t trust value
    */
   int32_t calculateTrust (Ipv4Address address);
 };
