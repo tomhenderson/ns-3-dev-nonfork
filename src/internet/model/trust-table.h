@@ -22,7 +22,7 @@
 #define TRUSTTABLE_H_
 
 #include <vector>
-#include "AbstractTrustEntry.h"
+#include "abstract-trust-entry.h"
 
 namespace ns3 {
 

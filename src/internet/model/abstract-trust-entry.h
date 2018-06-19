@@ -18,8 +18,8 @@
  * Author: Jude Niroshan <jude.niroshan11@gmail.com>
  */
 
-#ifndef ABSTRACTTRUSTENTRY_H_
-#define ABSTRACTTRUSTENTRY_H_
+#ifndef ABSTRACT_TRUST_ENTRY_H_
+#define ABSTRACT_TRUST_ENTRY_H_
 
 #include "ns3/ipv4-address.h"
 #include "ns3/nstime.h"
