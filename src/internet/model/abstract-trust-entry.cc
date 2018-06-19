@@ -18,17 +18,47 @@
  * Author: Jude Niroshan <jude.niroshan11@gmail.com>
  */
 
-#include "AbstractTrustCalculation.h"
-#include "ns3/ipv4-address.h"
+#include "abstract-trust-entry.h"
 
 namespace ns3 {
 
-AbstractTrustCalculation::AbstractTrustCalculation ()
+AbstractTrustEntry::AbstractTrustEntry ()
 {
 }
 
-AbstractTrustCalculation::~AbstractTrustCalculation ()
+AbstractTrustEntry::~AbstractTrustEntry ()
 {
+}
+
+Ipv4Address AbstractTrustEntry::GetNeighbourAddress ()
+{
+  return this->neighbourAddress;
+}
+
+void AbstractTrustEntry::SetNeighbourAddress (Ipv4Address neighbourAddress)
+{
+  this->neighbourAddress = neighbourAddress;
+}
+
+const Time& AbstractTrustEntry::GetTimestamp ()
+{
+  return this->timestamp;
+}
+
+void AbstractTrustEntry::SetTimestamp (const Time& timestamp)
+{
+  this->timestamp = timestamp;
+}
+
+int32_t AbstractTrustEntry::GetTrustValue ()
+{
+  return this->trustValue;
+}
+
+void AbstractTrustEntry::SetTrustValue (int32_t trustValue)
+{
+  this->trustValue = trustValue;
 }
 
 } // namespace ns3
+

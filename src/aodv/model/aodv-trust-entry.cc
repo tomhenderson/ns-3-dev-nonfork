@@ -18,14 +18,13 @@
  * Author: Jude Niroshan <jude.niroshan11@gmail.com>
  */
 
-#ifndef AODVTRUSTENTRY_H_
-#define AODVTRUSTENTRY_H_
+#include "aodv-trust-entry.h"
 
-class AodvTrustEntry
+AodvTrustEntry::AodvTrustEntry ()
 {
-public:
-  AodvTrustEntry ();
-  virtual ~AodvTrustEntry ();
-};
+}
 
-#endif
+AodvTrustEntry::~AodvTrustEntry ()
+{
+}
+

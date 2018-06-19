@@ -27,7 +27,7 @@
 #include "ipv4.h"
 #include "ns3/output-stream-wrapper.h"
 #include "ns3/nstime.h"
-#include "ns3/TrustTable.h"
+#include "ns3/trust-table.h"
 
 namespace ns3 {
 
