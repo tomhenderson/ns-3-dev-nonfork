@@ -43,7 +43,7 @@ class AbstractTrustEntry
 {
 private:
   Ipv4Address neighbourAddress;
-  int32_t trustValue;
+  uint32_t trustValue;
   Time timestamp;
 
 public:
@@ -76,15 +76,15 @@ public:
 
   /**
    * \brief Get the trust value of the trust table entry
-   * \returns int32_t trust value
+   * \returns uint32_t trust value
    */
-  int32_t GetTrustValue ();
+  uint32_t GetTrustValue ();
 
   /**
    * \brief Set the trust value of the trust table entry
-   * \param [in] trustValue int32_t trust value
+   * \param [in] trustValue uint32_t trust value
    */
-  void SetTrustValue (int32_t trustValue);
+  void SetTrustValue (uint32_t trustValue);
 };
 } // namespace ns3
 
