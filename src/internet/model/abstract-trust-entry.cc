@@ -50,12 +50,12 @@ void AbstractTrustEntry::SetTimestamp (const Time& timestamp)
   this->timestamp = timestamp;
 }
 
-int32_t AbstractTrustEntry::GetTrustValue ()
+uint32_t AbstractTrustEntry::GetTrustValue ()
 {
   return this->trustValue;
 }
 
-void AbstractTrustEntry::SetTrustValue (int32_t trustValue)
+void AbstractTrustEntry::SetTrustValue (uint32_t trustValue)
 {
   this->trustValue = trustValue;
 }

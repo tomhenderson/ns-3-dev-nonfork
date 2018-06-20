@@ -40,10 +40,10 @@ namespace ns3 {
 class AodvTrustEntry : AbstractTrustEntry
 {
 private:
-  int32_t rreq;
-  int32_t rply;
-  int32_t err;
-  int32_t hello;
+  uint16_t rreq;
+  uint16_t rply;
+  uint16_t err;
+  uint16_t hello;
 
 public:
   AodvTrustEntry ();
@@ -51,51 +51,51 @@ public:
 
   /**
    * \brief Returns the error count of trust table entry
-   * \returns int32_t of the error count
+   * \returns uint16_t of the error count
    */
-  int32_t GetErr ();
+  uint16_t GetErr ();
 
   /**
    * \brief Set the error count of trust table entry
-   * \param [in] err int32_t of the error count
+   * \param [in] err uint16_t of the error count
    */
-  void SetErr (int32_t err);
+  void SetErr (uint16_t err);
 
   /**
    * \brief Returns the hello count of trust table entry
-   * \returns int32_t of the hello count
+   * \returns uint16_t of the hello count
    */
-  int32_t GetHello ();
+  uint16_t GetHello ();
 
   /**
    * \brief Set the hello packet count of trust table entry
-   * \param [in] hello int32_t of the hello packet count
+   * \param [in] hello uint16_t of the hello packet count
    */
-  void SetHello (int32_t hello);
+  void SetHello (uint16_t hello);
 
   /**
    * \brief Returns the reply count of trust table entry
-   * \returns int32_t of the reply count
+   * \returns uint16_t of the reply count
    */
-  int32_t GetRply ();
+  uint16_t GetRply ();
 
   /**
    * \brief Set the reply count of trust table entry
-   * \param [in] reply int32_t of the reply count
+   * \param [in] reply uint16_t of the reply count
    */
-  void SetRply (int32_t rply);
+  void SetRply (uint16_t rply);
 
   /**
    * \brief Returns the rreq count of trust table entry
-   * \returns int32_t of the rreq count
+   * \returns uint16_t of the rreq count
    */
-  int32_t GetRreq ();
+  uint16_t GetRreq ();
 
   /**
    * \brief Set the rreq count of trust table entry
-   * \param [in] rreq int32_t of the rreq count
+   * \param [in] rreq uint16_t of the rreq count
    */
-  void SetRreq (int32_t rreq);
+  void SetRreq (uint16_t rreq);
 };
 
 } // namespace ns3

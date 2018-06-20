@@ -31,42 +31,42 @@ AodvTrustEntry::~AodvTrustEntry ()
 {
 }
 
-int32_t AodvTrustEntry::GetErr ()
+uint16_t AodvTrustEntry::GetErr ()
 {
   return this->err;
 }
 
-void AodvTrustEntry::SetErr (int32_t err)
+void AodvTrustEntry::SetErr (uint16_t err)
 {
   this->err = err;
 }
 
-int32_t AodvTrustEntry::GetHello ()
+uint16_t AodvTrustEntry::GetHello ()
 {
   return this->hello;
 }
 
-void AodvTrustEntry::SetHello (int32_t hello)
+void AodvTrustEntry::SetHello (uint16_t hello)
 {
   this->hello = hello;
 }
 
-int32_t AodvTrustEntry::GetRply ()
+uint16_t AodvTrustEntry::GetRply ()
 {
   return this->rply;
 }
 
-void AodvTrustEntry::SetRply (int32_t rply)
+void AodvTrustEntry::SetRply (uint16_t rply)
 {
   this->rply = rply;
 }
 
-int32_t AodvTrustEntry::GetRreq ()
+uint16_t AodvTrustEntry::GetRreq ()
 {
   return this->rreq;
 }
 
-void AodvTrustEntry::SetRreq (int32_t rreq)
+void AodvTrustEntry::SetRreq (uint16_t rreq)
 {
   this->rreq = rreq;
 }
