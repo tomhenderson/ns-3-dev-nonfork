@@ -21,11 +21,82 @@
 #ifndef AODV_TRUST_ENTRY_H_
 #define AODV_TRUST_ENTRY_H_
 
-class AodvTrustEntry
+#include "ns3/abstract-trust-entry.h"
+
+namespace ns3 {
+
+/**
+ * \ingroup internet
+ * \defgroup trust Trust management framework.
+ *
+ * The Trust Management Framework is built-in support to implement custom
+ * trust based protocols in ns-3.
+ */
+
+/**
+ * \ingroup trust
+ * \brief The aodv specific trust entry object which represent rows in trust table.
+ */
+class AodvTrustEntry : AbstractTrustEntry
 {
+private:
+  int32_t rreq;
+  int32_t rply;
+  int32_t err;
+  int32_t hello;
+
 public:
   AodvTrustEntry ();
   virtual ~AodvTrustEntry ();
+
+  /**
+   * \brief Returns the error count of trust table entry
+   * \returns int32_t of the error count
+   */
+  int32_t GetErr ();
+
+  /**
+   * \brief Set the error count of trust table entry
+   * \param [in] err int32_t of the error count
+   */
+  void SetErr (int32_t err);
+
+  /**
+   * \brief Returns the hello count of trust table entry
+   * \returns int32_t of the hello count
+   */
+  int32_t GetHello ();
+
+  /**
+   * \brief Set the hello packet count of trust table entry
+   * \param [in] hello int32_t of the hello packet count
+   */
+  void SetHello (int32_t hello);
+
+  /**
+   * \brief Returns the reply count of trust table entry
+   * \returns int32_t of the reply count
+   */
+  int32_t GetRply ();
+
+  /**
+   * \brief Set the reply count of trust table entry
+   * \param [in] reply int32_t of the reply count
+   */
+  void SetRply (int32_t rply);
+
+  /**
+   * \brief Returns the rreq count of trust table entry
+   * \returns int32_t of the rreq count
+   */
+  int32_t GetRreq ();
+
+  /**
+   * \brief Set the rreq count of trust table entry
+   * \param [in] rreq int32_t of the rreq count
+   */
+  void SetRreq (int32_t rreq);
 };
 
+} // namespace ns3
 #endif

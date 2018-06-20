@@ -20,6 +20,9 @@
 
 #include "aodv-trust-entry.h"
 
+namespace ns3
+{
+
 AodvTrustEntry::AodvTrustEntry ()
 {
 }
@@ -28,3 +31,44 @@ AodvTrustEntry::~AodvTrustEntry ()
 {
 }
 
+int32_t AodvTrustEntry::GetErr ()
+{
+  return this->err;
+}
+
+void AodvTrustEntry::SetErr (int32_t err)
+{
+  this->err = err;
+}
+
+int32_t AodvTrustEntry::GetHello ()
+{
+  return this->hello;
+}
+
+void AodvTrustEntry::SetHello (int32_t hello)
+{
+  this->hello = hello;
+}
+
+int32_t AodvTrustEntry::GetRply ()
+{
+  return this->rply;
+}
+
+void AodvTrustEntry::SetRply (int32_t rply)
+{
+  this->rply = rply;
+}
+
+int32_t AodvTrustEntry::GetRreq ()
+{
+  return this->rreq;
+}
+
+void AodvTrustEntry::SetRreq (int32_t rreq)
+{
+  this->rreq = rreq;
+}
+
+}

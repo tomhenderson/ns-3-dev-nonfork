@@ -35,6 +35,15 @@ Ipv4RoutingHelper::~Ipv4RoutingHelper ()
 {
 }
 
+Ipv4RoutingHelper::Ipv4RoutingHelper ()
+{
+}
+
+Ipv4RoutingHelper::Ipv4RoutingHelper (bool enableTrust)
+{
+  this->enableTrust = enableTrust;
+}
+
 void
 Ipv4RoutingHelper::PrintRoutingTableAllAt (Time printTime, Ptr<OutputStreamWrapper> stream, Time::Unit unit)
 {
@@ -187,4 +196,13 @@ Ipv4RoutingHelper::PrintArpCacheEvery (Time printInterval, Ptr<Node> node, Ptr<O
     }
 }
 
+void Ipv4RoutingHelper::SetEnableTrust (bool enableTrust)
+{
+  this->enableTrust = enableTrust;
+}
+
+bool Ipv4RoutingHelper::IsEnableTrust ()
+{
+  return this->enableTrust;
+}
 } // namespace ns3
