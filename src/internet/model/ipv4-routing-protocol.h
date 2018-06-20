@@ -175,6 +175,17 @@ public:
    */
   virtual void PrintRoutingTable (Ptr<OutputStreamWrapper> stream, Time::Unit unit = Time::S) const = 0;
 
+  /**
+   * \brief Returns the trust framework is enabled or not
+   * \returns bool trust enable
+   */
+  bool IsEnableTrust ();
+
+  /**
+   * \brief enable or disable trust framework
+   * \param [in] enableTrust bool trust enable
+   */
+  void SetEnableTrust (bool enableTrust);
 };
 
 } // namespace ns3

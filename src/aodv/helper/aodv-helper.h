@@ -36,6 +36,8 @@ class AodvHelper : public Ipv4RoutingHelper
 public:
   AodvHelper ();
 
+  AodvHelper (bool enableTrust);
+
   /**
    * \returns pointer to clone of this AodvHelper
    *

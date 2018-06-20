@@ -33,6 +33,12 @@ AodvHelper::AodvHelper() :
   m_agentFactory.SetTypeId ("ns3::aodv::RoutingProtocol");
 }
 
+AodvHelper::AodvHelper(bool enableTrust) :
+  Ipv4RoutingHelper (enableTrust)
+{
+  m_agentFactory.SetTypeId ("ns3::aodv::RoutingProtocol");
+}
+
 AodvHelper* 
 AodvHelper::Copy (void) const 
 {
@@ -44,6 +50,7 @@ AodvHelper::Create (Ptr<Node> node) const
 {
   Ptr<aodv::RoutingProtocol> agent = m_agentFactory.Create<aodv::RoutingProtocol> ();
   node->AggregateObject (agent);
+  agent->SetEnableTrust(this->enableTrust);
   return agent;
 }
 
