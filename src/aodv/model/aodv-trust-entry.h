@@ -40,9 +40,13 @@ namespace ns3 {
 class AodvTrustEntry : AbstractTrustEntry
 {
 private:
+  // number of rreq messages
   uint16_t rreq;
+  // number of reply messages
   uint16_t rply;
+  // number of error message
   uint16_t err;
+  // number of hello message
   uint16_t hello;
 
 public:

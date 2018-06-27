@@ -42,6 +42,10 @@ class TrustTable
 {
 
 private:
+  /**
+   * \brief vector type of AbstractTrustEntry or its extended classes
+   * contains here representing the trust table rows
+   */
   std::vector<AbstractTrustEntry> m_tableRecords;
 public:
   TrustTable ();

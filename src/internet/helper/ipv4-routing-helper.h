@@ -50,6 +50,13 @@ public:
    */
   virtual ~Ipv4RoutingHelper ();
   Ipv4RoutingHelper ();
+
+  /**
+   * \brief constructor to enable the trust framework
+   *
+   * This constructor is mainly for internal use by the other helpers;
+   * clients are expected to pass the boolean value from their extended helper classes
+   */
   Ipv4RoutingHelper (bool enableTrust);
 
   /**
