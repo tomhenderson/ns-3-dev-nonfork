@@ -42,8 +42,11 @@ namespace ns3 {
 class AbstractTrustEntry
 {
 private:
+  // IPv4 address of a neighbour node
   Ipv4Address neighbourAddress;
+  // trust value for a given neighbour node
   uint32_t trustValue;
+  // Timestamp when the trust value has been set
   Time timestamp;
 
 public:
