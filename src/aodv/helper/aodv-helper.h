@@ -76,6 +76,11 @@ public:
    */
   int64_t AssignStreams (NodeContainer c, int64_t stream);
 
+
+  static bool
+  ReceiveFromDevice (bool promiscuous, Ptr<NetDevice> device, Ptr<const Packet> packet, uint16_t protocol,
+                           const Address &from, const Address &to, NetDevice::PacketType packetType);
+
 private:
   /** the factory to create AODV routing object */
   ObjectFactory m_agentFactory;
