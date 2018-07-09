@@ -100,40 +100,4 @@ AodvHelper::AssignStreams (NodeContainer c, int64_t stream)
   return (currentStream - stream);
 }
 
-
-
-static bool
-AodvHelper::ReceiveFromDevice (bool promiscuous, Ptr<NetDevice> device, Ptr<const Packet> packet, uint16_t protocol,
-                         const Address &from, const Address &to, NetDevice::PacketType packetType)
-{
-  NS_LOG_FUNCTION (this << device << packet << protocol << &from << &to << packetType << promiscuous);
-  NS_ASSERT_MSG (Simulator::GetContext () == GetId (), "Received packet with erroneous context ; " <<
-                 "make sure the channels in use are correctly updating events context " <<
-                 "when transfering events from one node to another.");
-  NS_LOG_DEBUG ("Node " << GetId () << " ReceiveFromDevice:  dev "
-                        << device->GetIfIndex () << " (type=" << device->GetInstanceTypeId ().GetName ()
-                        << ") Packet UID " << packet->GetUid ());
-  bool found = false;
-
-
-  for (ProtocolHandlerList::iterator i = m_handlers.begin ();
-       i != m_handlers.end (); i++)
-    {
-      if (i->device == 0 ||
-          (i->device != 0 && i->device == device))
-        {
-          if (i->protocol == 0 ||
-              i->protocol == protocol)
-            {
-              if (promiscuous == i->promiscuous)
-                {
-                  i->handler (device, packet, protocol, from, to, packetType);
-                  found = true;
-                }
-            }
-        }
-    }
-  return found;
-}
-
 }
