@@ -241,7 +241,7 @@ AodvExample::InstallApplications ()
 {
   Ptr<ns3::Node> firstNode = nodes.Get(1);
   //  Ptr<ns3::PointToPointNetDevice> netDevice = ;
-  firstNode->GetDevice(0)->SetPromiscReceiveCallback(ns3::MakeCallback(&AodvExample::PromiscuousReceiveFromDevice));
+  firstNode->GetDevice(0)->SetPromiscReceiveCallback(ns3::MakeCallback(&AodvExample::PromiscuousReceiveFromDevice, this));
 
   V4PingHelper ping (interfaces.GetAddress (size - 1));
   ping.SetAttribute ("Verbose", BooleanValue (true));
