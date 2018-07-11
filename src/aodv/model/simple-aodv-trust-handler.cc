@@ -22,7 +22,7 @@
 
 namespace ns3 {
 
-NS_LOG_COMPONENT_DEFINE ("SimpleAodvTrustHandler");
+NS_LOG_COMPONENT_DEFINE("SimpleAodvTrustHandler");
 
 SimpleAodvTrustHandler::SimpleAodvTrustHandler ()
 {
@@ -39,7 +39,7 @@ bool SimpleAodvTrustHandler::OnReceivePromiscuousCallback (Ptr<NetDevice> device
                                                            const Address &to,
                                                            NetDevice::PacketType packetType)
 {
-  NS_LOG_FUNCTION (device << packet << protocol << &from << &to << packetType);
+  NS_LOG_FUNCTION(device << packet << protocol << &from << &to << packetType);
   bool found = false;
 
   return found;
@@ -47,6 +47,10 @@ bool SimpleAodvTrustHandler::OnReceivePromiscuousCallback (Ptr<NetDevice> device
 
 int32_t SimpleAodvTrustHandler::calculateTrust (Ipv4Address address)
 {
+  AodvTrustEntry m_aodvTrustEntry = m_trustParameters[address];
+  double trustDouble = m_aodvTrustEntry.GetRply() / m_aodvTrustEntry.GetRreq();
+  // Update the value in Trust Table here
+  std::cout<<trustDouble + 1<<std::endl; // to avoid unused variable compilation warning
   return 1;
 }
 

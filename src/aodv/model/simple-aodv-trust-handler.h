@@ -42,10 +42,10 @@ class SimpleAodvTrustHandler
 {
 private:
   /**
-   * \brief vector type of AodvTrustEntry that contain runtime trust metrics
+   * \brief map of AodvTrustEntry that contain runtime trust metrics
    * for each directly connected nodes
    */
-  std::vector<AodvTrustEntry> m_trustParameters;
+  std::map<Ipv4Address, AodvTrustEntry> m_trustParameters;
 
 
 public:
