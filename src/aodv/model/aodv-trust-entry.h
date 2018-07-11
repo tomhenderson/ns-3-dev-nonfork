@@ -21,7 +21,7 @@
 #ifndef AODV_TRUST_ENTRY_H_
 #define AODV_TRUST_ENTRY_H_
 
-#include "ns3/abstract-trust-entry.h"
+#include "ns3/core-module.h"
 
 namespace ns3 {
 
@@ -37,7 +37,7 @@ namespace ns3 {
  * \ingroup trust
  * \brief The aodv specific trust entry object which represent rows in trust table.
  */
-class AodvTrustEntry : AbstractTrustEntry
+class AodvTrustEntry
 {
 private:
   // number of rreq messages

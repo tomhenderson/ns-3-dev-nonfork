@@ -18,47 +18,36 @@
  * Author: Jude Niroshan <jude.niroshan11@gmail.com>
  */
 
-#include "abstract-trust-entry.h"
+#include "simple-aodv-trust-handler.h"
 
 namespace ns3 {
 
-AbstractTrustEntry::AbstractTrustEntry ()
+NS_LOG_COMPONENT_DEFINE ("SimpleAodvTrustHandler");
+
+SimpleAodvTrustHandler::SimpleAodvTrustHandler ()
 {
 }
 
-AbstractTrustEntry::~AbstractTrustEntry ()
+SimpleAodvTrustHandler::~SimpleAodvTrustHandler ()
 {
 }
 
-Ipv4Address AbstractTrustEntry::GetNeighbourAddress ()
+bool SimpleAodvTrustHandler::OnReceivePromiscuousCallback (Ptr<NetDevice> device,
+                                                           Ptr<const Packet> packet,
+                                                           uint16_t protocol,
+                                                           const Address &from,
+                                                           const Address &to,
+                                                           NetDevice::PacketType packetType)
 {
-  return this->neighbourAddress;
+  NS_LOG_FUNCTION (device << packet << protocol << &from << &to << packetType);
+  bool found = false;
+
+  return found;
 }
 
-void AbstractTrustEntry::SetNeighbourAddress (Ipv4Address neighbourAddress)
+int32_t SimpleAodvTrustHandler::calculateTrust (Ipv4Address address)
 {
-  this->neighbourAddress = neighbourAddress;
+  return 1;
 }
 
-const Time& AbstractTrustEntry::GetTimestamp ()
-{
-  return this->timestamp;
 }
-
-void AbstractTrustEntry::SetTimestamp (const Time& timestamp)
-{
-  this->timestamp = timestamp;
-}
-
-uint32_t AbstractTrustEntry::GetTrustValue ()
-{
-  return this->trustValue;
-}
-
-void AbstractTrustEntry::SetTrustValue (uint32_t trustValue)
-{
-  this->trustValue = trustValue;
-}
-
-} // namespace ns3
-

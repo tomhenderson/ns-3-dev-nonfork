@@ -13,6 +13,7 @@ def build(bld):
         'model/aodv-routing-protocol.cc',
         'helper/aodv-helper.cc',
         'model/aodv-trust-entry.cc',
+        'model/simple-aodv-trust-handler.cc',
         ]
 
     aodv_test = bld.create_ns3_module_test_library('aodv')
@@ -36,6 +37,7 @@ def build(bld):
         'model/aodv-routing-protocol.h',
         'helper/aodv-helper.h',
         'model/aodv-trust-entry.h',
+        'model/simple-aodv-trust-handler.h',
         ]
 
     if bld.env['ENABLE_EXAMPLES']:

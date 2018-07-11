@@ -18,42 +18,47 @@
  * Author: Jude Niroshan <jude.niroshan11@gmail.com>
  */
 
-#ifndef ABSTRACTTRUSTCALCULATION_H_
-#define ABSTRACTTRUSTCALCULATION_H_
-
-#include "ns3/ipv4-address.h"
+#include "trust-entry.h"
 
 namespace ns3 {
 
-class AbstractTrustCalculation
+TrustEntry::TrustEntry ()
 {
+}
 
-  /**
-   * \ingroup internet
-   * \defgroup trust Trust management framework.
-   *
-   * The Trust Management Framework is built-in support to implement custom
-   * trust based protocols in ns-3.
-   */
+TrustEntry::~TrustEntry ()
+{
+}
 
-  /**
-   * \ingroup trust
-   * \brief The abstract trust calculation for trust framework.
-   * This class should be extended in order to define a custom trust
-   * calculation algorithm.
-   */
-public:
-  AbstractTrustCalculation ();
-  virtual ~AbstractTrustCalculation ();
+Ipv4Address TrustEntry::GetNeighbourAddress ()
+{
+  return this->neighbourAddress;
+}
 
-  /**
-   * \brief Calculate the trust value for a given destination node
-   * \param [in] address target node IPv4 address to calculate the trust
-   * \returns int32_t trust value
-   */
-  int32_t calculateTrust (Ipv4Address address);
-};
+void TrustEntry::SetNeighbourAddress (Ipv4Address neighbourAddress)
+{
+  this->neighbourAddress = neighbourAddress;
+}
+
+const Time& TrustEntry::GetTimestamp ()
+{
+  return this->timestamp;
+}
+
+void TrustEntry::SetTimestamp (const Time& timestamp)
+{
+  this->timestamp = timestamp;
+}
+
+uint32_t TrustEntry::GetTrustValue ()
+{
+  return this->trustValue;
+}
+
+void TrustEntry::SetTrustValue (uint32_t trustValue)
+{
+  this->trustValue = trustValue;
+}
 
 } // namespace ns3
 
-#endif

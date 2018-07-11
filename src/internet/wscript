@@ -227,8 +227,8 @@ def build(bld):
         'model/rip.cc',
         'model/rip-header.cc',
         'helper/rip-helper.cc',
-        'model/abstract-trust-calculation.cc',
-        'model/abstract-trust-entry.cc',
+        'model/trust-mediator.cc',
+        'model/trust-entry.cc',
         'model/trust-table.cc',
         ]
 
@@ -413,8 +413,8 @@ def build(bld):
         'model/rip.h',
         'model/rip-header.h',
         'helper/rip-helper.h',
-        'model/abstract-trust-calculation.h',
-        'model/abstract-trust-entry.h',
+        'model/trust-mediator.h',
+        'model/trust-entry.h',
         'model/trust-table.h',
        ]
 

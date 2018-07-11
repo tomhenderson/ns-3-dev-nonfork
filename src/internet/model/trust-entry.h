@@ -18,8 +18,8 @@
  * Author: Jude Niroshan <jude.niroshan11@gmail.com>
  */
 
-#ifndef ABSTRACT_TRUST_ENTRY_H_
-#define ABSTRACT_TRUST_ENTRY_H_
+#ifndef TRUST_ENTRY_H_
+#define TRUST_ENTRY_H_
 
 #include "ns3/ipv4-address.h"
 #include "ns3/nstime.h"
@@ -36,10 +36,9 @@ namespace ns3 {
 
 /**
  * \ingroup trust
- * \brief The abstract entry object which represent rows in trust table.
- * This class should be extended in order to add extra columns to the trust table.
+ * \brief The entry object which represent a row in trust table.
  */
-class AbstractTrustEntry
+class TrustEntry
 {
 private:
   // IPv4 address of a neighbour node
@@ -50,8 +49,8 @@ private:
   Time timestamp;
 
 public:
-  AbstractTrustEntry ();
-  virtual ~AbstractTrustEntry ();
+  TrustEntry ();
+  virtual ~TrustEntry ();
 
   /**
    * \brief Returns the neighbour address of trust table entry

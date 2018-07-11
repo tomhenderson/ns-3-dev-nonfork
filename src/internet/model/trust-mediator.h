@@ -18,31 +18,34 @@
  * Author: Jude Niroshan <jude.niroshan11@gmail.com>
  */
 
-#include "trust-table.h"
+#ifndef TRUSTMEDIATOR_H_
+#define TRUSTMEDIATOR_H_
+
+#include "ns3/ipv4-address.h"
 
 namespace ns3 {
 
-TrustTable::TrustTable ()
+class TrustMediator
 {
-}
 
-void TrustTable::AddRecord (TrustEntry entry)
-{
-  m_tableRecords.push_back (entry);
-}
+  /**
+   * \ingroup internet
+   * \defgroup trust Trust management framework.
+   *
+   * The Trust Management Framework is built-in support to implement custom
+   * trust based protocols in ns-3.
+   */
 
-void TrustTable::RemoveRecord (TrustEntry entry)
-{
-  m_tableRecords.pop_back (); //need to change this
-}
+  /**
+   * \ingroup trust
+   * \brief Intermediate class that used to communicate with trust table
+   */
+public:
+  TrustMediator ();
+  virtual ~TrustMediator ();
 
-void updateRecord (TrustEntry entry)
-{
-  // TODO write update trust record logic
-}
-
-TrustTable::~TrustTable ()
-{
-}
+};
 
 } // namespace ns3
+
+#endif

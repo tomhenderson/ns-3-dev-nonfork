@@ -22,7 +22,8 @@
 #define TRUSTTABLE_H_
 
 #include <vector>
-#include "abstract-trust-entry.h"
+
+#include "trust-entry.h"
 
 namespace ns3 {
 
@@ -46,7 +47,7 @@ private:
    * \brief vector type of AbstractTrustEntry or its extended classes
    * contains here representing the trust table rows
    */
-  std::vector<AbstractTrustEntry> m_tableRecords;
+  std::vector<TrustEntry> m_tableRecords;
 public:
   TrustTable ();
   virtual ~TrustTable ();
@@ -55,19 +56,19 @@ public:
    * \brief Add a new record to the Trust Table
    * \param [in] entry The new entry.
    */
-  void AddRecord (AbstractTrustEntry entry);
+  void AddRecord (TrustEntry entry);
 
   /**
    * \brief Remove a record from the Trust Table
    * \param [in] entry The entry to be removed.
    */
-  void RemoveRecord (AbstractTrustEntry entry);
+  void RemoveRecord (TrustEntry entry);
 
   /**
    * \brief Update a record of the Trust Table
    * \param [in] entry The entry to be modified.
    */
-  void UpdateRecord (AbstractTrustEntry entry);
+  void UpdateRecord (TrustEntry entry);
 };
 
 } // namespace ns3
