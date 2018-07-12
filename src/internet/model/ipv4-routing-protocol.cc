@@ -36,14 +36,4 @@ TypeId Ipv4RoutingProtocol::GetTypeId (void)
   return tid;
 }
 
-bool Ipv4RoutingProtocol::IsEnableTrust ()
-{
-  return enableTrust;
-}
-
-void Ipv4RoutingProtocol::SetEnableTrust (bool enableTrust)
-{
-  this->enableTrust = enableTrust;
-}
-
 } // namespace ns3

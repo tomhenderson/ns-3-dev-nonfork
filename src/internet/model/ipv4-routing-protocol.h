@@ -56,10 +56,15 @@ class NetDevice;
  */
 class Ipv4RoutingProtocol : public Object
 {
-protected:
-	TrustTable trustTable;
-	bool enableTrust;
+
 public:
+  /**
+   * \brief trust table which holds trust values for directly connected nodes.
+   * this will be used for trust framework to tranform a protocol into a
+   * trust based variation
+   */
+  TrustTable m_trustTable;
+
   /**
    * \brief Get the type ID.
    * \return the object TypeId
@@ -175,17 +180,6 @@ public:
    */
   virtual void PrintRoutingTable (Ptr<OutputStreamWrapper> stream, Time::Unit unit = Time::S) const = 0;
 
-  /**
-   * \brief Returns the trust framework is enabled or not
-   * \returns bool trust enable
-   */
-  bool IsEnableTrust ();
-
-  /**
-   * \brief enable or disable trust framework
-   * \param [in] enableTrust bool trust enable
-   */
-  void SetEnableTrust (bool enableTrust);
 };
 
 } // namespace ns3
