@@ -18,16 +18,15 @@
  * Author: Jude Niroshan <jude.niroshan11@gmail.com>
  */
 
-#include "ns3/ipv4-address.h"
-#include "trust-mediator.h"
+#include "trust-handler.h"
 
 namespace ns3 {
 
-TrustMediator::TrustMediator ()
+TrustHandler::TrustHandler ()
 {
 }
 
-TrustMediator::~TrustMediator ()
+TrustHandler::~TrustHandler ()
 {
 }
 

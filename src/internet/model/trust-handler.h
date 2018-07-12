@@ -18,14 +18,14 @@
  * Author: Jude Niroshan <jude.niroshan11@gmail.com>
  */
 
-#ifndef TRUSTMEDIATOR_H_
-#define TRUSTMEDIATOR_H_
+#ifndef TRUSTHANDLER_H_
+#define TRUSTHANDLER_H_
 
-#include "ns3/ipv4-address.h"
+#include "ns3/object.h"
 
 namespace ns3 {
 
-class TrustMediator
+class TrustHandler : public Object
 {
 
   /**
@@ -41,8 +41,8 @@ class TrustMediator
    * \brief Intermediate class that used to communicate with trust table
    */
 public:
-  TrustMediator ();
-  virtual ~TrustMediator ();
+  TrustHandler ();
+  virtual ~TrustHandler ();
 
 };
 
