@@ -21,8 +21,10 @@
 #ifndef SIMPLE_AODV_TRUST_HANDLER_H_
 #define SIMPLE_AODV_TRUST_HANDLER_H_
 
+#include "ns3/ipv4-trust-handler.h"
 #include "aodv-trust-entry.h"
 #include "ns3/network-module.h"
+#include "ns3/ipv4-address.h"
 
 namespace ns3 {
 
@@ -38,7 +40,7 @@ namespace ns3 {
  * \ingroup trust
  * \brief The aodv specific trust operations handler
  */
-class SimpleAodvTrustHandler
+class SimpleAodvTrustHandler : Ipv4TrustHandler
 {
 private:
   /**

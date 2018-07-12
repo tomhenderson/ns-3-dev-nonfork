@@ -48,7 +48,7 @@ bool SimpleAodvTrustHandler::OnReceivePromiscuousCallback (Ptr<NetDevice> device
 int32_t SimpleAodvTrustHandler::calculateTrust (Ipv4Address address)
 {
   AodvTrustEntry m_aodvTrustEntry = m_trustParameters[address];
-  double trustDouble = m_aodvTrustEntry.GetRply() / m_aodvTrustEntry.GetRreq();
+  double trustDouble = m_aodvTrustEntry.GetRply() / m_aodvTrustEntry.GetRreq() * 1.0;
   // Update the value in Trust Table here
   std::cout<<trustDouble + 1<<std::endl; // to avoid unused variable compilation warning
   return 1;

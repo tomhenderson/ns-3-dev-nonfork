@@ -18,12 +18,12 @@
  * Author: Jude Niroshan <jude.niroshan11@gmail.com>
  */
 
-#ifndef TRUSTTABLE_H_
-#define TRUSTTABLE_H_
+#ifndef IPV4TRUSTTABLE_H_
+#define IPV4TRUSTTABLE_H_
 
 #include <vector>
 
-#include "trust-entry.h"
+#include "ipv4-trust-entry.h"
 
 namespace ns3 {
 
@@ -39,36 +39,36 @@ namespace ns3 {
  * \ingroup trust
  * \brief The abstract Trust table for the nodes.
  */
-class TrustTable
+class Ipv4TrustTable
 {
 
 private:
   /**
-   * \brief vector type of AbstractTrustEntry or its extended classes
-   * contains here representing the trust table rows
+   * \brief vector type of Ipv4TrustEntry classes
+   * contains here representing the IPv4 trust table rows
    */
-  std::vector<TrustEntry> m_tableRecords;
+  std::vector<Ipv4TrustEntry> m_tableRecords;
 public:
-  TrustTable ();
-  virtual ~TrustTable ();
+  Ipv4TrustTable ();
+  virtual ~Ipv4TrustTable ();
 
   /**
    * \brief Add a new record to the Trust Table
    * \param [in] entry The new entry.
    */
-  void AddRecord (TrustEntry entry);
+  void AddRecord (Ipv4TrustEntry entry);
 
   /**
    * \brief Remove a record from the Trust Table
    * \param [in] entry The entry to be removed.
    */
-  void RemoveRecord (TrustEntry entry);
+  void RemoveRecord (Ipv4TrustEntry entry);
 
   /**
    * \brief Update a record of the Trust Table
    * \param [in] entry The entry to be modified.
    */
-  void UpdateRecord (TrustEntry entry);
+  void UpdateRecord (Ipv4TrustEntry entry);
 };
 
 } // namespace ns3

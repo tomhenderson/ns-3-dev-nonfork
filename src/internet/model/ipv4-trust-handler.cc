@@ -18,15 +18,15 @@
  * Author: Jude Niroshan <jude.niroshan11@gmail.com>
  */
 
-#include "trust-handler.h"
+#include "ipv4-trust-handler.h"
 
 namespace ns3 {
 
-TrustHandler::TrustHandler ()
+Ipv4TrustHandler::Ipv4TrustHandler ()
 {
 }
 
-TrustHandler::~TrustHandler ()
+Ipv4TrustHandler::~Ipv4TrustHandler ()
 {
 }
 
