@@ -54,4 +54,15 @@ int32_t SimpleAodvTrustHandler::calculateTrust (Ipv4Address address)
   return 1;
 }
 
+
+void SimpleAodvTrustHandler::Install (NodeContainer c)
+{
+//  return Install (phyHelper, macHelper, c.Begin (), c.End ());
+//  NodeContainer::Iterator i;
+/*     *   for (i = container.Begin (); i != container.End (); ++i)
+     *     {
+     *       (*i)->method ();  // some Node method
+     *     }*/
+}
+
 }

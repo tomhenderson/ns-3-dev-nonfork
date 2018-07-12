@@ -47,7 +47,6 @@ private:
    */
   std::map<Ipv4Address, AodvTrustEntry> m_trustParameters;
 
-
 public:
   SimpleAodvTrustHandler ();
   virtual ~SimpleAodvTrustHandler ();
@@ -64,13 +63,19 @@ public:
                                      const Address &to,
                                      NetDevice::PacketType packetType);
 
-
   /**
    * \brief Calculate the trust value for a given destination node
    * \param [in] address target node IPv4 address to calculate the trust
    * \returns int32_t trust value
    */
   int32_t calculateTrust (Ipv4Address address);
+
+  /**
+   * \brief Hook the promiscuous callback to each of the nodes in
+   * given NodeContainer
+   * \param [in] c NodeContainer which holds the nodes within the network
+   */
+  void Install (NodeContainer c);
 
 };
 
