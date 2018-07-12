@@ -27,7 +27,7 @@
 #include "ipv4.h"
 #include "ns3/output-stream-wrapper.h"
 #include "ns3/nstime.h"
-#include "ns3/trust-table.h"
+#include "ns3/ipv4-trust-table.h"
 
 namespace ns3 {
 
@@ -63,7 +63,7 @@ public:
    * this will be used for trust framework to tranform a protocol into a
    * trust based variation
    */
-  TrustTable m_trustTable;
+  Ipv4TrustTable m_trustTable;
 
   /**
    * \brief Get the type ID.

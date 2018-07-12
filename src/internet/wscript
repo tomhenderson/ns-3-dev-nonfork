@@ -227,9 +227,9 @@ def build(bld):
         'model/rip.cc',
         'model/rip-header.cc',
         'helper/rip-helper.cc',
-        'model/trust-handler.cc',
-        'model/trust-entry.cc',
-        'model/trust-table.cc',
+        'model/ipv4-trust-handler.cc',
+        'model/ipv4-trust-entry.cc',
+        'model/ipv4-trust-table.cc',
         ]
 
     internet_test = bld.create_ns3_module_test_library('internet')
@@ -413,9 +413,9 @@ def build(bld):
         'model/rip.h',
         'model/rip-header.h',
         'helper/rip-helper.h',
-        'model/trust-handler.h',
-        'model/trust-entry.h',
-        'model/trust-table.h',
+        'model/ipv4-trust-handler.h',
+        'model/ipv4-trust-entry.h',
+        'model/ipv4-trust-table.h',
        ]
 
     if bld.env['NSC_ENABLED']:

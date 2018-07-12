@@ -18,31 +18,47 @@
  * Author: Jude Niroshan <jude.niroshan11@gmail.com>
  */
 
-#include "trust-table.h"
+#include "ipv4-trust-entry.h"
 
 namespace ns3 {
 
-TrustTable::TrustTable ()
+Ipv4TrustEntry::Ipv4TrustEntry ()
 {
 }
 
-void TrustTable::AddRecord (TrustEntry entry)
+Ipv4TrustEntry::~Ipv4TrustEntry ()
 {
-  m_tableRecords.push_back (entry);
 }
 
-void TrustTable::RemoveRecord (TrustEntry entry)
+Ipv4Address Ipv4TrustEntry::GetNeighbourAddress ()
 {
-  m_tableRecords.pop_back (); //need to change this
+  return this->m_neighbourAddress;
 }
 
-void updateRecord (TrustEntry entry)
+void Ipv4TrustEntry::SetNeighbourAddress (Ipv4Address neighbourAddress)
 {
-  // TODO write update trust record logic
+  this->m_neighbourAddress = neighbourAddress;
 }
 
-TrustTable::~TrustTable ()
+const Time& Ipv4TrustEntry::GetTimestamp ()
 {
+  return this->m_timestamp;
+}
+
+void Ipv4TrustEntry::SetTimestamp (const Time& timestamp)
+{
+  this->m_timestamp = timestamp;
+}
+
+uint32_t Ipv4TrustEntry::GetTrustValue ()
+{
+  return this->m_trustValue;
+}
+
+void Ipv4TrustEntry::SetTrustValue (uint32_t trustValue)
+{
+  this->m_trustValue = trustValue;
 }
 
 } // namespace ns3
+

@@ -18,34 +18,31 @@
  * Author: Jude Niroshan <jude.niroshan11@gmail.com>
  */
 
-#ifndef TRUSTHANDLER_H_
-#define TRUSTHANDLER_H_
-
-#include "ns3/object.h"
+#include "ipv4-trust-table.h"
 
 namespace ns3 {
 
-class TrustHandler : public Object
+Ipv4TrustTable::Ipv4TrustTable ()
 {
+}
 
-  /**
-   * \ingroup internet
-   * \defgroup trust Trust management framework.
-   *
-   * The Trust Management Framework is built-in support to implement custom
-   * trust based protocols in ns-3.
-   */
+void Ipv4TrustTable::AddRecord (Ipv4TrustEntry entry)
+{
+  m_tableRecords.push_back (entry);
+}
 
-  /**
-   * \ingroup trust
-   * \brief Intermediate class that used to communicate with trust table
-   */
-public:
-  TrustHandler ();
-  virtual ~TrustHandler ();
+void Ipv4TrustTable::RemoveRecord (Ipv4TrustEntry entry)
+{
+  m_tableRecords.pop_back (); //need to change this
+}
 
-};
+void Ipv4TrustTable::UpdateRecord (Ipv4TrustEntry entry)
+{
+  // TODO write update trust record logic
+}
+
+Ipv4TrustTable::~Ipv4TrustTable ()
+{
+}
 
 } // namespace ns3
-
-#endif

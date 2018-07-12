@@ -18,8 +18,8 @@
  * Author: Jude Niroshan <jude.niroshan11@gmail.com>
  */
 
-#ifndef TRUST_ENTRY_H_
-#define TRUST_ENTRY_H_
+#ifndef IPV4_TRUST_ENTRY_H_
+#define IPV4_TRUST_ENTRY_H_
 
 #include "ns3/ipv4-address.h"
 #include "ns3/nstime.h"
@@ -38,19 +38,19 @@ namespace ns3 {
  * \ingroup trust
  * \brief The entry object which represent a row in trust table.
  */
-class TrustEntry
+class Ipv4TrustEntry
 {
 private:
   // IPv4 address of a neighbour node
-  Ipv4Address neighbourAddress;
+  Ipv4Address m_neighbourAddress;
   // trust value for a given neighbour node
-  uint32_t trustValue;
+  uint32_t m_trustValue;
   // Timestamp when the trust value has been set
-  Time timestamp;
+  Time m_timestamp;
 
 public:
-  TrustEntry ();
-  virtual ~TrustEntry ();
+  Ipv4TrustEntry ();
+  virtual ~Ipv4TrustEntry ();
 
   /**
    * \brief Returns the neighbour address of trust table entry
@@ -66,13 +66,13 @@ public:
 
   /**
    * \brief Get the timestamp of the trust table entry
-   * \returns Time object reference represent the timestamp
+   * \returns Time object reference represent the m_timestamp
    */
   const Time& GetTimestamp ();
 
   /**
    * \brief Set the timestamp of the trust table entry
-   * \param [in] timestamp Time object reference represent the timestamp
+   * \param [in] timestamp Time object reference represent the m_timestamp
    */
   void SetTimestamp (const Time& timestamp);
 
