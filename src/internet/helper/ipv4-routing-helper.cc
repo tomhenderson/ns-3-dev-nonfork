@@ -39,11 +39,6 @@ Ipv4RoutingHelper::Ipv4RoutingHelper ()
 {
 }
 
-Ipv4RoutingHelper::Ipv4RoutingHelper (bool enableTrust)
-{
-  this->enableTrust = enableTrust;
-}
-
 void
 Ipv4RoutingHelper::PrintRoutingTableAllAt (Time printTime, Ptr<OutputStreamWrapper> stream, Time::Unit unit)
 {
