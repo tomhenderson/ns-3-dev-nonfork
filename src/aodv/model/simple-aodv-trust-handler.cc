@@ -48,21 +48,26 @@ bool SimpleAodvTrustHandler::OnReceivePromiscuousCallback (Ptr<NetDevice> device
 int32_t SimpleAodvTrustHandler::calculateTrust (Ipv4Address address)
 {
   AodvTrustEntry m_aodvTrustEntry = m_trustParameters[address];
-  double trustDouble = m_aodvTrustEntry.GetRply() / m_aodvTrustEntry.GetRreq() * 1.0;
+  double trustDouble = m_aodvTrustEntry.GetRply () / m_aodvTrustEntry.GetRreq () * 1.0;
+
   // Update the value in Trust Table here
-  std::cout<<trustDouble + 1<<std::endl; // to avoid unused variable compilation warning
+  Ptr<Node> src;
+  Ptr<Ipv4RoutingProtocol> m_ipv4Routing;
+  m_ipv4Routing = Ipv4RoutingHelper::GetRouting <Ipv4RoutingProtocol> (src->GetObject<Ipv4> ()->GetRoutingProtocol ());
+
+  std::cout << trustDouble + 1 << std::endl; // to avoid unused variable compilation warning
   return 1;
 }
 
-
 void SimpleAodvTrustHandler::Install (NodeContainer c)
 {
-//  return Install (phyHelper, macHelper, c.Begin (), c.End ());
-//  NodeContainer::Iterator i;
-/*     *   for (i = container.Begin (); i != container.End (); ++i)
-     *     {
-     *       (*i)->method ();  // some Node method
-     *     }*/
+  uint32_t nNodes = c.GetN ();
+  for (uint32_t i = 0; i < nNodes; ++i)
+    {
+      Ptr<Node> p = c.Get (i);
+      p->GetDevice (0)->SetPromiscReceiveCallback (ns3::MakeCallback (&SimpleAodvTrustHandler::OnReceivePromiscuousCallback,
+                                                                      this));
+    }
 }
 
 }

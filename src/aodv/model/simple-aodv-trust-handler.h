@@ -25,6 +25,8 @@
 #include "aodv-trust-entry.h"
 #include "ns3/network-module.h"
 #include "ns3/ipv4-address.h"
+#include "ns3/ipv4-routing-protocol.h"
+#include "ns3/ipv4-routing-helper.h"
 
 namespace ns3 {
 
