@@ -30,6 +30,7 @@
 #include "ns3/point-to-point-module.h"
 #include "ns3/v4ping-helper.h"
 #include "ns3/yans-wifi-helper.h"
+#include "ns3/simple-aodv-trust-handler.h"
 
 using namespace ns3;
 
@@ -175,6 +176,8 @@ AodvExample::Report (std::ostream &)
 void
 AodvExample::CreateNodes ()
 {
+
+
   std::cout << "Creating " << (unsigned)size << " nodes " << step << " m apart.\n";
   nodes.Create (size);
   // Name nodes
@@ -183,6 +186,9 @@ AodvExample::CreateNodes ()
       std::ostringstream os;
       os << "node-" << i;
       Names::Add (os.str (), nodes.Get (i));
+
+      SimpleAodvTrustHandler m_simpleAodvTrustHandler (nodes.Get (i));
+      nodes.Get(i)->SetIpv4TrustHandler(&m_simpleAodvTrustHandler); // attaching trust handler to node
     }
   // Create static grid
   MobilityHelper mobility;

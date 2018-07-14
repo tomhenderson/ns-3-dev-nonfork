@@ -28,6 +28,11 @@ SimpleAodvTrustHandler::SimpleAodvTrustHandler ()
 {
 }
 
+SimpleAodvTrustHandler::SimpleAodvTrustHandler (ns3::Ptr<Node> currentNode) :
+    Ipv4TrustHandler (currentNode)
+{
+}
+
 SimpleAodvTrustHandler::~SimpleAodvTrustHandler ()
 {
 }
@@ -51,9 +56,9 @@ int32_t SimpleAodvTrustHandler::calculateTrust (Ipv4Address address)
   double trustDouble = m_aodvTrustEntry.GetRply () / m_aodvTrustEntry.GetRreq () * 1.0;
 
   // Update the value in Trust Table here
-  Ptr<Node> src;
+//  Ptr<Node> src;
   Ptr<Ipv4RoutingProtocol> m_ipv4Routing;
-  m_ipv4Routing = Ipv4RoutingHelper::GetRouting <Ipv4RoutingProtocol> (src->GetObject<Ipv4> ()->GetRoutingProtocol ());
+  m_ipv4Routing = Ipv4RoutingHelper::GetRouting<Ipv4RoutingProtocol> (m_currentNode->GetObject<Ipv4> ()->GetRoutingProtocol ());
 
   std::cout << trustDouble + 1 << std::endl; // to avoid unused variable compilation warning
   return 1;
