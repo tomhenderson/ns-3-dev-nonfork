@@ -22,6 +22,7 @@
 #define IPV4TRUSTHANDLER_H_
 
 #include "ns3/object.h"
+#include "ns3/node.h"
 #include "ns3/ipv4-address.h"
 
 namespace ns3 {
@@ -42,8 +43,17 @@ class Ipv4TrustHandler : public Object
    * \brief Intermediate class that used to communicate with trust table
    */
 public:
+  ns3::Ptr<Node> m_currentNode; //!< node that is using this Ipv4TrustHandler at runtime
+
   Ipv4TrustHandler ();
   virtual ~Ipv4TrustHandler ();
+
+  /**
+   * \brief constructor that accepts the current node which this trust handler
+   * is being using
+   * \param [in] currentNode Pointer to Node
+   */
+  Ipv4TrustHandler (ns3::Ptr<Node> currentNode);
 
   /**
    * \brief calculate the trust value for a given IPv4 address host

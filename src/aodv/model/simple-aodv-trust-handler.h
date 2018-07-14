@@ -42,7 +42,7 @@ namespace ns3 {
  * \ingroup trust
  * \brief The aodv specific trust operations handler
  */
-class SimpleAodvTrustHandler : Ipv4TrustHandler
+class SimpleAodvTrustHandler : public Ipv4TrustHandler
 {
 private:
   /**
@@ -54,6 +54,11 @@ private:
 public:
   SimpleAodvTrustHandler ();
   virtual ~SimpleAodvTrustHandler ();
+
+  /**
+   * \brief Constructor to accept the current node which using this SimpleAodvTrustHandler
+   */
+  SimpleAodvTrustHandler (ns3::Ptr<Node> currentNode);
 
   /**
    * \brief Promiscuous callback function which will hooked for nodes.

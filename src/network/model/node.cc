@@ -367,5 +367,10 @@ Node::NotifyDeviceAdded (Ptr<NetDevice> device)
     }  
 }
  
+void
+Node::SetIpv4TrustHandler (Ptr<Ipv4TrustHandler> ipv4TrustHandler)
+{
+  this->m_ipv4TrustHandler = ipv4TrustHandler;
+}
 
 } // namespace ns3
