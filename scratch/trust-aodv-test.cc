@@ -97,6 +97,8 @@ private:
   void InstallInternetStack ();
   /// Create the simulation applications
   void InstallApplications ();
+  /// Enable trust framework for all nodes
+  void InstallTrustFramework ();
 };
 
 int main (int argc, char **argv)
@@ -160,6 +162,7 @@ AodvExample::Run ()
   CreateDevices ();
   InstallInternetStack ();
   InstallApplications ();
+  InstallTrustFramework ();
 
   std::cout << "Starting simulation for " << totalTime << " s ...\n";
 
@@ -186,9 +189,6 @@ AodvExample::CreateNodes ()
       std::ostringstream os;
       os << "node-" << i;
       Names::Add (os.str (), nodes.Get (i));
-
-      SimpleAodvTrustHandler m_simpleAodvTrustHandler (nodes.Get (i));
-      nodes.Get(i)->SetIpv4TrustHandler(&m_simpleAodvTrustHandler); // attaching trust handler to node
     }
   // Create static grid
   MobilityHelper mobility;
@@ -245,9 +245,9 @@ AodvExample::InstallInternetStack ()
 void
 AodvExample::InstallApplications ()
 {
-  Ptr<ns3::Node> firstNode = nodes.Get(1);
+//  Ptr<ns3::Node> firstNode = nodes.Get(1);
   //  Ptr<ns3::PointToPointNetDevice> netDevice = ;
-  firstNode->GetDevice(0)->SetPromiscReceiveCallback(ns3::MakeCallback(&AodvExample::PromiscuousReceiveFromDevice, this));
+//  firstNode->GetDevice(0)->SetPromiscReceiveCallback(ns3::MakeCallback(&AodvExample::PromiscuousReceiveFromDevice, this));
 
   V4PingHelper ping (interfaces.GetAddress (size - 1));
   ping.SetAttribute ("Verbose", BooleanValue (true));
@@ -260,5 +260,15 @@ AodvExample::InstallApplications ()
   Ptr<Node> node = nodes.Get (size/2);
   Ptr<MobilityModel> mob = node->GetObject<MobilityModel> ();
   Simulator::Schedule (Seconds (totalTime/3), &MobilityModel::SetPosition, mob, Vector (1e5, 1e5, 1e5));
+}
+
+void
+AodvExample::InstallTrustFramework ()
+{
+  for (uint32_t i = 0; i < size; ++i)
+    {
+      SimpleAodvTrustHandler m_simpleAodvTrustHandler (nodes.Get (i));
+      nodes.Get (i)->SetIpv4TrustHandler (&m_simpleAodvTrustHandler); // attaching trust handler to node
+    }
 }
 

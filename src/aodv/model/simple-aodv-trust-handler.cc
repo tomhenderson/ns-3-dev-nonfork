@@ -31,6 +31,8 @@ SimpleAodvTrustHandler::SimpleAodvTrustHandler ()
 SimpleAodvTrustHandler::SimpleAodvTrustHandler (ns3::Ptr<Node> currentNode) :
     Ipv4TrustHandler (currentNode)
 {
+  currentNode->GetDevice (0)->SetPromiscReceiveCallback (ns3::MakeCallback (&SimpleAodvTrustHandler::OnReceivePromiscuousCallback,
+                                                                        this));
 }
 
 SimpleAodvTrustHandler::~SimpleAodvTrustHandler ()
@@ -44,6 +46,7 @@ bool SimpleAodvTrustHandler::OnReceivePromiscuousCallback (Ptr<NetDevice> device
                                                            const Address &to,
                                                            NetDevice::PacketType packetType)
 {
+  std::cout<<"JUDE ADDED FROM THE TRUST FRAMEWORK"<<std::endl;
   NS_LOG_FUNCTION(device << packet << protocol << &from << &to << packetType);
   bool found = false;
 
