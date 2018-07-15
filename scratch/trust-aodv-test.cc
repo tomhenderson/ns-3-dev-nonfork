@@ -22,8 +22,8 @@
 
 #include <iostream>
 #include <cmath>
-#include "ns3/aodv-module.h"
 #include "ns3/core-module.h"
+#include "ns3/aodv-module.h"
 #include "ns3/network-module.h"
 #include "ns3/internet-module.h"
 #include "ns3/mobility-module.h"
@@ -267,8 +267,11 @@ AodvExample::InstallTrustFramework ()
 {
   for (uint32_t i = 0; i < size; ++i)
     {
-      SimpleAodvTrustHandler m_simpleAodvTrustHandler (nodes.Get (i));
-      nodes.Get (i)->SetIpv4TrustHandler (&m_simpleAodvTrustHandler); // attaching trust handler to node
+//      SimpleAodvTrustHandler m_simpleAodvTrustHandler (nodes.Get (i));
+//      nodes.Get (i)->SetIpv4TrustHandler (&m_simpleAodvTrustHandler); // attaching trust handler to node
+      Ptr<SimpleAodvTrustHandler> simpleAodvTrustHandler = CreateObject<SimpleAodvTrustHandler>(nodes.Get (i));
+      nodes.Get(i)->AggregateObject(simpleAodvTrustHandler);
+
     }
 }
 
