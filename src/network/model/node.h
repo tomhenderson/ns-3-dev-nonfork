@@ -27,7 +27,6 @@
 #include "ns3/callback.h"
 #include "ns3/ptr.h"
 #include "ns3/net-device.h"
-#include "ns3/ipv4-trust-handler.h"
 
 namespace ns3 {
 
@@ -35,7 +34,6 @@ class Application;
 class Packet;
 class Address;
 class Time;
-class Ipv4TrustHandler;
 
 
 /**
@@ -204,13 +202,6 @@ public:
    */
   void UnregisterDeviceAdditionListener (DeviceAdditionListener listener);
 
-  /**
-   * \brief set the Ipv4TrustHandler which manages the trust framework
-   * operations on this node
-   * \param [in] ipv4TrustHandler instance of Ipv4TrustHandler
-   */
-  void SetIpv4TrustHandler (Ptr<Ipv4TrustHandler> ipv4TrustHandler);
-
 
 
   /**
@@ -297,7 +288,6 @@ private:
   std::vector<Ptr<Application> > m_applications; //!< Applications associated to this node
   ProtocolHandlerList m_handlers; //!< Protocol handlers in the node
   DeviceAdditionListenerList m_deviceAdditionListeners; //!< Device addition listeners in the node
-  Ptr<Ipv4TrustHandler> m_ipv4TrustHandler; //!< manages the trust related operations for a node
 };
 
 } // namespace ns3
