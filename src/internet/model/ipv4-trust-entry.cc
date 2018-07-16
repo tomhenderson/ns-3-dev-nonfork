@@ -50,12 +50,12 @@ void Ipv4TrustEntry::SetTimestamp (const Time& timestamp)
   this->m_timestamp = timestamp;
 }
 
-uint32_t Ipv4TrustEntry::GetTrustValue ()
+double Ipv4TrustEntry::GetTrustValue ()
 {
   return this->m_trustValue;
 }
 
-void Ipv4TrustEntry::SetTrustValue (uint32_t trustValue)
+void Ipv4TrustEntry::SetTrustValue (double trustValue)
 {
   this->m_trustValue = trustValue;
 }
