@@ -23,16 +23,19 @@
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE("SimpleAodvTrustHandler");
+namespace aodv {
+
+NS_OBJECT_ENSURE_REGISTERED(SimpleAodvTrustHandler);
+
+TypeId SimpleAodvTrustHandler::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::aodv::SimpleAodvTrustHandler").SetParent<Object> ().SetGroupName ("Aodv").AddConstructor<
+      SimpleAodvTrustHandler> ();
+  return tid;
+}
 
 SimpleAodvTrustHandler::SimpleAodvTrustHandler ()
 {
-}
-
-SimpleAodvTrustHandler::SimpleAodvTrustHandler (ns3::Ptr<Node> currentNode) :
-    Ipv4TrustHandler (currentNode)
-{
-  currentNode->GetDevice (0)->SetPromiscReceiveCallback (ns3::MakeCallback (&SimpleAodvTrustHandler::OnReceivePromiscuousCallback,
-                                                                        this));
 }
 
 SimpleAodvTrustHandler::~SimpleAodvTrustHandler ()
@@ -46,7 +49,7 @@ bool SimpleAodvTrustHandler::OnReceivePromiscuousCallback (Ptr<NetDevice> device
                                                            const Address &to,
                                                            NetDevice::PacketType packetType)
 {
-  std::cout<<"JUDE ADDED FROM THE TRUST FRAMEWORK"<<std::endl;
+  std::cout << "JUDE ADDED FROM THE TRUST FRAMEWORK" << std::endl;
   NS_LOG_FUNCTION(device << packet << protocol << &from << &to << packetType);
   bool found = false;
 
@@ -60,22 +63,20 @@ int32_t SimpleAodvTrustHandler::calculateTrust (Ipv4Address address)
 
   // Update the value in Trust Table here
 //  Ptr<Node> src;
+  Ptr<Node> node = GetObject<Node> ();
   Ptr<Ipv4RoutingProtocol> m_ipv4Routing;
-  m_ipv4Routing = Ipv4RoutingHelper::GetRouting<Ipv4RoutingProtocol> (m_currentNode->GetObject<Ipv4> ()->GetRoutingProtocol ());
+  m_ipv4Routing = Ipv4RoutingHelper::GetRouting<Ipv4RoutingProtocol> (node->GetObject<Ipv4> ()->GetRoutingProtocol ());
 
   std::cout << trustDouble + 1 << std::endl; // to avoid unused variable compilation warning
   return 1;
 }
 
-void SimpleAodvTrustHandler::Install (NodeContainer c)
+void SimpleAodvTrustHandler::Install (Ptr<Node> node)
 {
-  uint32_t nNodes = c.GetN ();
-  for (uint32_t i = 0; i < nNodes; ++i)
-    {
-      Ptr<Node> p = c.Get (i);
-      p->GetDevice (0)->SetPromiscReceiveCallback (ns3::MakeCallback (&SimpleAodvTrustHandler::OnReceivePromiscuousCallback,
-                                                                      this));
-    }
+  node->GetDevice (0)->SetPromiscReceiveCallback (ns3::MakeCallback (&SimpleAodvTrustHandler::OnReceivePromiscuousCallback,
+                                                                     this));
+}
+
 }
 
 }
