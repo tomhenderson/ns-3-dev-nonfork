@@ -29,6 +29,7 @@
 #include "ns3/ipv4-routing-helper.h"
 
 namespace ns3 {
+namespace aodv {
 
 /**
  * \ingroup internet
@@ -52,13 +53,10 @@ private:
   std::map<Ipv4Address, AodvTrustEntry> m_trustParameters;
 
 public:
+  static TypeId GetTypeId (void);
+
   SimpleAodvTrustHandler ();
   virtual ~SimpleAodvTrustHandler ();
-
-  /**
-   * \brief Constructor to accept the current node which using this SimpleAodvTrustHandler
-   */
-  SimpleAodvTrustHandler (ns3::Ptr<Node> currentNode);
 
   /**
    * \brief Promiscuous callback function which will hooked for nodes.
@@ -81,12 +79,13 @@ public:
 
   /**
    * \brief Hook the promiscuous callback to each of the nodes in
-   * given NodeContainer
-   * \param [in] c NodeContainer which holds the nodes within the network
+   * given Node pointer
+   * \param [in] node Ptr<Node>
    */
-  void Install (NodeContainer c);
+  void Install (Ptr<Node> node);
 
 };
 
+}
 } // namespace ns3
 #endif
