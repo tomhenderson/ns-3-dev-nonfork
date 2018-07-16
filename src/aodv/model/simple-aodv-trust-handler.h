@@ -78,11 +78,10 @@ public:
   int32_t calculateTrust (Ipv4Address address);
 
   /**
-   * \brief Hook the promiscuous callback to each of the nodes in
-   * given Node pointer
-   * \param [in] node Ptr<Node>
+   * \brief Hook the promiscuous callback to the aggregated
+   * node object
    */
-  void Install (Ptr<Node> node);
+  void AttachPromiscuousCallbackToNode ();
 
 };
 

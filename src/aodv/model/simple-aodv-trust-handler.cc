@@ -71,8 +71,9 @@ int32_t SimpleAodvTrustHandler::calculateTrust (Ipv4Address address)
   return 1;
 }
 
-void SimpleAodvTrustHandler::Install (Ptr<Node> node)
+void SimpleAodvTrustHandler::AttachPromiscuousCallbackToNode ()
 {
+  Ptr<Node> node = GetObject<Node> ();
   node->GetDevice (0)->SetPromiscReceiveCallback (ns3::MakeCallback (&SimpleAodvTrustHandler::OnReceivePromiscuousCallback,
                                                                      this));
 }
