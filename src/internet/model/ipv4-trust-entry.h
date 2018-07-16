@@ -44,7 +44,7 @@ private:
   // IPv4 address of a neighbour node
   Ipv4Address m_neighbourAddress;
   // trust value for a given neighbour node
-  uint32_t m_trustValue;
+  double m_trustValue;
   // Timestamp when the trust value has been set
   Time m_timestamp;
 
@@ -78,15 +78,15 @@ public:
 
   /**
    * \brief Get the trust value of the trust table entry
-   * \returns uint32_t trust value
+   * \returns double trust value
    */
-  uint32_t GetTrustValue ();
+  double GetTrustValue ();
 
   /**
    * \brief Set the trust value of the trust table entry
-   * \param [in] trustValue uint32_t trust value
+   * \param [in] trustValue double trust value
    */
-  void SetTrustValue (uint32_t trustValue);
+  void SetTrustValue (double trustValue);
 };
 } // namespace ns3
 
