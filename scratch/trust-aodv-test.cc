@@ -33,6 +33,7 @@
 #include "ns3/simple-aodv-trust-handler.h"
 
 using namespace ns3;
+using namespace aodv;
 
 /**
  * \ingroup aodv-examples
@@ -267,9 +268,8 @@ AodvExample::InstallTrustFramework ()
 {
   for (uint32_t i = 0; i < size; ++i)
     {
-//      SimpleAodvTrustHandler m_simpleAodvTrustHandler (nodes.Get (i));
-//      nodes.Get (i)->SetIpv4TrustHandler (&m_simpleAodvTrustHandler); // attaching trust handler to node
-      Ptr<SimpleAodvTrustHandler> simpleAodvTrustHandler = CreateObject<SimpleAodvTrustHandler>(nodes.Get (i));
+      Ptr<SimpleAodvTrustHandler> simpleAodvTrustHandler = CreateObject<SimpleAodvTrustHandler>();
+      simpleAodvTrustHandler->Install(nodes.Get(i));
       nodes.Get(i)->AggregateObject(simpleAodvTrustHandler);
 
     }
