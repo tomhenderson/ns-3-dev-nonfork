@@ -26,11 +26,6 @@ Ipv4TrustHandler::Ipv4TrustHandler ()
 {
 }
 
-Ipv4TrustHandler::Ipv4TrustHandler (ns3::Ptr<Node> currentNode)
-{
-  this->m_currentNode = currentNode;
-}
-
 Ipv4TrustHandler::~Ipv4TrustHandler ()
 {
 }
