@@ -31,6 +31,7 @@
 #include "ns3/v4ping-helper.h"
 #include "ns3/yans-wifi-helper.h"
 #include "ns3/simple-aodv-trust-handler.h"
+#include "ns3/on-off-helper.h"
 
 using namespace ns3;
 using namespace aodv;
@@ -115,7 +116,7 @@ int main (int argc, char **argv)
 
 //-----------------------------------------------------------------------------
 AodvExample::AodvExample () :
-  size (10),
+  size (5),
   step (100),
   totalTime (10),
   pcap (true),
@@ -193,14 +194,28 @@ AodvExample::CreateNodes ()
     }
   // Create static grid
   MobilityHelper mobility;
-  mobility.SetPositionAllocator ("ns3::GridPositionAllocator",
-                                 "MinX", DoubleValue (0.0),
-                                 "MinY", DoubleValue (0.0),
-                                 "DeltaX", DoubleValue (step),
-                                 "DeltaY", DoubleValue (0),
-                                 "GridWidth", UintegerValue (size),
-                                 "LayoutType", StringValue ("RowFirst"));
-  mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
+  Ptr<ListPositionAllocator> positionAlloc = CreateObject <ListPositionAllocator>();
+    positionAlloc ->Add(Vector(100, 0, 0)); // node0
+    positionAlloc ->Add(Vector(200, 0, 0)); // node1
+    positionAlloc ->Add(Vector(450, 0, 0)); // node2
+    positionAlloc ->Add(Vector(550, 0, 0)); // node3
+    positionAlloc ->Add(Vector(650, 0, 0)); // node4
+    positionAlloc ->Add(Vector(750, 0, 0)); // node5
+    positionAlloc ->Add(Vector(850, 0, 0)); // node6
+    positionAlloc ->Add(Vector(950, 0, 0)); // node7
+    positionAlloc ->Add(Vector(1000, 0, 0)); // node8
+    positionAlloc ->Add(Vector(250, 0, 0)); // node9
+
+    mobility.SetPositionAllocator(positionAlloc);
+    mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
+    /*mobility.SetPositionAllocator ("ns3::GridPositionAllocator",
+                                     "MinX", DoubleValue (0.0),
+                                     "MinY", DoubleValue (0.0),
+                                     "DeltaX", DoubleValue (100),
+                                     "DeltaY", DoubleValue (0),
+                                     "GridWidth", UintegerValue (4),
+                                     "LayoutType", StringValue ("RowFirst"));
+    mobility.SetMobilityModel("ns3::RandomWalk2dMobilityModel");*/
   mobility.Install (nodes);
 }
 
@@ -246,17 +261,26 @@ AodvExample::InstallInternetStack ()
 void
 AodvExample::InstallApplications ()
 {
-  V4PingHelper ping (interfaces.GetAddress (size - 1));
-  ping.SetAttribute ("Verbose", BooleanValue (true));
+  uint16_t port = 9;   // Discard port (RFC 863)
 
-  ApplicationContainer p = ping.Install (nodes.Get (0));
-  p.Start (Seconds (0));
-  p.Stop (Seconds (totalTime) - Seconds (0.001));
+  OnOffHelper onoff ("ns3::UdpSocketFactory",
+                     InetSocketAddress (interfaces.GetAddress (size - 1),
+                                        port));
+  onoff.SetConstantRate (DataRate ("448kb/s"));
+
+  ApplicationContainer apps = onoff.Install (nodes.Get (2));
+  apps.Start (Seconds (1.0));
+  apps.Stop (Seconds (10.0));
 
   // move node away
-  Ptr<Node> node = nodes.Get (size/2);
+  Ptr<Node> node = nodes.Get (size / 2);
   Ptr<MobilityModel> mob = node->GetObject<MobilityModel> ();
-  Simulator::Schedule (Seconds (totalTime/3), &MobilityModel::SetPosition, mob, Vector (1e5, 1e5, 1e5));
+  Simulator::Schedule (Seconds (totalTime / 3),
+                       &MobilityModel::SetPosition,
+                       mob,
+                       Vector (1e5,
+                               1e5,
+                               1e5));
 }
 
 void
