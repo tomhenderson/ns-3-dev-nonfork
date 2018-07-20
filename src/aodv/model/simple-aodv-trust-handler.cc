@@ -19,6 +19,7 @@
  */
 
 #include "simple-aodv-trust-handler.h"
+#include "ns3/aodv-packet.h"
 
 namespace ns3 {
 
@@ -50,15 +51,53 @@ bool SimpleAodvTrustHandler::OnReceivePromiscuousCallback (Ptr<NetDevice> device
                                                            NetDevice::PacketType packetType)
 {
   std::cout << "JUDE ADDED FROM THE TRUST FRAMEWORK" << std::endl;
+
+  TypeHeader tHeader;
+  packet->PeekHeader (tHeader);
+  switch (tHeader.Get ())
+    {
+    case AODVTYPE_RREQ:
+      {
+        // increment RREQ count
+        tHeader.Print (std::cout);
+        break;
+      }
+    case AODVTYPE_RREP:
+      {
+        // increment RPLY count
+        tHeader.Print (std::cout);
+        break;
+      }
+    case AODVTYPE_RERR:
+      {
+        // increment ERR count
+        tHeader.Print (std::cout);
+        break;
+      }
+    case AODVTYPE_RREP_ACK:
+      {
+        // increment ERR count
+        tHeader.Print (std::cout);
+        break;
+      }
+    }
+
   NS_LOG_FUNCTION(device << packet << protocol << &from << &to << packetType);
   bool found = false;
 
   return found;
 }
 
-int32_t SimpleAodvTrustHandler::calculateTrust (Ipv4Address address)
+int32_t SimpleAodvTrustHandler::calculateTrust (Address address)
 {
-  AodvTrustEntry m_aodvTrustEntry = m_trustParameters[address];
+
+  Ipv4Address ipv4Address = Ipv4Address::ConverFrom (address);
+  AodvTrustEntry m_aodvTrustEntry = m_trustParameters[ipv4Address];
+
+  if (m_aodvTrustEntry == 0)
+    {
+      return 0;
+    }
   double trustDouble = m_aodvTrustEntry.GetRply () / m_aodvTrustEntry.GetRreq () * 1.0;
 
   // Update the value in Trust Table here
