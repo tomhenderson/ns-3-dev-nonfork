@@ -41,6 +41,25 @@ void Ipv4TrustTable::UpdateRecord (Ipv4TrustEntry entry)
   // TODO write update trust record logic
 }
 
+bool Ipv4TrustTable::LookupTrustEntry (Ipv4Address dst,
+                                       Ipv4TrustEntry & tt)
+{
+  if (m_tableRecords.empty ())
+    {
+      NS_LOG_LOGIC ("Trust entry to " << dst << " not found; trust table is empty");
+      return false;
+    }
+  std::map<Ipv4Address, Ipv4TrustEntry>::const_iterator i = m_tableRecords.find (id);
+  if (i == m_tableRecords.end ())
+    {
+      NS_LOG_LOGIC ("Trust entry to " << dst << " not found");
+      return false;
+    }
+  tt = i->second;
+  NS_LOG_LOGIC ("Trust entry to " << dst << " found");
+  return true;
+}
+
 Ipv4TrustTable::~Ipv4TrustTable ()
 {
 }

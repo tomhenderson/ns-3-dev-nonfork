@@ -47,7 +47,7 @@ private:
    * \brief vector type of Ipv4TrustEntry classes
    * contains here representing the IPv4 trust table rows
    */
-  std::vector<Ipv4TrustEntry> m_tableRecords;
+  std::map<Ipv4Address, Ipv4TrustEntry> m_tableRecords;
 public:
   Ipv4TrustTable ();
   virtual ~Ipv4TrustTable ();
@@ -69,6 +69,14 @@ public:
    * \param [in] entry The entry to be modified.
    */
   void UpdateRecord (Ipv4TrustEntry entry);
+
+  /**
+   * Lookup trust table entry with destination address dst
+   * \param dst destination address
+   * \param tt entry with destination address dst, if exists
+   * \return true on success
+   */
+  bool LookupTrustEntry (Ipv4Address dst, Ipv4TrustEntry & tt);
 };
 
 } // namespace ns3
