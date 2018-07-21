@@ -28,12 +28,12 @@ Ipv4TrustTable::Ipv4TrustTable ()
 
 void Ipv4TrustTable::AddRecord (Ipv4TrustEntry entry)
 {
-  m_tableRecords.push_back (entry);
+//  m_tableRecords.push_back (entry);
 }
 
 void Ipv4TrustTable::RemoveRecord (Ipv4TrustEntry entry)
 {
-  m_tableRecords.pop_back (); //need to change this
+//  m_tableRecords.pop_back (); //need to change this
 }
 
 void Ipv4TrustTable::UpdateRecord (Ipv4TrustEntry entry)
@@ -46,17 +46,17 @@ bool Ipv4TrustTable::LookupTrustEntry (Ipv4Address dst,
 {
   if (m_tableRecords.empty ())
     {
-      NS_LOG_LOGIC ("Trust entry to " << dst << " not found; trust table is empty");
+      std::cout<<"Trust entry to " << dst << " not found; trust table is empty";
       return false;
     }
-  std::map<Ipv4Address, Ipv4TrustEntry>::const_iterator i = m_tableRecords.find (id);
+  std::map<Ipv4Address, Ipv4TrustEntry>::const_iterator i = m_tableRecords.find (dst);
   if (i == m_tableRecords.end ())
     {
-      NS_LOG_LOGIC ("Trust entry to " << dst << " not found");
+      std::cout<<"Trust entry to " << dst << " not found";
       return false;
     }
   tt = i->second;
-  NS_LOG_LOGIC ("Trust entry to " << dst << " found");
+  std::cout<<"Trust entry to " << dst << " found";
   return true;
 }
 

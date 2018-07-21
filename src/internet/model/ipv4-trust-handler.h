@@ -23,7 +23,7 @@
 
 #include "ns3/object.h"
 #include "ns3/node.h"
-#include "ns3/ipv4-address.h"
+#include "ns3/address.h"
 
 namespace ns3 {
 
@@ -53,7 +53,7 @@ public:
    * \param address Ipv4Address instance of target node
    * \Return ins32_t type of trust value
    */
-  virtual int32_t calculateTrust (Ipv4Address address) = 0;
+  virtual int32_t calculateTrust (Address address) = 0;
 
 };
 
