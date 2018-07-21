@@ -21,9 +21,11 @@
 #ifndef IPV4TRUSTTABLE_H_
 #define IPV4TRUSTTABLE_H_
 
-#include <vector>
-
 #include "ipv4-trust-entry.h"
+#include "ns3/ipv4-address.h"
+#include <map>
+
+using std::map;
 
 namespace ns3 {
 
@@ -44,10 +46,11 @@ class Ipv4TrustTable
 
 private:
   /**
-   * \brief vector type of Ipv4TrustEntry classes
+   * \brief m_tableRecords type of <Ipv4Address, Ipv4TrustEntry> classes
    * contains here representing the IPv4 trust table rows
    */
   std::map<Ipv4Address, Ipv4TrustEntry> m_tableRecords;
+
 public:
   Ipv4TrustTable ();
   virtual ~Ipv4TrustTable ();
