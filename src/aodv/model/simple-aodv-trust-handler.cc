@@ -91,13 +91,13 @@ bool SimpleAodvTrustHandler::OnReceivePromiscuousCallback (Ptr<NetDevice> device
 int32_t SimpleAodvTrustHandler::calculateTrust (Address address)
 {
 
-  Ipv4Address ipv4Address = Ipv4Address::ConverFrom (address);
+  Ipv4Address ipv4Address = Ipv4Address::ConvertFrom (address);
   AodvTrustEntry m_aodvTrustEntry = m_trustParameters[ipv4Address];
-
-  if (m_aodvTrustEntry == 0)
+/*
+  if (m_aodvTrustEntry == NULL)
     {
       return 0;
-    }
+    }*/
   double trustDouble = m_aodvTrustEntry.GetRply () / m_aodvTrustEntry.GetRreq () * 1.0;
 
   // Update the value in Trust Table here
