@@ -110,11 +110,11 @@
 <nu p="p" t="0" id="2" x="20000" y="50000" />
 <nu p="p" t="0" id="3" x="50000" y="40000" />
 <nu p="p" t="0" id="4" x="40000" y="35000" />
-<nu p="s" t="0" id="0" w="1000" h="1000" />
-<nu p="s" t="0" id="1" w="1000" h="1000" />
-<nu p="s" t="0" id="2" w="1000" h="1000" />
-<nu p="s" t="0" id="3" w="1000" h="1000" />
-<nu p="s" t="0" id="4" w="1000" h="1000" />
+<nu p="s" t="0" id="0" w="5000" h="5000" />
+<nu p="s" t="0" id="1" w="5000" h="5000" />
+<nu p="s" t="0" id="2" w="5000" h="5000" />
+<nu p="s" t="0" id="3" w="5000" h="5000" />
+<nu p="s" t="0" id="4" w="5000" h="5000" />
 <p fId="0" fbTx="0.002" lbTx="0.00200013" meta-info="ns3::EthernetHeader ( length/type=0x800, source=00:00:00:00:00:01, destination=ff:ff:ff:ff:ff:ff) ns3::Ipv4Header (tos 0x0 DSCP Default ECN Not-ECT ttl 1 id 0 protocol 17 offset (bytes) 0 flags [none] length: 52 10.0.0.1 &gt; 10.255.255.255) ns3::UdpHeader (length: 32 654 &gt; 654) ns3::aodv::TypeHeader (RREQ) ns3::aodv::RreqHeader (RREQ ID 1 destination: ipv4 10.0.0.5 sequence number 0 source: ipv4 10.0.0.1 sequence number 1 flags: Gratuitous RREP 1 Destination only 0 Unknown sequence number 1) ns3::EthernetTrailer (fcs=0)" tId="1" fbRx="0.00200013" lbRx="0" />
 <p fId="0" fbTx="0.002" lbTx="0.00200013" meta-info="ns3::EthernetHeader ( length/type=0x800, source=00:00:00:00:00:01, destination=ff:ff:ff:ff:ff:ff) ns3::Ipv4Header (tos 0x0 DSCP Default ECN Not-ECT ttl 1 id 0 protocol 17 offset (bytes) 0 flags [none] length: 52 10.0.0.1 &gt; 10.255.255.255) ns3::UdpHeader (length: 32 654 &gt; 654) ns3::aodv::TypeHeader (RREQ) ns3::aodv::RreqHeader (RREQ ID 1 destination: ipv4 10.0.0.5 sequence number 0 source: ipv4 10.0.0.1 sequence number 1 flags: Gratuitous RREP 1 Destination only 0 Unknown sequence number 1) ns3::EthernetTrailer (fcs=0)" tId="1" fbRx="0.00200013" lbRx="0" />
 <p fId="0" fbTx="0.002" lbTx="0.00200013" meta-info="ns3::EthernetHeader ( length/type=0x800, source=00:00:00:00:00:01, destination=ff:ff:ff:ff:ff:ff) ns3::Ipv4Header (tos 0x0 DSCP Default ECN Not-ECT ttl 1 id 0 protocol 17 offset (bytes) 0 flags [none] length: 52 10.0.0.1 &gt; 10.255.255.255) ns3::UdpHeader (length: 32 654 &gt; 654) ns3::aodv::TypeHeader (RREQ) ns3::aodv::RreqHeader (RREQ ID 1 destination: ipv4 10.0.0.5 sequence number 0 source: ipv4 10.0.0.1 sequence number 1 flags: Gratuitous RREP 1 Destination only 0 Unknown sequence number 1) ns3::EthernetTrailer (fcs=0)" tId="2" fbRx="0.00200013" lbRx="0" />
