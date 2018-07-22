@@ -20,6 +20,8 @@
  * Authors: Pavel Boyko <boyko@iitp.ru>
  */
 
+#include <iostream>
+#include <cmath>
 #include "ns3/aodv-module.h"
 #include "ns3/netanim-module.h"
 #include "ns3/core-module.h"
@@ -31,10 +33,10 @@
 #include "ns3/v4ping-helper.h"
 #include "ns3/on-off-helper.h"
 #include "ns3/csma-helper.h"
-#include <iostream>
-#include <cmath>
+#include "ns3/simple-aodv-trust-handler.h"
 
 using namespace ns3;
+using namespace aodv;
 
 /**
  * \ingroup aodv-examples
@@ -93,6 +95,8 @@ private:
   void InstallInternetStack ();
   /// Create the simulation applications
   void InstallApplications ();
+  /// Enable trust framework for all nodes
+  void InstallTrustFramework ();
 };
 
 int main (int argc, char **argv)
@@ -143,6 +147,7 @@ AodvExample::Run ()
   CreateDevices ();
   InstallInternetStack ();
   InstallApplications ();
+  InstallTrustFramework ();
 
   std::cout << "Starting simulation for " << totalTime << " s ...\n";
 
@@ -154,11 +159,11 @@ AodvExample::Run ()
   AnimationInterface::SetConstantPosition (nodes.Get (2), 20000, 50000);
   AnimationInterface::SetConstantPosition (nodes.Get (3), 50000, 40000);
   AnimationInterface::SetConstantPosition (nodes.Get (4), 40000, 35000);
-  anim.UpdateNodeSize (0, 1000, 1000);
-  anim.UpdateNodeSize (1, 1000, 1000);
-  anim.UpdateNodeSize (2, 1000, 1000);
-  anim.UpdateNodeSize (3, 1000, 1000);
-  anim.UpdateNodeSize (4, 1000, 1000);
+  anim.UpdateNodeSize (0, 5000, 5000);
+  anim.UpdateNodeSize (1, 5000, 5000);
+  anim.UpdateNodeSize (2, 5000, 5000);
+  anim.UpdateNodeSize (3, 5000, 5000);
+  anim.UpdateNodeSize (4, 5000, 5000);
   anim.EnablePacketMetadata(true);
 
   Simulator::Run ();
@@ -269,3 +274,14 @@ AodvExample::InstallApplications ()
   Simulator::Schedule (Seconds (totalTime/3), &MobilityModel::SetPosition, mob, Vector (1e5, 1e5, 1e5));
 }
 
+void
+AodvExample::InstallTrustFramework ()
+{
+  for (uint32_t i = 0; i < size; ++i)
+    {
+      Ptr<SimpleAodvTrustHandler> simpleAodvTrustHandler = CreateObject<SimpleAodvTrustHandler>();
+      nodes.Get(i)->AggregateObject(simpleAodvTrustHandler);
+      simpleAodvTrustHandler->AttachPromiscuousCallbackToNode();
+
+    }
+}
