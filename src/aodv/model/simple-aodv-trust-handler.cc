@@ -92,7 +92,8 @@ int32_t SimpleAodvTrustHandler::calculateTrust (Address address)
 {
 
   Ipv4Address ipv4Address = Ipv4Address::ConvertFrom (address);
-  AodvTrustEntry m_aodvTrustEntry = m_trustParameters[ipv4Address];
+  AodvTrustEntry m_aodvTrustEntry = m_trustParameters.find(ipv4Address)->second;
+  std::cout<<"NIROSHAN ADDED = "<< &m_aodvTrustEntry <<std::endl;
 /*
   if (m_aodvTrustEntry == NULL)
     {

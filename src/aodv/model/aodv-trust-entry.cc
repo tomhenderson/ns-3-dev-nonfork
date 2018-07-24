@@ -31,7 +31,7 @@ AodvTrustEntry::~AodvTrustEntry ()
 {
 }
 
-uint16_t AodvTrustEntry::GetErr ()
+uint16_t AodvTrustEntry::GetErr () const
 {
   return this->err;
 }
@@ -41,7 +41,7 @@ void AodvTrustEntry::SetErr (uint16_t err)
   this->err = err;
 }
 
-uint16_t AodvTrustEntry::GetHello ()
+uint16_t AodvTrustEntry::GetHello () const
 {
   return this->hello;
 }
@@ -51,7 +51,7 @@ void AodvTrustEntry::SetHello (uint16_t hello)
   this->hello = hello;
 }
 
-uint16_t AodvTrustEntry::GetRply ()
+uint16_t AodvTrustEntry::GetRply () const
 {
   return this->rply;
 }
@@ -61,7 +61,7 @@ void AodvTrustEntry::SetRply (uint16_t rply)
   this->rply = rply;
 }
 
-uint16_t AodvTrustEntry::GetRreq ()
+uint16_t AodvTrustEntry::GetRreq () const
 {
   return this->rreq;
 }
@@ -69,6 +69,12 @@ uint16_t AodvTrustEntry::GetRreq ()
 void AodvTrustEntry::SetRreq (uint16_t rreq)
 {
   this->rreq = rreq;
+}
+
+std::ostream &operator<< (std::ostream &os, AodvTrustEntry const &m)
+{
+  os << "rreq=" << m.GetRreq() << "|" << "rrep=" << m.GetRply();
+  return os;
 }
 
 }

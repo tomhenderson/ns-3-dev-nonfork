@@ -57,7 +57,7 @@ public:
    * \brief Returns the error count of trust table entry
    * \returns uint16_t of the error count
    */
-  uint16_t GetErr ();
+  uint16_t GetErr () const;
 
   /**
    * \brief Set the error count of trust table entry
@@ -69,7 +69,7 @@ public:
    * \brief Returns the hello count of trust table entry
    * \returns uint16_t of the hello count
    */
-  uint16_t GetHello ();
+  uint16_t GetHello () const;
 
   /**
    * \brief Set the hello packet count of trust table entry
@@ -81,7 +81,7 @@ public:
    * \brief Returns the reply count of trust table entry
    * \returns uint16_t of the reply count
    */
-  uint16_t GetRply ();
+  uint16_t GetRply () const;
 
   /**
    * \brief Set the reply count of trust table entry
@@ -93,14 +93,16 @@ public:
    * \brief Returns the rreq count of trust table entry
    * \returns uint16_t of the rreq count
    */
-  uint16_t GetRreq ();
+  uint16_t GetRreq () const;
 
   /**
    * \brief Set the rreq count of trust table entry
    * \param [in] rreq uint16_t of the rreq count
    */
   void SetRreq (uint16_t rreq);
+
 };
+  std::ostream &operator<< (std::ostream &os, AodvTrustEntry const &m);
 
 } // namespace ns3
 #endif
