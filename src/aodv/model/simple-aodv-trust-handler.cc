@@ -50,7 +50,7 @@ bool SimpleAodvTrustHandler::OnReceivePromiscuousCallback (Ptr<NetDevice> device
                                                            const Address &to,
                                                            NetDevice::PacketType packetType)
 {
-  std::cout << "JUDE ADDED FROM THE TRUST FRAMEWORK" << std::endl;
+//  std::cout << "JUDE ADDED FROM THE TRUST FRAMEWORK" << std::endl;
 
   TypeHeader tHeader;
   packet->PeekHeader (tHeader);
@@ -90,22 +90,22 @@ bool SimpleAodvTrustHandler::OnReceivePromiscuousCallback (Ptr<NetDevice> device
 
 int32_t SimpleAodvTrustHandler::calculateTrust (Address address)
 {
-
   Ipv4Address ipv4Address = Ipv4Address::ConvertFrom (address);
-  AodvTrustEntry m_aodvTrustEntry = m_trustParameters.find(ipv4Address)->second;
-  std::cout<<"NIROSHAN ADDED = "<< &m_aodvTrustEntry <<std::endl;
-/*
-  if (m_aodvTrustEntry == NULL)
+  std::map<Ipv4Address, RoutingTableEntry>::iterator i = m_trustParameters.find (ipv4Address);
+  if (i == m_trustParameters.end ())
     {
       return 0;
-    }*/
+    }
+
+  AodvTrustEntry m_aodvTrustEntry = i->second;
   double trustDouble = m_aodvTrustEntry.GetRply () / m_aodvTrustEntry.GetRreq () * 1.0;
 
-  // Update the value in Trust Table here
-//  Ptr<Node> src;
   Ptr<Node> node = GetObject<Node> ();
   Ptr<Ipv4RoutingProtocol> m_ipv4Routing;
   m_ipv4Routing = Ipv4RoutingHelper::GetRouting<Ipv4RoutingProtocol> (node->GetObject<Ipv4> ()->GetRoutingProtocol ());
+  Ipv4TrustEntry trustEntry;
+
+  m_ipv4Routing->m_trustTable.LookupTrustEntry(ipv4Address, &trustEntry);
 
   std::cout << trustDouble + 1 << std::endl; // to avoid unused variable compilation warning
   return 1;
