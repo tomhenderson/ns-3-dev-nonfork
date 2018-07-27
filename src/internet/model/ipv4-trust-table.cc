@@ -19,6 +19,7 @@
  */
 
 #include "ipv4-trust-table.h"
+#include "ns3/simulator.h"
 
 namespace ns3 {
 
@@ -46,18 +47,40 @@ bool Ipv4TrustTable::LookupTrustEntry (Ipv4Address dst,
 {
   if (m_tableRecords.empty ())
     {
-      std::cout<<"Trust entry to " << dst << " not found; trust table is empty";
+      std::cout << "Trust entry to " << dst << " not found; trust table is empty";
       return false;
     }
   std::map<Ipv4Address, Ipv4TrustEntry>::const_iterator i = m_tableRecords.find (dst);
   if (i == m_tableRecords.end ())
     {
-      std::cout<<"Trust entry to " << dst << " not found";
+      std::cout << "Trust entry to " << dst << " not found";
       return false;
     }
   tt = i->second;
-  std::cout<<"Trust entry to " << dst << " found";
+  std::cout << "Trust entry to " << dst << " found";
   return true;
+}
+
+void Ipv4TrustTable::AddOrUpdateTrustTableEntry (Ipv4Address dst,
+                                                 double trustValue)
+{
+  std::map<Ipv4Address, Ipv4TrustEntry>::const_iterator i = m_tableRecords.find (dst);
+
+  if (i == m_tableRecords.end ())
+    {
+      Ipv4TrustEntry newTrustEntry;
+      newTrustEntry.SetNeighbourAddress (dst);
+      newTrustEntry.SetTrustValue (trustValue);
+      newTrustEntry.SetTimestamp (Simulator::Now ());
+      m_tableRecords[dst] = newTrustEntry;
+    }
+  else
+    {
+      Ipv4TrustEntry trustEntry = i->second;
+      trustEntry.SetTrustValue (trustValue);
+      trustEntry.SetTimestamp (Simulator::Now ());
+      m_tableRecords[dst] = trustEntry;
+    }
 }
 
 Ipv4TrustTable::~Ipv4TrustTable ()

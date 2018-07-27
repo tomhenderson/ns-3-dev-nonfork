@@ -51,9 +51,9 @@ public:
    * \brief calculate the trust value for a given IPv4 address host
    * with in the network simulation
    * \param address Ipv4Address instance of target node
-   * \Return ins32_t type of trust value
+   * \Return double type of trust value
    */
-  virtual int32_t calculateTrust (Address address) = 0;
+  virtual double calculateTrust (Ipv4Address ipv4Address) = 0;
 
 };
 

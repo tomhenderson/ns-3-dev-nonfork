@@ -80,6 +80,16 @@ public:
    * \return true on success
    */
   bool LookupTrustEntry (Ipv4Address dst, Ipv4TrustEntry & tt);
+
+
+  /**
+   * \brief add a new trust table entry or update the existing
+   * trust table entry for the given Ipv4Address
+   * \param address Ipv4Address instance of target node
+   * \param trustValue trust value
+   */
+  void AddOrUpdateTrustTableEntry (Ipv4Address dst,
+                                   double trustValue);
 };
 
 } // namespace ns3

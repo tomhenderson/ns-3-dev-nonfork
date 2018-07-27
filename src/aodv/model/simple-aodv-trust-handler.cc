@@ -20,6 +20,7 @@
 
 #include "simple-aodv-trust-handler.h"
 #include "ns3/aodv-packet.h"
+#include "aodv-trust-entry.h"
 
 namespace ns3 {
 
@@ -50,7 +51,15 @@ bool SimpleAodvTrustHandler::OnReceivePromiscuousCallback (Ptr<NetDevice> device
                                                            const Address &to,
                                                            NetDevice::PacketType packetType)
 {
-//  std::cout << "JUDE ADDED FROM THE TRUST FRAMEWORK" << std::endl;
+  std::cout << "JUDE ADDED FROM : " << from << std::endl;
+  Ipv4Address ipv4Address = Ipv4Address::ConvertFrom (from);
+  std::map<Ipv4Address, AodvTrustEntry>::iterator i = m_trustParameters.find (ipv4Address);
+  AodvTrustEntry aodvTrustEntry;
+
+  if (i != m_trustParameters.end ())
+    {
+      aodvTrustEntry = i->second;
+    }
 
   TypeHeader tHeader;
   packet->PeekHeader (tHeader);
@@ -59,56 +68,60 @@ bool SimpleAodvTrustHandler::OnReceivePromiscuousCallback (Ptr<NetDevice> device
     case AODVTYPE_RREQ:
       {
         // increment RREQ count
-        tHeader.Print (std::cout);
+        std::cout << "RREQ captured in Promiscuous callback function" << std::endl;
+        aodvTrustEntry.SetRreq (aodvTrustEntry.GetRreq () + 1);
         break;
       }
     case AODVTYPE_RREP:
       {
         // increment RPLY count
-        tHeader.Print (std::cout);
+        std::cout << "RREP captured in Promiscuous callback function" << std::endl;
+        aodvTrustEntry.SetRply (aodvTrustEntry.GetRply () + 1);
         break;
       }
     case AODVTYPE_RERR:
       {
         // increment ERR count
-        tHeader.Print (std::cout);
+        std::cout << "RERR captured in Promiscuous callback function" << std::endl;
+        aodvTrustEntry.SetErr (aodvTrustEntry.GetErr () + 1);
         break;
       }
     case AODVTYPE_RREP_ACK:
       {
         // increment ERR count
-        tHeader.Print (std::cout);
+        std::cout << "RREP_ACK captured in Promiscuous callback function" << std::endl;
+//        aodvTrustEntry.SetErr(aodvTrustEntry.Get + 1);
         break;
       }
     }
 
-  NS_LOG_FUNCTION(device << packet << protocol << &from << &to << packetType);
-  bool found = false;
+  m_trustParameters[ipv4Address] = aodvTrustEntry;
+  double calculatedTrust = this->calculateTrust (ipv4Address);
 
-  return found;
+  Ptr<Node> node = GetObject<Node> ();
+  Ptr<Ipv4RoutingProtocol> m_ipv4Routing;
+  m_ipv4Routing = Ipv4RoutingHelper::GetRouting<Ipv4RoutingProtocol> (node->GetObject<Ipv4> ()->GetRoutingProtocol ());
+  m_ipv4Routing->m_trustTable.AddOrUpdateTrustTableEntry (ipv4Address,
+                                                          calculatedTrust);
+
+  NS_LOG_FUNCTION (device << packet << protocol << &from << &to << packetType);
+
+  return true;
 }
 
-int32_t SimpleAodvTrustHandler::calculateTrust (Address address)
+double SimpleAodvTrustHandler::calculateTrust (Ipv4Address ipv4Address)
 {
-  Ipv4Address ipv4Address = Ipv4Address::ConvertFrom (address);
-  std::map<Ipv4Address, RoutingTableEntry>::iterator i = m_trustParameters.find (ipv4Address);
+  std::map<Ipv4Address, AodvTrustEntry>::iterator i = m_trustParameters.find (ipv4Address);
+
   if (i == m_trustParameters.end ())
     {
-      return 0;
+      return 0; // <! No existing data to calculate trust
     }
 
   AodvTrustEntry m_aodvTrustEntry = i->second;
   double trustDouble = m_aodvTrustEntry.GetRply () / m_aodvTrustEntry.GetRreq () * 1.0;
 
-  Ptr<Node> node = GetObject<Node> ();
-  Ptr<Ipv4RoutingProtocol> m_ipv4Routing;
-  m_ipv4Routing = Ipv4RoutingHelper::GetRouting<Ipv4RoutingProtocol> (node->GetObject<Ipv4> ()->GetRoutingProtocol ());
-  Ipv4TrustEntry trustEntry;
-
-  m_ipv4Routing->m_trustTable.LookupTrustEntry(ipv4Address, &trustEntry);
-
-  std::cout << trustDouble + 1 << std::endl; // to avoid unused variable compilation warning
-  return 1;
+  return trustDouble;
 }
 
 void SimpleAodvTrustHandler::AttachPromiscuousCallbackToNode ()
