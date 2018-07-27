@@ -227,7 +227,7 @@ def build(bld):
         'model/rip.cc',
         'model/rip-header.cc',
         'helper/rip-helper.cc',
-        'model/ipv4-trust-handler.cc',
+        'model/ipv4-trust-manager.cc',
         'model/ipv4-trust-entry.cc',
         'model/ipv4-trust-table.cc',
         ]
@@ -413,7 +413,7 @@ def build(bld):
         'model/rip.h',
         'model/rip-header.h',
         'helper/rip-helper.h',
-        'model/ipv4-trust-handler.h',
+        'model/ipv4-trust-manager.h',
         'model/ipv4-trust-entry.h',
         'model/ipv4-trust-table.h',
        ]

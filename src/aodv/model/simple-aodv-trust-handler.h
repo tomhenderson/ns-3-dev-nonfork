@@ -21,7 +21,7 @@
 #ifndef SIMPLE_AODV_TRUST_HANDLER_H_
 #define SIMPLE_AODV_TRUST_HANDLER_H_
 
-#include "ns3/ipv4-trust-handler.h"
+#include "ns3/ipv4-trust-manager.h"
 #include "aodv-trust-entry.h"
 #include "ns3/network-module.h"
 #include "ns3/ipv4-address.h"
@@ -43,7 +43,7 @@ namespace aodv {
  * \ingroup trust
  * \brief The aodv specific trust operations handler
  */
-class SimpleAodvTrustHandler : public Ipv4TrustHandler
+class SimpleAodvTrustHandler : public Ipv4TrustManager
 {
 private:
   /**

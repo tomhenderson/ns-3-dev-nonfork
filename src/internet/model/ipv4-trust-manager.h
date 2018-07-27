@@ -18,16 +18,45 @@
  * Author: Jude Niroshan <jude.niroshan11@gmail.com>
  */
 
-#include "ipv4-trust-handler.h"
+#ifndef IPV4TRUSTHANDLER_H_
+#define IPV4TRUSTHANDLER_H_
+
+#include "ns3/object.h"
+#include "ns3/node.h"
+#include "ns3/address.h"
 
 namespace ns3 {
 
-Ipv4TrustHandler::Ipv4TrustHandler ()
+class Ipv4TrustManager : public Object
 {
-}
 
-Ipv4TrustHandler::~Ipv4TrustHandler ()
-{
-}
+  /**
+   * \ingroup internet
+   * \defgroup trust Trust management framework.
+   *
+   * The Trust Management Framework is built-in support to implement custom
+   * trust based protocols in ns-3.
+   */
+
+  /**
+   * \ingroup trust
+   * \brief Generic class for trust framework
+   */
+public:
+
+  Ipv4TrustManager ();
+  virtual ~Ipv4TrustManager ();
+
+  /**
+   * \brief calculate the trust value for a given IPv4 address host
+   * with in the network simulation
+   * \param address Ipv4Address instance of target node
+   * \Return double type of trust value
+   */
+  virtual double calculateTrust (Ipv4Address ipv4Address) = 0;
+
+};
 
 } // namespace ns3
+
+#endif
