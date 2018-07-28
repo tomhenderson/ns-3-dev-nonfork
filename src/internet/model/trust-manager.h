@@ -58,10 +58,10 @@ public:
   /**
    * \brief calculate the trust value for a given IPv4 address host
    * with in the network simulation
-   * \param address Ipv4Address instance of target node
+   * \param address Address instance of target node
    * \Return double type of trust value
    */
-  virtual double calculateTrust (Ipv4Address ipv4Address) = 0;
+  virtual double calculateTrust (Address ipv4Address) = 0;
 
 };
 

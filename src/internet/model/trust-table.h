@@ -22,7 +22,7 @@
 #define TRUSTTABLE_H_
 
 #include "trust-entry.h"
-#include "ns3/ipv4-address.h"
+#include "ns3/address.h"
 #include <map>
 
 using std::map;
@@ -39,7 +39,7 @@ namespace ns3 {
 
 /**
  * \ingroup trust
- * \brief The abstract Trust table for the nodes.
+ * \brief Trust table for the a network node
  */
 class TrustTable
 {
@@ -49,7 +49,7 @@ private:
    * \brief m_tableRecords type of <Ipv4Address, Ipv4TrustEntry> classes
    * contains here representing the IPv4 trust table rows
    */
-  std::map<Ipv4Address, TrustEntry> m_tableRecords;
+  std::map<Address, TrustEntry> m_tableRecords;
 
 public:
   TrustTable ();
@@ -79,16 +79,16 @@ public:
    * \param tt entry with destination address dst, if exists
    * \return true on success
    */
-  bool LookupTrustEntry (Ipv4Address dst, TrustEntry & tt);
+  bool LookupTrustEntry (Address dst, TrustEntry & tt);
 
 
   /**
    * \brief add a new trust table entry or update the existing
-   * trust table entry for the given Ipv4Address
-   * \param address Ipv4Address instance of target node
+   * trust table entry for the given Address
+   * \param dst Address instance of target node
    * \param trustValue trust value
    */
-  void AddOrUpdateTrustTableEntry (Ipv4Address dst,
+  void AddOrUpdateTrustTableEntry (Address dst,
                                    double trustValue);
 };
 

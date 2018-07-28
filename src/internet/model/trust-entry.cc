@@ -30,12 +30,12 @@ TrustEntry::~TrustEntry ()
 {
 }
 
-Ipv4Address TrustEntry::GetNeighbourAddress ()
+Address TrustEntry::GetNeighbourAddress ()
 {
   return this->m_neighbourAddress;
 }
 
-void TrustEntry::SetNeighbourAddress (Ipv4Address neighbourAddress)
+void TrustEntry::SetNeighbourAddress (Address neighbourAddress)
 {
   this->m_neighbourAddress = neighbourAddress;
 }

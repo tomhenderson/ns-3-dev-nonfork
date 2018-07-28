@@ -21,7 +21,7 @@
 #ifndef TRUST_ENTRY_H_
 #define TRUST_ENTRY_H_
 
-#include "ns3/ipv4-address.h"
+#include "ns3/address.h"
 #include "ns3/nstime.h"
 
 namespace ns3 {
@@ -41,8 +41,8 @@ namespace ns3 {
 class TrustEntry
 {
 private:
-  // IPv4 address of a neighbour node
-  Ipv4Address m_neighbourAddress;
+  // Address of a neighbour node
+  Address m_neighbourAddress;
   // trust value for a given neighbour node
   double m_trustValue;
   // Timestamp when the trust value has been set
@@ -56,13 +56,13 @@ public:
    * \brief Returns the neighbour address of trust table entry
    * \returns the IPv4 address of the neighbour node
    */
-  Ipv4Address GetNeighbourAddress ();
+  Address GetNeighbourAddress ();
 
   /**
    * \brief Set the neighbour address to trust table entry
-   * \param [in] neighbourAddress IPv4 address of neighbour node
+   * \param [in] neighbourAddress address of neighbour node
    */
-  void SetNeighbourAddress (Ipv4Address neighbourAddress);
+  void SetNeighbourAddress (Address neighbourAddress);
 
   /**
    * \brief Get the timestamp of the trust table entry

@@ -57,13 +57,13 @@ bool SimpleAodvTrustManager::OnReceivePromiscuousCallback (Ptr<NetDevice> device
 
   Ipv4Header ipv4Header;
 
-  if(protocol != Ipv4L3Protocol::PROT_NUMBER)
+  if (protocol != Ipv4L3Protocol::PROT_NUMBER)
     {
       return false;
     }
-  packet->PeekHeader(ipv4Header);
+  packet->PeekHeader (ipv4Header);
 
-  Ipv4Address ipv4Address = ipv4Header.GetSource();
+  Ipv4Address ipv4Address = ipv4Header.GetSource ();
   std::map<Ipv4Address, AodvTrustEntry>::iterator i = m_trustParameters.find (ipv4Address);
   AodvTrustEntry aodvTrustEntry;
 
@@ -109,19 +109,20 @@ bool SimpleAodvTrustManager::OnReceivePromiscuousCallback (Ptr<NetDevice> device
   m_trustParameters[ipv4Address] = aodvTrustEntry;
   double calculatedTrust = this->calculateTrust (ipv4Address);
 
- /* Ptr<Node> node = GetObject<Node> ();
-  Ptr<Ipv4RoutingProtocol> m_ipv4Routing;
-  m_ipv4Routing = Ipv4RoutingHelper::GetRouting<Ipv4RoutingProtocol> (node->GetObject<Ipv4> ()->GetRoutingProtocol ());*/
+  /* Ptr<Node> node = GetObject<Node> ();
+   Ptr<Ipv4RoutingProtocol> m_ipv4Routing;
+   m_ipv4Routing = Ipv4RoutingHelper::GetRouting<Ipv4RoutingProtocol> (node->GetObject<Ipv4> ()->GetRoutingProtocol ());*/
   m_trustTable.AddOrUpdateTrustTableEntry (ipv4Address,
-                                                          calculatedTrust);
+                                           calculatedTrust);
 
-  NS_LOG_FUNCTION (device << packet << protocol << &from << &to << packetType);
+  NS_LOG_FUNCTION(device << packet << protocol << &from << &to << packetType);
 
   return true;
 }
 
-double SimpleAodvTrustManager::calculateTrust (Ipv4Address ipv4Address)
+double SimpleAodvTrustManager::calculateTrust (Address address)
 {
+  Ipv4Address ipv4Address = Ipv4Address::ConvertFrom (address);
   std::map<Ipv4Address, AodvTrustEntry>::iterator i = m_trustParameters.find (ipv4Address);
 
   if (i == m_trustParameters.end ())

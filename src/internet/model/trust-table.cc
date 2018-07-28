@@ -42,7 +42,7 @@ void TrustTable::UpdateRecord (TrustEntry entry)
   // TODO write update trust record logic
 }
 
-bool TrustTable::LookupTrustEntry (Ipv4Address dst,
+bool TrustTable::LookupTrustEntry (Address dst,
                                        TrustEntry & tt)
 {
   if (m_tableRecords.empty ())
@@ -50,7 +50,7 @@ bool TrustTable::LookupTrustEntry (Ipv4Address dst,
       std::cout << "Trust entry to " << dst << " not found; trust table is empty";
       return false;
     }
-  std::map<Ipv4Address, TrustEntry>::const_iterator i = m_tableRecords.find (dst);
+  std::map<Address, TrustEntry>::const_iterator i = m_tableRecords.find (dst);
   if (i == m_tableRecords.end ())
     {
       std::cout << "Trust entry to " << dst << " not found";
@@ -61,10 +61,10 @@ bool TrustTable::LookupTrustEntry (Ipv4Address dst,
   return true;
 }
 
-void TrustTable::AddOrUpdateTrustTableEntry (Ipv4Address dst,
+void TrustTable::AddOrUpdateTrustTableEntry (Address dst,
                                                  double trustValue)
 {
-  std::map<Ipv4Address, TrustEntry>::const_iterator i = m_tableRecords.find (dst);
+  std::map<Address, TrustEntry>::const_iterator i = m_tableRecords.find (dst);
 
   if (i == m_tableRecords.end ())
     {
