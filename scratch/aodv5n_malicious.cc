@@ -1,6 +1,6 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2009 IITP RAS
+ * Copyright (c) 2018 Sri Lanka Institute of Information Technology
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -15,35 +15,37 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * This is an example script for AODV manet routing protocol. 
+ * This is an example script for Trust Framework usage in ns-3 with aodv protocol
  *
- * Authors: Pavel Boyko <boyko@iitp.ru>
+ * Author: Jude Niroshan <jude.niroshan11@gmail.com>
  */
 
 #include <iostream>
 #include <cmath>
 #include "ns3/aodv-module.h"
 #include "ns3/malicious-aodv-module.h"
+#include "ns3/netanim-module.h"
 #include "ns3/core-module.h"
 #include "ns3/network-module.h"
 #include "ns3/internet-module.h"
 #include "ns3/mobility-module.h"
 #include "ns3/point-to-point-module.h"
+#include "ns3/wifi-module.h" 
 #include "ns3/v4ping-helper.h"
-#include "ns3/yans-wifi-helper.h"
+#include "ns3/on-off-helper.h"
+#include "ns3/csma-helper.h"
+#include "ns3/simple-aodv-trust-handler.h"
 
 using namespace ns3;
+using namespace aodv;
 
 /**
  * \ingroup aodv-examples
  * \ingroup examples
  * \brief Test script.
  * 
- * This script creates 1-dimensional grid topology and then ping last node from the first one:
- * 
- * [10.0.0.1] <-- step --> [10.0.0.2] <-- step --> [10.0.0.3] <-- step --> [10.0.0.4]
- * 
- * ping 10.0.0.4
+ * This is non-linear simulation of 5 nodes with static positions
+ * This simulates a malicious node within the network
  */
 class AodvExample 
 {
@@ -95,6 +97,8 @@ private:
   void InstallInternetStack ();
   /// Create the simulation applications
   void InstallApplications ();
+  /// Enable trust framework for all nodes
+  void InstallTrustFramework ();
 };
 
 int main (int argc, char **argv)
@@ -110,7 +114,7 @@ int main (int argc, char **argv)
 
 //-----------------------------------------------------------------------------
 AodvExample::AodvExample () :
-  size (10),
+  size (5),
   step (100),
   totalTime (100),
   pcap (true),
@@ -140,15 +144,29 @@ AodvExample::Configure (int argc, char **argv)
 void
 AodvExample::Run ()
 {
-//  Config::SetDefault ("ns3::WifiRemoteStationManager::RtsCtsThreshold", UintegerValue (1)); // enable rts cts all the time.
   CreateNodes ();
   CreateDevices ();
   InstallInternetStack ();
   InstallApplications ();
+  InstallTrustFramework ();
 
   std::cout << "Starting simulation for " << totalTime << " s ...\n";
 
   Simulator::Stop (Seconds (totalTime));
+
+  AnimationInterface anim ("aodv5n_malicious.xml"); // Mandatory
+  AnimationInterface::SetConstantPosition (nodes.Get (0), 0, 40000);
+  AnimationInterface::SetConstantPosition (nodes.Get (1), 20000, 30000);
+  AnimationInterface::SetConstantPosition (nodes.Get (2), 20000, 50000);
+  AnimationInterface::SetConstantPosition (nodes.Get (3), 50000, 40000);
+  AnimationInterface::SetConstantPosition (nodes.Get (4), 40000, 35000);
+  anim.UpdateNodeSize (0, 5000, 5000);
+  anim.UpdateNodeSize (1, 5000, 5000);
+  anim.UpdateNodeSize (2, 5000, 5000);
+  anim.UpdateNodeSize (3, 5000, 5000);
+  anim.UpdateNodeSize (4, 5000, 5000);
+  anim.EnablePacketMetadata(true);
+
   Simulator::Run ();
   Simulator::Destroy ();
 }
@@ -172,13 +190,13 @@ AodvExample::CreateNodes ()
     }
   // Create static grid
   MobilityHelper mobility;
-  mobility.SetPositionAllocator ("ns3::GridPositionAllocator",
-                                 "MinX", DoubleValue (0.0),
-                                 "MinY", DoubleValue (0.0),
-                                 "DeltaX", DoubleValue (step),
-                                 "DeltaY", DoubleValue (0),
-                                 "GridWidth", UintegerValue (size),
-                                 "LayoutType", StringValue ("RowFirst"));
+  Ptr<ListPositionAllocator> positionAlloc = CreateObject <ListPositionAllocator>();
+  positionAlloc ->Add(Vector(1000, 0, 0)); // node0
+  positionAlloc ->Add(Vector(2000, 0, 0)); // node1
+  positionAlloc ->Add(Vector(4500, 0, 0)); // node2
+  positionAlloc ->Add(Vector(5500, 0, 0)); // node3
+  positionAlloc ->Add(Vector(6500, 0, 0)); // node4
+  mobility.SetPositionAllocator(positionAlloc);
   mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
   mobility.Install (nodes);
 }
@@ -186,29 +204,22 @@ AodvExample::CreateNodes ()
 void
 AodvExample::CreateDevices ()
 {
-  WifiMacHelper wifiMac;
-  wifiMac.SetType ("ns3::AdhocWifiMac");
-  YansWifiPhyHelper wifiPhy = YansWifiPhyHelper::Default ();
-  YansWifiChannelHelper wifiChannel = YansWifiChannelHelper::Default ();
-  wifiPhy.SetChannel (wifiChannel.Create ());
-  WifiHelper wifi;
-  wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager", "DataMode", StringValue ("OfdmRate6Mbps"), "RtsCtsThreshold", UintegerValue (0));
-  devices = wifi.Install (wifiPhy, wifiMac, nodes); 
+  CsmaHelper csma;
+  devices = csma.Install (nodes);
 
   if (pcap)
     {
-      wifiPhy.EnablePcapAll (std::string ("aodv"));
+      csma.EnablePcapAll (std::string ("aodv"));
     }
 }
 
 void
 AodvExample::InstallInternetStack ()
 {
-  MaliciousAodvHelper aodv;
-  // AodvHelper aodv;
+  MaliciousAodvHelper aodvMalicious;
   // you can configure AODV attributes here using aodv.Set(name, value)
   InternetStackHelper stack;
-  stack.SetRoutingHelper (aodv); // has effect on the next Install ()
+  stack.SetRoutingHelper (aodvMalicious); // has effect on the next Install ()
   stack.Install (nodes);
   Ipv4AddressHelper address;
   address.SetBase ("10.0.0.0", "255.0.0.0");
@@ -216,8 +227,8 @@ AodvExample::InstallInternetStack ()
 
   if (printRoutes)
     {
-      Ptr<OutputStreamWrapper> routingStream = Create<OutputStreamWrapper> ("aodv.routes", std::ios::out);
-      aodv.PrintRoutingTableAllAt (Seconds (8), routingStream);
+      Ptr<OutputStreamWrapper> routingStream = Create<OutputStreamWrapper> ("aodv5n_malicious.routes", std::ios::out);
+      aodvMalicious.PrintRoutingTableAllAt (Seconds (8), routingStream);
     }
 }
 
@@ -237,3 +248,14 @@ AodvExample::InstallApplications ()
   Simulator::Schedule (Seconds (totalTime/3), &MobilityModel::SetPosition, mob, Vector (1e5, 1e5, 1e5));
 }
 
+void
+AodvExample::InstallTrustFramework ()
+{
+  for (uint32_t i = 0; i < size; ++i)
+    {
+      Ptr<SimpleAodvTrustHandler> simpleAodvTrustHandler = CreateObject<SimpleAodvTrustHandler>();
+      nodes.Get(i)->AggregateObject(simpleAodvTrustHandler);
+      simpleAodvTrustHandler->AttachPromiscuousCallbackToNode();
+
+    }
+}
