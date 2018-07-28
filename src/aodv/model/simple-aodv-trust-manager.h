@@ -18,8 +18,8 @@
  * Author: Jude Niroshan <jude.niroshan11@gmail.com>
  */
 
-#ifndef SIMPLE_AODV_TRUST_HANDLER_H_
-#define SIMPLE_AODV_TRUST_HANDLER_H_
+#ifndef SIMPLE_AODV_TRUST_MANAGER_H_
+#define SIMPLE_AODV_TRUST_MANAGER_H_
 
 #include "ns3/ipv4-trust-manager.h"
 #include "aodv-trust-entry.h"
@@ -43,11 +43,11 @@ namespace aodv {
  * \ingroup trust
  * \brief The aodv specific trust operations handler
  */
-class SimpleAodvTrustHandler : public Ipv4TrustManager
+class SimpleAodvTrustManager : public Ipv4TrustManager
 {
 private:
   /**
-   * \brief map of AodvTrustEntry that contain runtime trust metrics
+   * \brief map of AodvTrustEntry objects that contain runtime trust metrics
    * for each directly connected nodes
    */
   std::map<Ipv4Address, AodvTrustEntry> m_trustParameters;
@@ -55,8 +55,8 @@ private:
 public:
   static TypeId GetTypeId (void);
 
-  SimpleAodvTrustHandler ();
-  virtual ~SimpleAodvTrustHandler ();
+  SimpleAodvTrustManager ();
+  virtual ~SimpleAodvTrustManager ();
 
   /**
    * \brief Promiscuous callback function which will hooked for nodes.

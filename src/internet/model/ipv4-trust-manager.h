@@ -24,6 +24,7 @@
 #include "ns3/object.h"
 #include "ns3/node.h"
 #include "ns3/address.h"
+#include "ns3/ipv4-trust-table.h"
 
 namespace ns3 {
 
@@ -43,6 +44,13 @@ class Ipv4TrustManager : public Object
    * \brief Generic class for trust framework
    */
 public:
+
+  /**
+   * \brief trust table which holds trust values for directly connected nodes.
+   * this will be used for trust framework to tranform a protocol into a
+   * trust based variation
+   */
+  Ipv4TrustTable m_trustTable;
 
   Ipv4TrustManager ();
   virtual ~Ipv4TrustManager ();

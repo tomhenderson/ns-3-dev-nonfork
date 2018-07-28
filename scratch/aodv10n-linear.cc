@@ -30,7 +30,7 @@
 #include "ns3/point-to-point-module.h"
 #include "ns3/v4ping-helper.h"
 #include "ns3/yans-wifi-helper.h"
-#include "ns3/simple-aodv-trust-handler.h"
+#include "ns3/simple-aodv-trust-manager.h"
 #include "ns3/on-off-helper.h"
 
 using namespace ns3;
@@ -288,9 +288,9 @@ AodvExample::InstallTrustFramework ()
 {
   for (uint32_t i = 0; i < size; ++i)
     {
-      Ptr<SimpleAodvTrustHandler> simpleAodvTrustHandler = CreateObject<SimpleAodvTrustHandler>();
-      nodes.Get(i)->AggregateObject(simpleAodvTrustHandler);
-      simpleAodvTrustHandler->AttachPromiscuousCallbackToNode();
+      Ptr<SimpleAodvTrustManager> simpleAodvTrustManager = CreateObject<SimpleAodvTrustManager>();
+      nodes.Get(i)->AggregateObject(simpleAodvTrustManager);
+      simpleAodvTrustManager->AttachPromiscuousCallbackToNode();
 
     }
 }

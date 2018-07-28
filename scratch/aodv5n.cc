@@ -33,7 +33,7 @@
 #include "ns3/v4ping-helper.h"
 #include "ns3/on-off-helper.h"
 #include "ns3/csma-helper.h"
-#include "ns3/simple-aodv-trust-handler.h"
+#include "ns3/simple-aodv-trust-manager.h"
 
 using namespace ns3;
 using namespace aodv;
@@ -279,9 +279,9 @@ AodvExample::InstallTrustFramework ()
 {
   for (uint32_t i = 0; i < size; ++i)
     {
-      Ptr<SimpleAodvTrustHandler> simpleAodvTrustHandler = CreateObject<SimpleAodvTrustHandler>();
-      nodes.Get(i)->AggregateObject(simpleAodvTrustHandler);
-      simpleAodvTrustHandler->AttachPromiscuousCallbackToNode();
+      Ptr<SimpleAodvTrustManager> simpleAodvTrustManager = CreateObject<SimpleAodvTrustManager>();
+      nodes.Get(i)->AggregateObject(simpleAodvTrustManager);
+      simpleAodvTrustManager->AttachPromiscuousCallbackToNode();
 
     }
 }

@@ -18,7 +18,7 @@
  * Author: Jude Niroshan <jude.niroshan11@gmail.com>
  */
 
-#include "simple-aodv-trust-handler.h"
+#include "simple-aodv-trust-manager.h"
 #include "ns3/aodv-packet.h"
 #include "ns3/ipv4-header.h"
 #include "aodv-trust-entry.h"
@@ -26,27 +26,27 @@
 
 namespace ns3 {
 
-NS_LOG_COMPONENT_DEFINE("SimpleAodvTrustHandler");
+NS_LOG_COMPONENT_DEFINE("SimpleAodvTrustManager");
 namespace aodv {
 
-NS_OBJECT_ENSURE_REGISTERED(SimpleAodvTrustHandler);
+NS_OBJECT_ENSURE_REGISTERED(SimpleAodvTrustManager);
 
-TypeId SimpleAodvTrustHandler::GetTypeId (void)
+TypeId SimpleAodvTrustManager::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::aodv::SimpleAodvTrustHandler").SetParent<Object> ().SetGroupName ("Aodv").AddConstructor<
-      SimpleAodvTrustHandler> ();
+  static TypeId tid = TypeId ("ns3::aodv::SimpleAodvTrustManager").SetParent<Object> ().SetGroupName ("Aodv").AddConstructor<
+      SimpleAodvTrustManager> ();
   return tid;
 }
 
-SimpleAodvTrustHandler::SimpleAodvTrustHandler ()
+SimpleAodvTrustManager::SimpleAodvTrustManager ()
 {
 }
 
-SimpleAodvTrustHandler::~SimpleAodvTrustHandler ()
+SimpleAodvTrustManager::~SimpleAodvTrustManager ()
 {
 }
 
-bool SimpleAodvTrustHandler::OnReceivePromiscuousCallback (Ptr<NetDevice> device,
+bool SimpleAodvTrustManager::OnReceivePromiscuousCallback (Ptr<NetDevice> device,
                                                            Ptr<const Packet> packet,
                                                            uint16_t protocol,
                                                            const Address &from,
@@ -109,10 +109,10 @@ bool SimpleAodvTrustHandler::OnReceivePromiscuousCallback (Ptr<NetDevice> device
   m_trustParameters[ipv4Address] = aodvTrustEntry;
   double calculatedTrust = this->calculateTrust (ipv4Address);
 
-  Ptr<Node> node = GetObject<Node> ();
+ /* Ptr<Node> node = GetObject<Node> ();
   Ptr<Ipv4RoutingProtocol> m_ipv4Routing;
-  m_ipv4Routing = Ipv4RoutingHelper::GetRouting<Ipv4RoutingProtocol> (node->GetObject<Ipv4> ()->GetRoutingProtocol ());
-  m_ipv4Routing->m_trustTable.AddOrUpdateTrustTableEntry (ipv4Address,
+  m_ipv4Routing = Ipv4RoutingHelper::GetRouting<Ipv4RoutingProtocol> (node->GetObject<Ipv4> ()->GetRoutingProtocol ());*/
+  m_trustTable.AddOrUpdateTrustTableEntry (ipv4Address,
                                                           calculatedTrust);
 
   NS_LOG_FUNCTION (device << packet << protocol << &from << &to << packetType);
@@ -120,7 +120,7 @@ bool SimpleAodvTrustHandler::OnReceivePromiscuousCallback (Ptr<NetDevice> device
   return true;
 }
 
-double SimpleAodvTrustHandler::calculateTrust (Ipv4Address ipv4Address)
+double SimpleAodvTrustManager::calculateTrust (Ipv4Address ipv4Address)
 {
   std::map<Ipv4Address, AodvTrustEntry>::iterator i = m_trustParameters.find (ipv4Address);
 
@@ -135,10 +135,10 @@ double SimpleAodvTrustHandler::calculateTrust (Ipv4Address ipv4Address)
   return trustDouble;
 }
 
-void SimpleAodvTrustHandler::AttachPromiscuousCallbackToNode ()
+void SimpleAodvTrustManager::AttachPromiscuousCallbackToNode ()
 {
   Ptr<Node> node = GetObject<Node> ();
-  node->GetDevice (0)->SetPromiscReceiveCallback (ns3::MakeCallback (&SimpleAodvTrustHandler::OnReceivePromiscuousCallback,
+  node->GetDevice (0)->SetPromiscReceiveCallback (ns3::MakeCallback (&SimpleAodvTrustManager::OnReceivePromiscuousCallback,
                                                                      this));
 }
 
