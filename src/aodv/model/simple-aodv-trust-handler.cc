@@ -20,7 +20,9 @@
 
 #include "simple-aodv-trust-handler.h"
 #include "ns3/aodv-packet.h"
+#include "ns3/ipv4-header.h"
 #include "aodv-trust-entry.h"
+#include "ns3/ipv4-l3-protocol.h"
 
 namespace ns3 {
 
@@ -52,7 +54,16 @@ bool SimpleAodvTrustHandler::OnReceivePromiscuousCallback (Ptr<NetDevice> device
                                                            NetDevice::PacketType packetType)
 {
   std::cout << "JUDE ADDED FROM : " << from << std::endl;
-  Ipv4Address ipv4Address = Ipv4Address::ConvertFrom (from);
+
+  Ipv4Header ipv4Header;
+
+  if(protocol != Ipv4L3Protocol::PROT_NUMBER)
+    {
+      return false;
+    }
+  packet->PeekHeader(ipv4Header);
+
+  Ipv4Address ipv4Address = ipv4Header.GetSource();
   std::map<Ipv4Address, AodvTrustEntry>::iterator i = m_trustParameters.find (ipv4Address);
   AodvTrustEntry aodvTrustEntry;
 
