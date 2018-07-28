@@ -18,16 +18,47 @@
  * Author: Jude Niroshan <jude.niroshan11@gmail.com>
  */
 
-#include "ipv4-trust-manager.h"
+#include "trust-entry.h"
 
 namespace ns3 {
 
-Ipv4TrustManager::Ipv4TrustManager ()
+TrustEntry::TrustEntry ()
 {
 }
 
-Ipv4TrustManager::~Ipv4TrustManager ()
+TrustEntry::~TrustEntry ()
 {
+}
+
+Ipv4Address TrustEntry::GetNeighbourAddress ()
+{
+  return this->m_neighbourAddress;
+}
+
+void TrustEntry::SetNeighbourAddress (Ipv4Address neighbourAddress)
+{
+  this->m_neighbourAddress = neighbourAddress;
+}
+
+const Time& TrustEntry::GetTimestamp ()
+{
+  return this->m_timestamp;
+}
+
+void TrustEntry::SetTimestamp (const Time& timestamp)
+{
+  this->m_timestamp = timestamp;
+}
+
+double TrustEntry::GetTrustValue ()
+{
+  return this->m_trustValue;
+}
+
+void TrustEntry::SetTrustValue (double trustValue)
+{
+  this->m_trustValue = trustValue;
 }
 
 } // namespace ns3
+

@@ -18,39 +18,39 @@
  * Author: Jude Niroshan <jude.niroshan11@gmail.com>
  */
 
-#include "ipv4-trust-table.h"
+#include "trust-table.h"
 #include "ns3/simulator.h"
 
 namespace ns3 {
 
-Ipv4TrustTable::Ipv4TrustTable ()
+TrustTable::TrustTable ()
 {
 }
 
-void Ipv4TrustTable::AddRecord (Ipv4TrustEntry entry)
+void TrustTable::AddRecord (TrustEntry entry)
 {
 //  m_tableRecords.push_back (entry);
 }
 
-void Ipv4TrustTable::RemoveRecord (Ipv4TrustEntry entry)
+void TrustTable::RemoveRecord (TrustEntry entry)
 {
 //  m_tableRecords.pop_back (); //need to change this
 }
 
-void Ipv4TrustTable::UpdateRecord (Ipv4TrustEntry entry)
+void TrustTable::UpdateRecord (TrustEntry entry)
 {
   // TODO write update trust record logic
 }
 
-bool Ipv4TrustTable::LookupTrustEntry (Ipv4Address dst,
-                                       Ipv4TrustEntry & tt)
+bool TrustTable::LookupTrustEntry (Ipv4Address dst,
+                                       TrustEntry & tt)
 {
   if (m_tableRecords.empty ())
     {
       std::cout << "Trust entry to " << dst << " not found; trust table is empty";
       return false;
     }
-  std::map<Ipv4Address, Ipv4TrustEntry>::const_iterator i = m_tableRecords.find (dst);
+  std::map<Ipv4Address, TrustEntry>::const_iterator i = m_tableRecords.find (dst);
   if (i == m_tableRecords.end ())
     {
       std::cout << "Trust entry to " << dst << " not found";
@@ -61,14 +61,14 @@ bool Ipv4TrustTable::LookupTrustEntry (Ipv4Address dst,
   return true;
 }
 
-void Ipv4TrustTable::AddOrUpdateTrustTableEntry (Ipv4Address dst,
+void TrustTable::AddOrUpdateTrustTableEntry (Ipv4Address dst,
                                                  double trustValue)
 {
-  std::map<Ipv4Address, Ipv4TrustEntry>::const_iterator i = m_tableRecords.find (dst);
+  std::map<Ipv4Address, TrustEntry>::const_iterator i = m_tableRecords.find (dst);
 
   if (i == m_tableRecords.end ())
     {
-      Ipv4TrustEntry newTrustEntry;
+      TrustEntry newTrustEntry;
       newTrustEntry.SetNeighbourAddress (dst);
       newTrustEntry.SetTrustValue (trustValue);
       newTrustEntry.SetTimestamp (Simulator::Now ());
@@ -76,14 +76,14 @@ void Ipv4TrustTable::AddOrUpdateTrustTableEntry (Ipv4Address dst,
     }
   else
     {
-      Ipv4TrustEntry trustEntry = i->second;
+      TrustEntry trustEntry = i->second;
       trustEntry.SetTrustValue (trustValue);
       trustEntry.SetTimestamp (Simulator::Now ());
       m_tableRecords[dst] = trustEntry;
     }
 }
 
-Ipv4TrustTable::~Ipv4TrustTable ()
+TrustTable::~TrustTable ()
 {
 }
 

@@ -18,10 +18,10 @@
  * Author: Jude Niroshan <jude.niroshan11@gmail.com>
  */
 
-#ifndef IPV4TRUSTTABLE_H_
-#define IPV4TRUSTTABLE_H_
+#ifndef TRUSTTABLE_H_
+#define TRUSTTABLE_H_
 
-#include "ipv4-trust-entry.h"
+#include "trust-entry.h"
 #include "ns3/ipv4-address.h"
 #include <map>
 
@@ -41,7 +41,7 @@ namespace ns3 {
  * \ingroup trust
  * \brief The abstract Trust table for the nodes.
  */
-class Ipv4TrustTable
+class TrustTable
 {
 
 private:
@@ -49,29 +49,29 @@ private:
    * \brief m_tableRecords type of <Ipv4Address, Ipv4TrustEntry> classes
    * contains here representing the IPv4 trust table rows
    */
-  std::map<Ipv4Address, Ipv4TrustEntry> m_tableRecords;
+  std::map<Ipv4Address, TrustEntry> m_tableRecords;
 
 public:
-  Ipv4TrustTable ();
-  virtual ~Ipv4TrustTable ();
+  TrustTable ();
+  virtual ~TrustTable ();
 
   /**
    * \brief Add a new record to the Trust Table
    * \param [in] entry The new entry.
    */
-  void AddRecord (Ipv4TrustEntry entry);
+  void AddRecord (TrustEntry entry);
 
   /**
    * \brief Remove a record from the Trust Table
    * \param [in] entry The entry to be removed.
    */
-  void RemoveRecord (Ipv4TrustEntry entry);
+  void RemoveRecord (TrustEntry entry);
 
   /**
    * \brief Update a record of the Trust Table
    * \param [in] entry The entry to be modified.
    */
-  void UpdateRecord (Ipv4TrustEntry entry);
+  void UpdateRecord (TrustEntry entry);
 
   /**
    * Lookup trust table entry with destination address dst
@@ -79,7 +79,7 @@ public:
    * \param tt entry with destination address dst, if exists
    * \return true on success
    */
-  bool LookupTrustEntry (Ipv4Address dst, Ipv4TrustEntry & tt);
+  bool LookupTrustEntry (Ipv4Address dst, TrustEntry & tt);
 
 
   /**

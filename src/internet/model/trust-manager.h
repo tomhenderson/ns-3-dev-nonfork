@@ -18,17 +18,17 @@
  * Author: Jude Niroshan <jude.niroshan11@gmail.com>
  */
 
-#ifndef IPV4TRUSTHANDLER_H_
-#define IPV4TRUSTHANDLER_H_
+#ifndef TRUSTHANDLER_H_
+#define TRUSTHANDLER_H_
 
 #include "ns3/object.h"
 #include "ns3/node.h"
 #include "ns3/address.h"
-#include "ns3/ipv4-trust-table.h"
+#include "ns3/trust-table.h"
 
 namespace ns3 {
 
-class Ipv4TrustManager : public Object
+class TrustManager : public Object
 {
 
   /**
@@ -50,10 +50,10 @@ public:
    * this will be used for trust framework to tranform a protocol into a
    * trust based variation
    */
-  Ipv4TrustTable m_trustTable;
+  TrustTable m_trustTable;
 
-  Ipv4TrustManager ();
-  virtual ~Ipv4TrustManager ();
+  TrustManager ();
+  virtual ~TrustManager ();
 
   /**
    * \brief calculate the trust value for a given IPv4 address host
