@@ -179,7 +179,7 @@ public:
 
 protected:
   virtual void DoInitialize (void);
-private:
+
   // Protocol parameters.
   uint32_t m_rreqRetries;             ///< Maximum number of retransmissions of RREQ with TTL = NetDiameter to discover a route
   uint16_t m_ttlStart;                ///< Initial TTL value for RREQ.
@@ -247,7 +247,7 @@ private:
   /// Number of RERRs used for RERR rate control
   uint16_t m_rerrCount;
 
-private:
+protected:
   /// Start protocol operation
   void Start ();
   /**
@@ -327,7 +327,7 @@ private:
   ///\name Receive control packets
   //\{
   /// Receive and process control packet
-  void RecvAodv (Ptr<Socket> socket);
+  virtual void RecvAodv (Ptr<Socket> socket);
   /// Receive RREQ
   void RecvRequest (Ptr<Packet> p, Ipv4Address receiver, Ipv4Address src);
   /// Receive RREP
