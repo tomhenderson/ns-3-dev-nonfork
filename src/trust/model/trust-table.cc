@@ -27,23 +27,46 @@ TrustTable::TrustTable ()
 {
 }
 
-void TrustTable::AddRecord (TrustEntry entry)
+bool TrustTable::AddRecord (Address address,
+                            double trustValue)
 {
-//  m_tableRecords.push_back (entry);
+  TrustEntry newTrustEntry;
+  newTrustEntry.SetNeighbourAddress (address);
+  newTrustEntry.SetTrustValue (trustValue);
+  newTrustEntry.SetTimestamp (Simulator::Now ());
+  std::pair<std::map<Address, TrustEntry>::iterator, bool> result = m_tableRecords.insert (std::make_pair (address,
+                                                                                                           newTrustEntry));
+  return result.second;
 }
 
-void TrustTable::RemoveRecord (TrustEntry entry)
+bool TrustTable::RemoveRecord (Address address)
 {
-//  m_tableRecords.pop_back (); //need to change this
+  if (m_tableRecords.erase (address) != 0)
+    {
+      return true;
+    }
+  return false;
 }
 
-void TrustTable::UpdateRecord (TrustEntry entry)
+bool TrustTable::UpdateRecord (Address address,
+                               double trustValue)
 {
-  // TODO write update trust record logic
+  std::map<Address, TrustEntry>::iterator i = m_tableRecords.find (address);
+  if (i == m_tableRecords.end ())
+    {
+      return false;
+    }
+  TrustEntry newTrustEntry;
+  newTrustEntry.SetNeighbourAddress (address);
+  newTrustEntry.SetTrustValue (trustValue);
+  newTrustEntry.SetTimestamp (Simulator::Now ());
+
+  i->second = newTrustEntry;
+  return true;
 }
 
 bool TrustTable::LookupTrustEntry (Address dst,
-                                       TrustEntry & tt)
+                                   TrustEntry & tt)
 {
   if (m_tableRecords.empty ())
     {
@@ -62,7 +85,7 @@ bool TrustTable::LookupTrustEntry (Address dst,
 }
 
 void TrustTable::AddOrUpdateTrustTableEntry (Address dst,
-                                                 double trustValue)
+                                             double trustValue)
 {
   std::map<Address, TrustEntry>::const_iterator i = m_tableRecords.find (dst);
 

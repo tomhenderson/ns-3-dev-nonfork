@@ -57,21 +57,26 @@ public:
 
   /**
    * \brief Add a new record to the Trust Table
-   * \param [in] entry The new entry.
+   * \param [in] address The node Address
+   * \param [in] trustValue new trust value that needs to be inserted in the trust table
+   * \Returns bool boolean value whether add record operation was successful or not
    */
-  void AddRecord (TrustEntry entry);
+  bool AddRecord (Address address, double trustValue);
 
   /**
    * \brief Remove a record from the Trust Table
-   * \param [in] entry The entry to be removed.
+   * \param [in] address Address to be removed.from the trust table
+   * \Returns bool boolean value whether delete record operation was successful or not
    */
-  void RemoveRecord (TrustEntry entry);
+  bool RemoveRecord (Address address);
 
   /**
    * \brief Update a record of the Trust Table
-   * \param [in] entry The entry to be modified.
+   * \param [in] address The node Address that needs to be modified.
+   * \param [in] trustValue new trust value that needs to be updated in the trust table
+   * \Returns bool boolean value whether update record operation was successful or not
    */
-  void UpdateRecord (TrustEntry entry);
+  bool UpdateRecord (Address address, double trustValue);
 
   /**
    * Lookup trust table entry with destination address dst
@@ -79,8 +84,8 @@ public:
    * \param tt entry with destination address dst, if exists
    * \return true on success
    */
-  bool LookupTrustEntry (Address dst, TrustEntry & tt);
-
+  bool LookupTrustEntry (Address dst,
+                         TrustEntry & tt);
 
   /**
    * \brief add a new trust table entry or update the existing
